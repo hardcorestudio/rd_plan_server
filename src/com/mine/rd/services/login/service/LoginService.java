@@ -109,9 +109,9 @@ public class LoginService extends BaseService {
 	}
 	
 	/**
-	 * @author weizanting
+	 * @author woody
 	 * @throws Exception 
-	 * @date 20170227
+	 * @date 20180825
 	 * 方法：产生单位登录
 	 */
 	private void epAdminLogin() throws Exception{
@@ -119,12 +119,12 @@ public class LoginService extends BaseService {
 		if(controller.getMyParam("epCode") != null && !"".equals(controller.getMyParam("epCode"))  && controller.getMyParam("epAdminPwd") != null && !"".equals(controller.getMyParam("epAdminPwd"))){
 			String REGISTERCODE = controller.getMyParam("epCode").toString();
 			String PWD = controller.getMyParam("epAdminPwd").toString();
-			Map<String, Object> admin = dao.verifyLoginInfo(PWD, REGISTERCODE);
+			Map<String, Object> admin = dao.epAdminLogin(REGISTERCODE);
 			if(admin.size() > 0){
-				if(PWD.equals(admin.get("PWD"))){
+				if(Md5kit.MD5_64bit(PWD).equals(admin.get("pwd"))){
 					controller.setMySession("userId", admin.get("USER_ID"));
 					controller.setMySession("nickName", admin.get("NAME"));
-					controller.setMySession("userType", "epAdminCs");
+					controller.setMySession("userType", "CSEP");
 					controller.setMySession("ifLogin","0");
 					controller.setMySession("epId", admin.get("EP_ID"));
 					controller.setMySession("epName", admin.get("EP_NAME"));

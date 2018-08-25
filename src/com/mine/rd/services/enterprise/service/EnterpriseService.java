@@ -97,122 +97,6 @@ public class EnterpriseService extends BaseService {
 	
 	/**
 	 * @author ouyangxu
-	 * @throws Exception 
-	 * @date 20170220
-	 * 方法：更新单位信息
-	 */
-	private void updateEnterpriseInfo() throws Exception{
-		Map<String, Object> epInfo = controller.getMyParamMap("epInfo");
-		List<Map<String, Object>> admins = controller.getMyParamList("admins");
-		List<Map<String, Object>> connects = controller.getMyParamList("connects");
-		List<Map<String, Object>> cars = controller.getMyParamList("cars");
-		String epId = controller.getMyParam("epId").toString();
-		String epType = controller.getMyParam("epType").toString();
-		String epName = controller.getMyParam("epName").toString();
-		String tablename = "";
-		//CS-医疗单位 CZ-医疗处置单位
-		if("CS".equals(epType)){
-			tablename = "WOBO_PERSON_CS";
-		}else if("CZ".equals(epType)){
-			tablename = "WOBO_PERSON_CZ";
-		}
-		if(loginDao.checkEnterprise(epInfo.get("epName").toString(), epId)){
-			if(loginDao.checkOrgCode(epInfo.get("epCode").toString(), epId)){
-				if(dao.checkAdmin(admins, epId, tablename)){
-					if(dao.updateEnterpriseInfo(epInfo, epId)){
-						int adminSize = dao.addAdminInfo(admins, epId, tablename,"add","").size();
-						if(adminSize > 0 || (adminSize <= 0 && admins.size() == 0)){
-							int connectSize = dao.addConnectInfo(connects, epId, tablename).size();
-							if(connectSize > 0 || (connectSize <= 0 && connects.size() == 0)){
-								int carSize = dao.addCarInfo(cars, epId).size();
-								if(carSize > 0 || (carSize <= 0 && cars.size() == 0)){
-									if(!"".equals(dao.saveApply(epId, epName, epInfo.get("belongSepa").toString(), "", tablename))){
-										controller.setMySession("newGuideFlag", false);
-										controller.setAttr("resFlag", "0");
-										controller.setAttr("msg", "更新成功，也可在待办任务菜单中提交信息！");
-									}else{
-										controller.setAttr("resFlag", "1");
-										controller.setAttr("msg", "更新失败！");
-									}
-								}else{
-									controller.setAttr("resFlag", "1");
-									controller.setAttr("msg", "更新失败！");
-								}
-							}else{
-								controller.setAttr("resFlag", "1");
-								controller.setAttr("msg", "更新失败！");
-							}
-						}else{
-							controller.setAttr("resFlag", "1");
-							controller.setAttr("msg", "更新失败！");
-						}
-					}else{
-						controller.setAttr("resFlag", "1");
-						controller.setAttr("msg", "更新失败！");
-					}
-				}else{
-					controller.setAttr("resFlag", "1");
-					controller.setAttr("msg", "不能删除已通过审核管理员，可至【管理员信息维护】菜单对该用户进行禁用操作！");
-				}
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "该组织机构代码证已存在！");
-			}
-		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("msg", "该名称单位已存在！");
-		}
-	}
-	
-	/**
-	 * @author ouyangxu
-	 * @date 20170220
-	 * 方法：修改单位信息
-	 */
-	private void modifyEnterpriseInfo(){
-		Map<String, Object> epInfo = controller.getMyParamMap("epInfo");
-		String epId = controller.getMyParam("epId").toString();
-		String epName = controller.getMyParam("epName").toString();
-		String belongSepa = controller.getMyParam("belongSepa").toString();
-		if(dao.checkIfModifyEpInfo(epInfo, epId)){
-			if(loginDao.checkEnterprise(epInfo.get("epName").toString(), epId)){
-				if(loginDao.checkOrgCode(epInfo.get("epCode").toString(), epId)){
-					String applyId = dao.saveApply(epId, epName, belongSepa, "modify", "");
-					if(!"".equals(applyId)){
-						if(dao.saveEpInfoTransition(epInfo, epId, applyId)){
-	//								AdminDao adminDao = new AdminDao();
-	//								if(adminDao.saveHistoryInfo(epId, "", applyId, "PE")){
-							controller.setAttr("resFlag", "0");
-							controller.setAttr("applyId", applyId);
-							controller.setAttr("msg", "保存成功，也可在待办任务菜单中提交信息！");
-	//								}else{
-	//									controller.setAttr("resFlag", "1");
-	//									controller.setAttr("msg", "保存失败！");
-	//								}
-						}else{
-							controller.setAttr("resFlag", "1");
-							controller.setAttr("msg", "保存失败！");
-						}
-					}else{
-						controller.setAttr("resFlag", "1");
-						controller.setAttr("msg", "保存失败！");
-					}
-				}else{
-					controller.setAttr("resFlag", "1");
-					controller.setAttr("msg", "该组织机构代码证已存在！");
-				}
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "该名称单位已存在！");
-			}
-		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("msg", "未对单位信息作修改，不能保存或提交！");
-		}
-	}
-	
-	/**
-	 * @author ouyangxu
 	 * @date 20170223
 	 * 方法：提交医疗机构信息完善申请
 	 */
@@ -671,13 +555,6 @@ public class EnterpriseService extends BaseService {
 	            try {
 	            	if("queryEnterpriseInfo".equals(getLastMethodName(7))){
 	        			queryEnterpriseInfo();
-	        		}else if("updateEnterpriseInfo".equals(getLastMethodName(7))){
-	        			updateEnterpriseInfo();
-	        		}else if("submitEpAddInfoApply".equals(getLastMethodName(7))){
-	        			updateEnterpriseInfo();
-	        			if("0".equals(controller.getAttr("resFlag"))){
-	        				submitEpAddInfoApply();
-	        			}
 	        		}else if("queryAdminInfo".equals(getLastMethodName(7))){
 	        			queryAdminInfo();
 	        		}else if("adminManage".equals(getLastMethodName(7))){
@@ -700,13 +577,6 @@ public class EnterpriseService extends BaseService {
 	        			queryCodeInfoForCar();
 	        		}else if("queryEnterpriseInfoTransition".equals(getLastMethodName(7))){
 	        			queryEnterpriseInfoTransition();
-	        		}else if("modifyEnterpriseInfo".equals(getLastMethodName(7))){
-	        			modifyEnterpriseInfo();
-	        		}else if("submitEpModifyInfoApply".equals(getLastMethodName(7))){
-	        			modifyEnterpriseInfo();
-	        			if("0".equals(controller.getAttr("resFlag"))){
-	        				submitEpModifyInfoApply();
-	        			}
 	        		}else if("modifyAdminInfo".equals(getLastMethodName(7))){
 	        			modifyAdminInfo();
 	        		}else if("submitModifyAdminInfo".equals(getLastMethodName(7))){

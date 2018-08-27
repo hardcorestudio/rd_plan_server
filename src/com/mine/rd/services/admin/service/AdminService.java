@@ -13,9 +13,6 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.admin.pojo.AdminDao;
-import com.mine.rd.services.agreement.pojo.AgreementDao;
-import com.mine.rd.services.plan.pojo.PlanDao;
-import com.mine.rd.services.transfer.pojo.TransferDao;
 import com.sun.mail.smtp.SMTPAddressFailedException;
 
 public class AdminService extends BaseService{
@@ -142,15 +139,10 @@ public class AdminService extends BaseService{
         String bizIdStart = bizId.substring(0,2);
         if("EP".equals(bizIdStart)){	//EP-单位信息完善
         }else if("TP".equals(bizIdStart)){		//TP-转移计划
-            PlanDao planDao = new PlanDao();
-            Map<String, Object> applyInfo = planDao.queryPlan(bizId);
-            controller.setAttr("applyInfo", applyInfo);
+            controller.setAttr("applyInfo", null);
 			controller.setAttr("resFlag", "0");
         }else if("TM".equals(bizIdStart)){		//TM-运行中转移计划变更中转单位
-            PlanDao planDao = new PlanDao();
-            String tpId = planDao.queryPlanId(bizId);
-            Map<String, Object> applyInfo = planDao.queryPlanModify(tpId, bizId);
-            controller.setAttr("applyInfo", applyInfo);
+            controller.setAttr("applyInfo", null);
 			controller.setAttr("resFlag", "0");
         }
 	}
@@ -269,9 +261,6 @@ public class AdminService extends BaseService{
 	 * 方法：首页查看统计数据
 	 */
 	private void queryData(){
-		AgreementDao agreementDao = new AgreementDao();
-		PlanDao planDao = new PlanDao();
-		TransferDao transferDao = new TransferDao();
 		String userType = controller.getMySession("userType").toString();
 		pn = 1;
 		ps = 10;
@@ -290,14 +279,10 @@ public class AdminService extends BaseService{
 			agreementNumI = 0;
 			planNumI = 0;
 //			finishedTaskNumI = Integer.parseInt(dao.adminTask(orgCode, action, BTOF_ID, pn, ps, ROLEID, "", "").get("totalRow").toString());
-//			agreementNumI = Integer.parseInt(agreementDao.queryAgreementListForAdmin(pn, ps, orgCode, ROLEID, "", "", "", null).get("totalRow").toString());
-//			planNumI = Integer.parseInt(planDao.queryPlanListForAdmin(pn, ps, orgCode, ROLEID, "", "", "", null).get("totalRow").toString());
 			if("SJSPROLE".equals(ROLEID)){	//SJSPROLE-市级管理员
-//				hualNumI = Integer.parseInt(transferDao.queryHaulListForAdmin(ROLEID, orgCode, pn, ps, "", "", null).get("totalRow").toString());
 				hualNumI = 0;
 			}
 			if(!"SJSPROLE".equals(ROLEID)){		//区级管理员
-//				billNumI = Integer.parseInt(transferDao.queryBillListForEpCs("", pn, ps, "", "", null, orgCode).get("totalRow").toString());
 				billNumI = 0;
 			}
 		}else if("epCs".equals(userType) || "epCz".equals(userType)){	//epCs-医疗单位  epCz-医疗处置单位
@@ -315,11 +300,9 @@ public class AdminService extends BaseService{
 				planNumI = 0;
 				billNumI = 0;
 //				planNumI = Integer.parseInt(planDao.queryPlanList(epId, pn, ps, "", "").get("totalRow").toString());
-//				billNumI = Integer.parseInt(transferDao.queryBillListForEpCs(epId, pn, ps, "", "", null, "").get("totalRow").toString());
 			}
 			if("epAdminCz".equals(userType)){	//epAdminCz-医疗处置单位管理员
 				hualNumI = 0;
-//				hualNumI = Integer.parseInt(transferDao.queryHaulList(epId, pn, ps, "", "", null).get("totalRow").toString());
 			}
 		}
 		controller.setAttr("resFlag", "0");

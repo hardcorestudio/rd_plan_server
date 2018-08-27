@@ -16,8 +16,6 @@ import javax.websocket.server.ServerEndpoint;
 import com.jfinal.json.Jackson;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.mine.pub.controller.BaseController;
-import com.mine.rd.controllers.arcGis.ArcGisController;
-import com.mine.rd.services.arcGis.pojo.ArcGisDao;
 
 @ServerEndpoint(value="/mywebsocket")
 public class MyWebSocket {
@@ -113,8 +111,7 @@ public class MyWebSocket {
         if(map.get("key") != null && "1".equals(map.get("key"))){
         	if(map.get("res") != null && "0".equals(map.get("res"))){
 				Map<String, Object> info = (Map<String, Object>) map.get("info");
-        		ArcGisDao dao = new ArcGisDao();
-        		if(dao.saveLocationConduit(info)){
+        		if(false){
             		System.out.println("============>true");
             	}else{
             		System.out.println("============>false");
@@ -123,10 +120,7 @@ public class MyWebSocket {
         	
         }
         else if(map.get("key") != null && "2".equals(map.get("key"))){
-        	ArcGisController bc=new ArcGisController();
-    		bc.getCarPositions(message);
-    		Map<String, Object> result= (Map<String, Object>)bc.resMap.get("carPositions");
-    		String json = Jackson.getJson().toJson(result);
+    		String json = Jackson.getJson().toJson("");
     		String mName = map.get("mName").toString();
     		if(!"queryPositionByLp".equals(mName))
     		{
@@ -141,10 +135,7 @@ public class MyWebSocket {
 			}  
         }
         else if(map.get("key") != null && "3".equals(map.get("key"))){
-        	ArcGisController bc=new ArcGisController();
-        	bc.getCarPositions(message);
-        	Map<String, Object> result= (Map<String, Object>)bc.resMap.get("carPositions");
-        	String json = Jackson.getJson().toJson(result);
+        	String json = Jackson.getJson().toJson("");
         	try {
 				sendMessage(json);
 			} catch (IOException e) {
@@ -155,21 +146,14 @@ public class MyWebSocket {
         	paramMap.put("mName", "");
         }
         else if(map.get("key") != null && "5".equals(map.get("key"))){
-        	ArcGisController bc=new ArcGisController();
-        	bc.getCarPositions(message);
         	webSocketSet.remove(this);
         	this.onClose(this.session);
         }
         else if(map.get("key") != null && "6".equals(map.get("key"))){
-        	ArcGisDao dao = new ArcGisDao();
         	Map<String, Object> info = (Map<String, Object>) map.get("info");
-        	dao.saveGisHistory(info);
         }
         else if(map.get("key") != null && "7".equals(map.get("key"))){
-        	ArcGisController bc=new ArcGisController();
-        	bc.getCarPositions(message);
-        	Map<String, Object> result= (Map<String, Object>)bc.resMap.get("carPositions");
-        	String json = Jackson.getJson().toJson(result);
+        	String json = Jackson.getJson().toJson("");
         	try {
 				sendMessage(json);
 			} catch (IOException e) {

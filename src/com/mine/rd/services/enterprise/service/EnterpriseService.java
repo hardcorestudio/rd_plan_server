@@ -13,12 +13,10 @@ import com.mine.pub.controller.BaseController;
 import com.mine.pub.kit.DESKit;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.enterprise.pojo.EnterpriseDao;
-import com.mine.rd.services.login.pojo.LoginDao;
 
 public class EnterpriseService extends BaseService {
 
 	private EnterpriseDao dao = new EnterpriseDao();
-	private LoginDao loginDao = new LoginDao();
 	public EnterpriseService(BaseController controller) {
 		super(controller);
 	}
@@ -95,43 +93,7 @@ public class EnterpriseService extends BaseService {
 		controller.setAttr("resFlag", "0");
 	}
 	
-	/**
-	 * @author ouyangxu
-	 * @date 20170223
-	 * 方法：提交医疗机构信息完善申请
-	 */
-	private void submitEpAddInfoApply(){
-		String epId = controller.getMyParam("epId").toString();
-		if(dao.submitEpAddInfoApply(epId, "")){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("msg", "提交成功！");
-		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("msg", "提交失败！");
-		}
-	}
 	
-	/**
-	 * @author ouyangxu
-	 * @date 20170223
-	 * 方法：提交医疗机构信息修改申请
-	 */
-	private void submitEpModifyInfoApply(){
-		String epId = controller.getMyParam("epId").toString();
-//		Map<String, Object> epInfo = controller.getMyParamMap("epInfo");
-//		if(dao.checkIfModifyEpInfo(epInfo, epId)){
-		if(dao.submitEpAddInfoApply(epId, "modify")){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("msg", "提交成功！");
-		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("msg", "提交失败！");
-		}
-//		}else{
-//			controller.setAttr("resFlag", "1");
-//			controller.setAttr("msg", "未对单位信息作修改，不能提交！");
-//		}
-	}
 	
 	/**
 	 * @author ouyangxu
@@ -151,18 +113,6 @@ public class EnterpriseService extends BaseService {
 		controller.setAttr("resFlag", "0");
 	}
 	
-	/**
-	 * @author ouyangxu
-	 * @date 20170303
-	 * 方法：查询单位管理员修改过渡和历史信息
-	 */
-	private void queryAdminInfoTransition(){
-		String epId = controller.getMyParam("epId").toString();
-//			String bizId = controller.getMyParam("bizId").toString();
-//			controller.setAttr("adminData", dao.queryAdminInfoTransition(epId, bizId));
-		controller.setAttr("adminData", dao.queryAdminInfoForNow(epId));
-		controller.setAttr("resFlag", "0");
-	}
 	
 	/**
 	 * @author ouyangxu
@@ -474,79 +424,6 @@ public class EnterpriseService extends BaseService {
 		controller.setAttr("path", path);
 	}
 	
-	/**
-	 * @author ouyangxu
-	 * @date 20170428
-	 * 方法：删除交接员
-	 */
-	private void delConnect(){
-		String personId = controller.getMyParam("personId").toString();
-//		String personName = controller.getMyParam("personName").toString();
-		String epId = controller.getMyParam("epId").toString();
-		String tablename = dao.epPersonTable(epId);
-//		String personId = dao.getConnectId(epId, personName, tablename);
-		if(personId != null && !"".equals(personId)){
-			if(dao.checkPersonTask(personId)){
-				if(dao.delConnect(personId, tablename)){
-					controller.setAttr("resFlag", "0");
-					controller.setAttr("msg", "删除成功！");
-				}else{
-					controller.setAttr("resFlag", "1");
-					controller.setAttr("msg", "删除失败！");
-				}
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "该用户有未完成行程，不能删除！");
-			}
-		}else{
-			controller.setAttr("resFlag", "3");
-			controller.setAttr("msg", "用户不存在，请先保存人员信息！");
-		}
-	}
-	
-	/**
-	 * @author ouyangxu
-	 * @date 20170428
-	 * 方法：删除车辆
-	 */
-	private void delCar(){
-		String carId = controller.getMyParam("carId").toString();
-		if(carId != null && !"".equals(carId)){
-			if(dao.delCar(carId)){
-				controller.setAttr("resFlag", "0");
-				controller.setAttr("msg", "删除成功！");
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "删除失败！");
-			}
-		}else{
-			controller.setAttr("resFlag", "3");
-			controller.setAttr("msg", "车辆不存在，请先保存车辆信息！");
-		}
-	}
-	
-	/**
-	 *@author weizanting
-	 * @date 20170515
-	 * 方法：车辆类型
-	 */
-	private void queryCarType(){
-		controller.setAttr("carTypeList", dao.queryCarType());
-		controller.setAttr("resFlag", "0");
-	}
-	
-	/**
-	 * @author ouyangxu
-	 * @date 20170619
-	 * 方法：根据区域获取中转单位信息
-	 */
-	private void queryBelongOrgBySepa(){
-		String sepa = controller.getMyParam("sepa").toString();
-		String epId = controller.getMyParam("epId").toString();
-		controller.setAttr("transferOrgData", dao.queryBelongOrgBySepa(sepa, epId));
-		controller.setAttr("resFlag", "0");
-	}
-	
 	@Override
 	public void doService() throws Exception {
 		Db.tx(new IAtom() {
@@ -584,20 +461,10 @@ public class EnterpriseService extends BaseService {
 	        			if("0".equals(controller.getAttr("resFlag"))){
 	        				submitModifyAdminInfo();
 	        			}
-	        		}else if("queryAdminInfoTransition".equals(getLastMethodName(7))){
-	        			queryAdminInfoTransition();
-	        		}else if("delConnect".equals(getLastMethodName(7))){
-	        			delConnect();
-	        		}else if("delCar".equals(getLastMethodName(7))){
-	        			delCar();
 	        		}else if("queryEpInfoTransitionForEp".equals(getLastMethodName(7))){
 	        			queryEpInfoTransitionForEp();
 	        		}else if("queryEpInfoHistoryForEp".equals(getLastMethodName(7))){
 	        			queryEpInfoHistoryForEp();
-	        		}else if("queryCarType".equals(getLastMethodName(7))){
-	        			queryCarType();
-	        		}else if("queryBelongOrgBySepa".equals(getLastMethodName(7))){
-	        			queryBelongOrgBySepa();
 	        		}
 	            } catch (Exception e) {
 	                e.printStackTrace();

@@ -63,6 +63,23 @@ public class BaseController extends Controller
 		getResponse().setHeader("Access-Control-Allow-Origin", "*");
 		this.renderJson();
 	}
+	public void redirectForCors(String url) {
+		this.doIWBSESSION();
+		this.doUserBaseInfo();
+		getResponse().setHeader("Access-Control-Allow-Origin", "*");
+		this.redirect(url);
+	}
+	/**
+	 * @author woody
+	 * @date 20151001
+	 * @跨域返回
+	 * */
+	public void renderHtmlForCors(String htmltext) {
+		this.doIWBSESSION();
+		this.doUserBaseInfo();
+		getResponse().setHeader("Access-Control-Allow-Origin", "*");
+		this.renderHtml(htmltext);
+	}
 	/**
 	 * Render with any Render which extends Render
 	 */

@@ -130,6 +130,7 @@ public class LoginService extends BaseService {
 					controller.setMySession("epName", admin.get("EP_NAME"));
 					controller.setMySession("belongSepa",admin.get("belongSepa"));
 					controller.setMySession("sepaName",admin.get("sepaName"));
+					controller.setAttr("ROLEID", "CSEP");
 					//token值
 					controller.setMySession("WJWT", dao.getToken());
 					controller.setAttr("resFlag", "0");

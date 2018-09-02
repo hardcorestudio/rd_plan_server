@@ -27,4 +27,18 @@ public class PlanController extends BaseController {
 		renderJsonForCors();
 	}
 	
+	public void planList(){
+		logger.info("管理计划列表");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("管理计划列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
 }

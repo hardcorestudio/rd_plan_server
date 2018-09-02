@@ -1,15 +1,22 @@
 package com.mine.rd.services.plan.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.service.BaseService;
+import com.mine.rd.services.plan.pojo.PlanDao;
 
 public class PlanService extends BaseService{
 
+	private PlanDao dao = new PlanDao();
+	
+	private int pn = 0;
+	private int ps = 0;
+	
 	public PlanService(BaseController controller) {
 		super(controller);
 	}
@@ -23,6 +30,9 @@ public class PlanService extends BaseService{
 	            	if("planMain".equals(getLastMethodName(7))){
 	            		planMain();
 	        		}
+	            	else if("planList".equals(getLastMethodName(7))){
+	            		planList();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -36,6 +46,17 @@ public class PlanService extends BaseService{
 	
 	private String getUrl(String url){
 		return PropKit.get("rd_plan_sub_url")+url;
+	}
+	
+	private void planList(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object statusValue = controller.getMyParam("statusValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.queryEpList(pn, ps,searchContent,statusValue,statusCache));
+		controller.setAttr("resFlag", "0");
 	}
 	
 	private void planMain(){

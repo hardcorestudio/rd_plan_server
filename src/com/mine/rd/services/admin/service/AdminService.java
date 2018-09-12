@@ -40,10 +40,6 @@ public class AdminService extends BaseService{
 			if("SJSPROLE".equals(ROLEID)){
 				controller.setAttr("forgetPwdNum", dao.forgetPwdNum());
 			}
-		}else if("epCs".equals(userType) || "epCz".equals(userType)){	//epCs-医疗单位  epCz-医疗处置单位
-			String epId = controller.getMyParam("epId").toString();
-			String action = controller.getMyParam("action").toString();
-			num =  Integer.parseInt(dao.epTask(epId, action, 1, 10, "").get("totalRow").toString());
 		}else if("epAdminCs".equals(userType)){		//epAdminCs-医疗单位管理员
 			String epId = controller.getMyParam("epId").toString();
 			String action = controller.getMyParam("action").toString();
@@ -74,11 +70,6 @@ public class AdminService extends BaseService{
 			String BTOF_ID = controller.getMyParam("BTOF_ID").toString();
 			String ROLEID = controller.getMyParam("ROLEID").toString();
 			controller.setAttrs(dao.adminTask(orgCode, action, BTOF_ID, pn, ps, ROLEID, searchContent, sepaValue));
-			controller.setAttr("resFlag", "0");
-		}else if("epCs".equals(userType) || "epCz".equals(userType)){	//epCs-医疗单位  epCz-医疗处置单位
-			String epId = controller.getMyParam("epId").toString();
-			String action = controller.getMyParam("action").toString();
-			controller.setAttrs(dao.epTask(epId, action, pn, ps, searchContent));
 			controller.setAttr("resFlag", "0");
 		}else{
 			String epId = controller.getMyParam("epId").toString();

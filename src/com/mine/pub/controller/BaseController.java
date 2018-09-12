@@ -269,7 +269,8 @@ public class BaseController extends Controller
 		setAttr("empId", getMySession("empId") == null ? "" : getMySession("empId"));
 		setAttr("userName", getMySession("userName") == null ? "" : getMySession("userName"));
 		setAttr("realName", getMySession("realName") == null ? "" : getMySession("realName"));
-		setAttr("roleId", getMySession("roleId") == null ? "" : getMySession("roleId"));
+//		setAttr("roleId", getMySession("roleId") == null ? "" : getMySession("roleId"));
+		setAttr("ROLEID", getMySession("ROLEID") == null ? "" : getMySession("ROLEID"));
 		setAttr("orgSeq", getMySession("orgSeq") == null ? "" : getMySession("orgSeq"));
 		setAttr("status", getMySession("status") == null ? "" : getMySession("status"));
 		setAttr("newGuideFlag", getMySession("newGuideFlag") == null ? "" : getMySession("newGuideFlag"));

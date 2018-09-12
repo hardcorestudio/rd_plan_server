@@ -1,16 +1,11 @@
 package com.mine.rd.services.login.service;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-import com.jfinal.json.Json;
-import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
-import com.mine.pub.kit.DESKit;
-import com.mine.pub.kit.DecryptKit;
 import com.mine.pub.kit.Md5kit;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.login.pojo.LoginDao;
@@ -88,6 +83,7 @@ public class LoginService extends BaseService {
 					controller.setMySession("userPortrait","");
 					controller.setMySession("belongSepa", "");
 					controller.setMySession("sepaName", belongQ);
+					controller.setMySession("ROLEID", user.get("ROLEID"));
 					controller.setAttr("btoId", user.get("btoId"));
 					controller.setAttr("btoName", user.get("btoName"));
 					controller.setAttr("btofId", user.get("btofId"));
@@ -130,6 +126,7 @@ public class LoginService extends BaseService {
 					controller.setMySession("epName", admin.get("EP_NAME"));
 					controller.setMySession("belongSepa",admin.get("belongSepa"));
 					controller.setMySession("sepaName",admin.get("sepaName"));
+					controller.setMySession("ROLEID", "CSEP");
 					controller.setAttr("ROLEID", "CSEP");
 					//token值
 					controller.setMySession("WJWT", dao.getToken());

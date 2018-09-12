@@ -1,7 +1,9 @@
 package com.mine.rd.services.plan.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
@@ -33,6 +35,15 @@ public class PlanService extends BaseService{
 	            	else if("planList".equals(getLastMethodName(7))){
 	            		planList();
 	            	}
+	            	else if("apply".equals(getLastMethodName(7))){
+	            		apply();
+	            	}
+	            	else if("checkPlan".equals(getLastMethodName(7))){
+	            		checkPlan();
+	            	}
+	            	else if("apply2q".equals(getLastMethodName(7))){
+	            		apply2q();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -53,9 +64,10 @@ public class PlanService extends BaseService{
 		ps = Integer.parseInt(controller.getMyParam("ps").toString());
 		Object searchContent = controller.getMyParam("searchContent");
 		Object statusValue = controller.getMyParam("statusValue");
+		String epId = controller.getMySession("epId").toString();
 		@SuppressWarnings("unchecked")
 		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
-		controller.setAttrs(dao.queryEpList(pn, ps,searchContent,statusValue,statusCache));
+		controller.setAttrs(dao.queryEpList(pn, ps,searchContent,statusValue,statusCache,epId));
 		controller.setAttr("resFlag", "0");
 	}
 	
@@ -134,5 +146,44 @@ public class PlanService extends BaseService{
 	private void lastYearManagePlanRecord(){
 		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/lastYearManagePlanRecord");
 		controller.setAttr("resFlag", "0");
+	}
+	
+	private void apply() throws ParseException{
+		String epId = controller.getMyParam("epId").toString();
+		String epName = controller.getMySession("epName").toString();
+		String belongSepa = controller.getMySession("belongSepa").toString();
+		int resInt = dao.checkApply(epId);
+		if(resInt < 1){
+			Map<String,Object> map = dao.createPlan(epId,epName);
+			String applyId = dao.createApply(map.get("TP_ID").toString(),epId,epName,belongSepa);
+			if(applyId != ""){
+				controller.setAttr("resFlag", "0");
+			}else{
+				controller.setAttr("resFlag", "2");
+				controller.setAttr("resMsg", "操作失败");
+			}
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "当年不能重复申报");
+		}
+	}
+	
+	private void checkPlan(){
+		String TP_ID = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> map =  dao.checkApplyList(TP_ID);
+		controller.setAttr("applyListStatus", map == null ? "" : map.get("STATUS"));
+	}
+	
+	private void apply2q(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		boolean flag = dao.updateApply(tpId);
+		boolean flagMain = dao.updatePlanMain(tpId);
+		if(flag && flagMain){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
 	}
 }

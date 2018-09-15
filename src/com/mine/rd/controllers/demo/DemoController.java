@@ -29,6 +29,7 @@ import com.jfinal.aop.Clear;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.upload.UploadFile;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.kit.DateKit;
@@ -215,14 +216,15 @@ public class DemoController extends BaseController{
 		}
 		renderJson("111");
 	}
-//	public void getMenuList()
-//	{
-//		List list = CacheKit.getKeys("mySession");
-//		String userId = this.getMySession("userId").toString();
-//		setAttr("menulist", dao.getMenuList(userId));
-//		System.out.println("===>"+dao.getMenuList(userId));
-//		renderJsonForCors();
-//	}
+	public void getMenuList()
+	{
+		List list = CacheKit.getKeys("mySession");
+		String userId = "sysadmin";
+		setAttr("menulist", dao.getMenuList(userId));
+		System.out.println("===>"+dao.getMenuList(userId));
+		getResponse().setHeader("Access-Control-Allow-Origin", "*");
+		renderJson();
+	}
 //	public void demoFile()
 //	{
 //		mixRenderReturn("index.html");

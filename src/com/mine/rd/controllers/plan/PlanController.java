@@ -83,4 +83,63 @@ public class PlanController extends BaseController {
 		renderJsonForCors();
 	}
 	
+	public void initBaseInfo()
+	{
+		logger.info("进入基本信息的初始信息");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("进入基本信息的初始信息异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void saveBaseInfo()
+	{
+		logger.info("保存基本信息的初始信息");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存基本信息的初始信息异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void initProductInfo()
+	{
+		logger.info("进入产品生产情况");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("进入产品生产情况异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void saveProductInfo()
+	{
+		logger.info("保存产品生产情况");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存产品生产情况异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

@@ -49,6 +49,11 @@ public class AdminService extends BaseService{
 			String epId = controller.getMyParam("epId").toString();
 			controller.setAttr("agreementNum", dao.queryAgreementNum(epId));
 		}
+		else if("CSEP".equals(userType)){		
+			String epId = controller.getMyParam("epId").toString();
+			String action = controller.getMyParam("action").toString();
+			num = Integer.parseInt(dao.epAdminTask(epId, action, 1, 10, "").get("totalRow").toString());
+		}
 		controller.setAttr("taskNum", num);
 		controller.setAttr("resFlag", "0");
 	}
@@ -269,7 +274,7 @@ public class AdminService extends BaseService{
 			finishedTaskNumI = 0;
 			agreementNumI = 0;
 			planNumI = 0;
-//			finishedTaskNumI = Integer.parseInt(dao.adminTask(orgCode, action, BTOF_ID, pn, ps, ROLEID, "", "").get("totalRow").toString());
+			finishedTaskNumI = Integer.parseInt(dao.adminTask(orgCode, action, BTOF_ID, pn, ps, ROLEID, "", "").get("totalRow").toString());
 			if("SJSPROLE".equals(ROLEID)){	//SJSPROLE-市级管理员
 				hualNumI = 0;
 			}
@@ -280,6 +285,9 @@ public class AdminService extends BaseService{
 			String epId = controller.getMyParam("epId").toString();
 //			finishedTaskNumI = Integer.parseInt(dao.epTask(epId, action, pn, ps, "").get("totalRow").toString());
 			finishedTaskNumI = 0;
+		}else if("CSEP".equals(userType) ){	
+			String epId = controller.getMyParam("epId").toString();
+			finishedTaskNumI = Integer.parseInt(dao.epTask(epId, action, pn, ps, "").get("totalRow").toString());
 		}else if("sysAdmin".equals(userType)){		//sysAdmin-系统管理员
 		}else{
 			String epId = controller.getMyParam("epId").toString();

@@ -30,9 +30,9 @@ public class AdminDao extends BaseDao {
 	public int adminTaskNum(String area, String ROLEID){
 		String sql = "";
 		if("SJSPROLE".equals(ROLEID)){		//SJSPROLE-市级管理员
-			sql = "select count(*) as num from WOBO_APPLY_LIST where STATUS = '02'";
+			sql = "select count(*) as num from Z_WOBO_APPLY_LIST where STATUS = '02'";
 		}else{
-			sql = "select count(*) as num from WOBO_APPLY_LIST where BELONG_SEPA = '"+area+"' and  STATUS in ('01','05')";
+			sql = "select count(*) as num from Z_WOBO_APPLY_LIST where BELONG_SEPA = '"+area+"' and  STATUS in ('01','05')";
 		}
 		Record record = Db.findFirst(sql);
 		if(record != null){
@@ -134,55 +134,55 @@ public class AdminDao extends BaseDao {
 		return resMap;
 	}
 	
-//	/**
-//	 * @author ouyangxu
-//	 * @date 20170424
-//	 * 方法：单位任务
-//	 */
-//	public Map<String, Object> epTask(String epId, String action, int pn, int ps, Object searchContent){
-//		String sql = "";
-//		String sqlSelect = "";
-//		if("finished".equals(action)){		//finished-已办业务
-//			sqlSelect = "select * ";
-//			sql = "from (select AYL_ID,EP_ID,EP_NAME,BIZ_ID,BIZ_NAME,BELONG_SEPA,APPLY_DATE,STATUS,(case APPLY_DATE when '' then '' else CONVERT(varchar(100), APPLY_DATE, 120) end) as APPLY_DATE_S,(case when STATUS = '01' or STATUS = '05' then '区级审批' when STATUS = '02' then '市级审批' when STATUS = '04' then '审批通过' else '' end) as STEP_NAME from WOBO_APPLY_LIST where EP_ID = ? and STATUS in ('01', '02', '04', '05') and (BIZ_ID like '%EP%' or BIZ_ID like '%PI%' or BIZ_ID like '%PE%')) as A where A.STATUS in ('01', '02', '04', '05')";
-//			if(searchContent != null && !"".equals(searchContent)){
-//				sql = sql + " and (A.AYL_ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or A.BIZ_NAME like '%"+searchContent+"%' or A.APPLY_DATE_S like '%"+searchContent+"%' or A.STEP_NAME like '%"+searchContent+"%')";
-//			}
-//			sql = sql + " order by A.APPLY_DATE desc";
-//		}else{		//待办业务
-//			sqlSelect = "select * ";
-//			sql = "from (select AYL_ID,EP_ID,EP_NAME,BIZ_ID,BIZ_NAME,BELONG_SEPA,APPLY_DATE,STATUS,(case APPLY_DATE when '' then '' else CONVERT(varchar(100), APPLY_DATE, 120) end) as APPLY_DATE_S,(case when STATUS = '00' then '待提交' when STATUS = '03' then '被驳回' else '' end) as STEP_NAME from WOBO_APPLY_LIST where EP_ID = ? and STATUS in ('00', '03') and (BIZ_ID like '%EP%' or BIZ_ID like '%PI%' or BIZ_ID like '%PE%')) as A where A.STATUS in ('00', '03')";
-//			if(searchContent != null && !"".equals(searchContent)){
-//				sql = sql + " and (A.AYL_ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or A.BIZ_NAME like '%"+searchContent+"%' or A.APPLY_DATE_S like '%"+searchContent+"%' or A.STEP_NAME like '%"+searchContent+"%')";
-//			}
-//			sql = sql + " order by A.APPLY_DATE desc";
-//		}
-//		Page<Record> page = null;
-//		List<Record> record = new ArrayList<Record>();
-//		page = Db.paginate(pn, ps, sqlSelect, sql, epId);
-//		record = page.getList();
-//		List<Map<String, Object>> list = new ArrayList<>();
-//		Map<String, Object> resMap = new HashMap<>();
-//		if(record != null){
-//			for(Record apply : record){
-//				Map<String, Object> map = new HashMap<>();
-//				map.put("AYL_ID", apply.get("AYL_ID"));
-//				map.put("EP_ID", apply.get("EP_ID"));
-//				map.put("EP_NAME", apply.get("EP_NAME"));
-//				map.put("BIZ_ID", apply.get("BIZ_ID"));
-//				map.put("BIZ_NAME", apply.get("BIZ_NAME"));
-//				map.put("STEP_NAME", apply.get("STEP_NAME"));
-//				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
-//				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
-//				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
-//				list.add(map);
-//			}
-//		}
-//		resMap.put("applys", list);
-//		resMap.put("totalPage", page.getTotalPage());
-//		resMap.put("totalRow", page.getTotalRow());
-//		return resMap;
-//	}
+	/**
+	 * @author ouyangxu
+	 * @date 20170424
+	 * 方法：单位任务
+	 */
+	public Map<String, Object> epTask(String epId, String action, int pn, int ps, Object searchContent){
+		String sql = "";
+		String sqlSelect = "";
+		if("finished".equals(action)){		//finished-已办业务
+			sqlSelect = "select * ";
+			sql = "from (select AYL_ID,EP_ID,EP_NAME,BIZ_ID,BIZ_NAME,BELONG_SEPA,APPLY_DATE,STATUS,(case APPLY_DATE when '' then '' else CONVERT(varchar(100), APPLY_DATE, 120) end) as APPLY_DATE_S,(case when STATUS = '01' or STATUS = '05' then '区级审批' when STATUS = '02' then '市级审批' when STATUS = '04' then '审批通过' else '' end) as STEP_NAME from Z_WOBO_APPLY_LIST where EP_ID = ? and STATUS in ('01', '02', '04', '05') ) as A where A.STATUS in ('01', '02', '04', '05')";
+			if(searchContent != null && !"".equals(searchContent)){
+				sql = sql + " and (A.AYL_ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or A.BIZ_NAME like '%"+searchContent+"%' or A.APPLY_DATE_S like '%"+searchContent+"%' or A.STEP_NAME like '%"+searchContent+"%')";
+			}
+			sql = sql + " order by A.APPLY_DATE desc";
+		}else{		//待办业务
+			sqlSelect = "select * ";
+			sql = "from (select AYL_ID,EP_ID,EP_NAME,BIZ_ID,BIZ_NAME,BELONG_SEPA,APPLY_DATE,STATUS,(case APPLY_DATE when '' then '' else CONVERT(varchar(100), APPLY_DATE, 120) end) as APPLY_DATE_S,(case when STATUS = '00' then '待提交' when STATUS = '03' then '被驳回' else '' end) as STEP_NAME from Z_WOBO_APPLY_LIST where EP_ID = ? and STATUS in ('00', '03') ) as A where A.STATUS in ('00', '03')";
+			if(searchContent != null && !"".equals(searchContent)){
+				sql = sql + " and (A.AYL_ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or A.BIZ_NAME like '%"+searchContent+"%' or A.APPLY_DATE_S like '%"+searchContent+"%' or A.STEP_NAME like '%"+searchContent+"%')";
+			}
+			sql = sql + " order by A.APPLY_DATE desc";
+		}
+		Page<Record> page = null;
+		List<Record> record = new ArrayList<Record>();
+		page = Db.paginate(pn, ps, sqlSelect, sql, epId);
+		record = page.getList();
+		List<Map<String, Object>> list = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(record != null){
+			for(Record apply : record){
+				Map<String, Object> map = new HashMap<>();
+				map.put("AYL_ID", apply.get("AYL_ID"));
+				map.put("EP_ID", apply.get("EP_ID"));
+				map.put("EP_NAME", apply.get("EP_NAME"));
+				map.put("BIZ_ID", apply.get("BIZ_ID"));
+				map.put("BIZ_NAME", apply.get("BIZ_NAME"));
+				map.put("STEP_NAME", apply.get("STEP_NAME"));
+				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
+				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
+				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
+				list.add(map);
+			}
+		}
+		resMap.put("applys", list);
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
 	
 	/**
 	 * @author ouyangxu

@@ -2,6 +2,7 @@ package com.mine.rd.services.plan.service;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,36 @@ public class PlanService extends BaseService{
 	            	}
 	            	else if("saveProductInfo".equals(getLastMethodName(7))){
 	            		saveProductInfo();
+	            	}
+	            	else if("initOverview".equals(getLastMethodName(7))){
+	            		initOverview();
+	            	}
+	            	else if("saveOverview".equals(getLastMethodName(7))){
+	            		saveOverview();
+	            	}
+	            	else if("initReduction".equals(getLastMethodName(7))){
+	            		initReduction();
+	            	}
+	            	else if("saveReduction".equals(getLastMethodName(7))){
+	            		saveReduction();
+	            	}
+	            	else if("initTransfer".equals(getLastMethodName(7))){
+	            		initTransfer();
+	            	}
+	            	else if("saveTransfer".equals(getLastMethodName(7))){
+	            		saveTransfer();
+	            	}
+	            	else if("initHandleSelf".equals(getLastMethodName(7))){
+	            		initHandleSelf();
+	            	}
+	            	else if("saveHandleSelf".equals(getLastMethodName(7))){
+	            		saveHandleSelf();
+	            	}
+	            	else if("initHandle".equals(getLastMethodName(7))){
+	            		initHandle();
+	            	}
+	            	else if("saveHandle".equals(getLastMethodName(7))){
+	            		saveHandle();
 	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -188,6 +219,11 @@ public class PlanService extends BaseService{
 		{
 			controller.setAttr("baseInfoFlag", dao.queryEpExtend(map.get("EP_ID").toString()) == null ? "0" : "1");
 			controller.setAttr("productionSituationFlag", dao.initProductInfo(TP_ID) == null ? "0" : "1");
+			controller.setAttr("produceSituationFlag", dao.initOverviewList(TP_ID) == null || dao.initOverviewList(TP_ID).size() == 0 ? "0" : "1");
+			controller.setAttr("decrementPlanFlag", dao.initReduction(TP_ID) == null ? "0" : "1");
+			controller.setAttr("transferStuationFlag", dao.initTransfer(TP_ID) == null ? "0" : "1");
+			controller.setAttr("selfDisposalMeasuresFlag", dao.initHandleSelf(TP_ID) == null ? "0" : "1");
+			controller.setAttr("entrustDisposalMeasuresFlag", dao.initHandleList(TP_ID) == null || dao.initHandleList(TP_ID).size() == 0 ? "0" : "1");
 		}
 	}
 	
@@ -274,6 +310,168 @@ public class PlanService extends BaseService{
 		boolean flag_equ = dao.saveProductEqu(tpId,PRODUCT_EQU);
 		boolean flag_output = dao.saveProductOutput(tpId,PRODUCT_OUTPUT);
 		if(flag_info && flag_ori && flag_equ && flag_output){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initOverview(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		controller.setAttr("initOverviewList", initOverviewList);
+		controller.setAttr("bigCategoryList", dao.getBigCategoryList());
+		controller.setAttr("smallCategoryList", dao.getSmallCategoryList());
+		controller.setAttr("sumOverviewList", dao.sumOverviewList(tpId));
+	}
+	
+	private void saveOverview(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		List<Map<String, Object>> overviewList = controller.getMyParamList("LIST");
+		boolean flag = dao.saveOverview(tpId);
+		boolean flag_list = dao.saveOverviewList(tpId,overviewList);
+		if(flag && flag_list){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initReduction(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initReduction = dao.initReduction(tpId);
+		controller.setAttr("initReduction", initReduction);
+	}
+	
+	private void saveReduction(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String PLAN_REDUCTION = controller.getMyParam("PLAN_REDUCTION").toString();
+		String MEASURES_REDUCTION = controller.getMyParam("MEASURES_REDUCTION").toString();
+		boolean flag = dao.saveReduction(tpId,PLAN_REDUCTION,MEASURES_REDUCTION);
+		if(flag){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initTransfer(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initTransfer = dao.initTransfer(tpId);
+		List<Map<String,Object>> initProductFacility = dao.initProductFacility(tpId);
+		List<Map<String,Object>> initProductCc = dao.initProductCc(tpId);
+		List<Map<String,Object>> initProductYs = dao.initProductYs(tpId);
+		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		controller.setAttr("initTransfer", initTransfer);
+		controller.setAttr("initProductFacility", initProductFacility);
+		controller.setAttr("initProductCc", initProductCc);
+		controller.setAttr("initProductYs", initProductYs);
+		controller.setAttr("initOverviewList", initOverviewList);
+	}
+	
+	private void saveTransfer(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String CC_1 = controller.getMyParam("CC_1").toString();
+		String CC_2 = controller.getMyParam("CC_2").toString();
+		String CC_3 = controller.getMyParam("CC_3").toString();
+		String CC_4 = controller.getMyParam("CC_4").toString();
+		String CC_5 = controller.getMyParam("CC_5").toString();
+		String CC_PROCESS = controller.getMyParam("CC_PROCESS").toString();
+		List<Map<String, Object>> TRANSFER_FACILITY = controller.getMyParamList("TRANSFER_FACILITY");
+		List<Map<String, Object>> TRANSFER_CC = controller.getMyParamList("TRANSFER_CC");
+		List<Map<String, Object>> TRANSFER_YS = controller.getMyParamList("TRANSFER_YS");
+		boolean flag = dao.saveTransfer(tpId, CC_1, CC_2, CC_3, CC_4, CC_5, CC_PROCESS);
+		boolean flag_f = dao.saveTransferFacility(tpId, TRANSFER_FACILITY);
+		boolean flag_c = dao.saveTransferCc(tpId, TRANSFER_CC);
+		boolean flag_y = dao.saveTransferYs(tpId, TRANSFER_YS);
+		if(flag && flag_f && flag_c && flag_y){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initHandleSelf(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initHandleSelf = dao.initHandleSelf(tpId);
+		List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId);
+		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		controller.setAttr("initHandleSelf", initHandleSelf);
+		controller.setAttr("initHandleSelfList", initHandleSelfList);
+		controller.setAttr("initOverviewList", initOverviewList);
+	}
+	
+	private void saveHandleSelf(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String FACILITY_NAME = controller.getMyParam("FACILITY_NAME").toString();
+		String FACILITY_TYPE = controller.getMyParam("FACILITY_TYPE").toString();
+		String FACILITY_ADDRESS = controller.getMyParam("FACILITY_ADDRESS").toString();
+		String INVEST_SUM = controller.getMyParam("INVEST_SUM").toString();
+		String INVEST_SUM_UNIT = controller.getMyParam("INVEST_SUM_UNIT").toString();
+		String DESIGN = controller.getMyParam("DESIGN").toString();
+		String DESIGN_TIME = controller.getMyParam("DESIGN_TIME").toString();
+		String RUN_TIME = controller.getMyParam("RUN_TIME").toString();
+		String RUN_MONEY = controller.getMyParam("RUN_MONEY").toString();
+		String RUN_MONEY_UNIT = controller.getMyParam("RUN_MONEY_UNIT").toString();
+		String FACILITY_SUM = controller.getMyParam("FACILITY_SUM").toString();
+		String HANDLE_EFFECT = controller.getMyParam("HANDLE_EFFECT").toString();
+		String DB_1 = controller.getMyParam("DB_1").toString();
+		String DB_2 = controller.getMyParam("DB_2").toString();
+		String DESC_CONTENT = controller.getMyParam("DESC_CONTENT").toString();
+		String MEASURE = controller.getMyParam("MEASURE").toString();
+		Map<String,String> map = new HashMap<String, String>();
+		map.put("FACILITY_NAME", FACILITY_NAME);
+		map.put("FACILITY_TYPE", FACILITY_TYPE);
+		map.put("FACILITY_ADDRESS", FACILITY_ADDRESS);
+		map.put("INVEST_SUM", INVEST_SUM);
+		map.put("INVEST_SUM_UNIT", INVEST_SUM_UNIT);
+		map.put("DESIGN", DESIGN);
+		map.put("DESIGN_TIME", DESIGN_TIME);
+		map.put("RUN_TIME", RUN_TIME);
+		map.put("RUN_MONEY", RUN_MONEY);
+		map.put("RUN_MONEY_UNIT", RUN_MONEY_UNIT);
+		map.put("FACILITY_SUM", FACILITY_SUM);
+		map.put("HANDLE_EFFECT", HANDLE_EFFECT);
+		map.put("DB_1", DB_1);
+		map.put("DB_2", DB_2);
+		map.put("DESC_CONTENT", DESC_CONTENT);
+		map.put("MEASURE", MEASURE);
+		List<Map<String, Object>> HANDLE_LIST = controller.getMyParamList("HANDLE_LIST");
+		boolean flag = dao.saveHandleSelf(tpId,map);
+		boolean flag_handle = dao.saveHandleSelfList(tpId, HANDLE_LIST);
+		if(flag && flag_handle){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initHandle(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		List<Map<String,Object>> initHandleList = dao.initHandleList(tpId);
+		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		List<Map<String,Object>> initEpCzList = dao.initEpCzList();
+		controller.setAttr("initHandleList", initHandleList);
+		controller.setAttr("initOverviewList", initOverviewList);
+		controller.setAttr("initEpCzList", initEpCzList);
+	}
+	
+	private void saveHandle(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		List<Map<String, Object>> handleList = controller.getMyParamList("LIST");
+		boolean flag = dao.saveHandle(tpId);
+		boolean flag_list = dao.saveHandleList(tpId,handleList);
+		if(flag && flag_list){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
 		}else{

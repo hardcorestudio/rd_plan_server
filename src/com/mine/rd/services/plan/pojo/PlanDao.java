@@ -268,7 +268,7 @@ public class PlanDao extends BaseDao {
 		Db.update("delete from Z_WOBO_PRODUCT_ORI where tp_id = ? " ,tpId);
 		boolean res = false;
 		for(int i=0;i<list.size();i++){
-			Map<String,Object> map = list.get(0);
+			Map<String,Object> map = list.get(i);
 			Record record = new Record();
 			record.set("TP_ID", tpId);
 			record.set("Id", i+1);
@@ -285,7 +285,7 @@ public class PlanDao extends BaseDao {
 		Db.update("delete from Z_WOBO_PRODUCT_EQU where tp_id = ? " ,tpId);
 		boolean res = false;
 		for(int i=0;i<list.size();i++){
-			Map<String,Object> map = list.get(0);
+			Map<String,Object> map = list.get(i);
 			Record record = new Record();
 			record.set("TP_ID", tpId);
 			record.set("Id", i+1);
@@ -302,7 +302,7 @@ public class PlanDao extends BaseDao {
 		Db.update("delete from Z_WOBO_PRODUCT_OUTPUT where tp_id = ? " ,tpId);
 		boolean res = false;
 		for(int i=0;i<list.size();i++){
-			Map<String,Object> map = list.get(0);
+			Map<String,Object> map = list.get(i);
 			Record record = new Record();
 			record.set("TP_ID", tpId);
 			record.set("Id", i+1);
@@ -311,6 +311,329 @@ public class PlanDao extends BaseDao {
 			record.set("LAST_NUM", map.get("LAST_NUM"));
 			record.set("YEAR_NUM", map.get("YEAR_NUM"));
 			res = Db.save("Z_WOBO_PRODUCT_OUTPUT", record);
+		}
+		return res;
+	}
+	
+	public List<Map<String,Object>> initOverviewList(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_OVERVIEWLIST where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public List<Map<String,Object>> sumOverviewList(String tpId){
+		List<Record> records = Db.find("select unit , sum(cast(last_num as numeric(18,2))) last_num_sum,sum(cast(year_num as numeric(18,2))) year_num_sum from Z_WOBO_OVERVIEWLIST where tp_id=? group by unit",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			Record record = records.get(i);
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("last_num_sum", record.get("last_num_sum")+record.getStr("unit"));
+			map.put("year_num_sum", record.get("year_num_sum")+record.getStr("unit"));
+			list.add(map);
+		}
+		return list;
+	}
+	
+	public boolean saveOverview(String tpId){
+		Db.update("delete from Z_WOBO_OVERVIEW where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_OVERVIEW", record);
+	}
+	
+	public boolean saveOverviewList(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_OVERVIEWLIST where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("D_NAME", map.get("D_NAME"));
+			record.set("UNIT", map.get("UNIT"));
+			record.set("LAST_NUM", map.get("LAST_NUM"));
+			record.set("YEAR_NUM", map.get("YEAR_NUM"));
+			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
+			record.set("BIG_CATEGORY_NAME", map.get("BIG_CATEGORY_NAME"));
+			record.set("SAMLL_CATEGORY_ID", map.get("SAMLL_CATEGORY_ID"));
+			record.set("SAMLL_CATEGORY_NAME", map.get("SAMLL_CATEGORY_NAME"));
+			record.set("W_SHAPE", map.get("W_SHAPE"));
+			record.set("W_NAME", map.get("W_NAME"));
+			record.set("CHARACTER", map.get("CHARACTER"));
+			record.set("SOURCE_PROCESS", map.get("SOURCE_PROCESS"));
+			res = Db.save("Z_WOBO_OVERVIEWLIST", record);
+		}
+		return res;
+	}
+	
+	public List<Map<String,Object>> getBigCategoryList(){
+		List<Record> list = Db.find("select * from BIG_CATEGORY where big_id like 'HW%' order by big_id");
+		List<Map<String,Object>> resList = new ArrayList<Map<String,Object>>();
+		for(int i = 0 ; i<list.size(); i++){
+			resList.add(list.get(i).getColumns());
+		}
+		return resList;
+	}
+	
+	public List<Map<String,List<Record>>> getSmallCategoryList(){
+		List<Record> list = Db.find("select * from BIG_CATEGORY where big_id like 'HW%' order by big_id");
+		List<Map<String,List<Record>>> resList = new ArrayList<Map<String,List<Record>>>();
+		for(int i = 0 ; i<list.size(); i++){
+			Map<String,List<Record>> map = new HashMap<String,List<Record>>();
+			List<Record> smallList = Db.find("select * from SMALL_CATEGORY where big_id = ? ",list.get(i).getStr("BIG_ID"));
+			map.put(list.get(i).getStr("BIG_ID"), smallList);
+			resList.add(map);
+		}
+		return resList;
+	}
+	
+	public Map<String,Object> initReduction(String tpId){
+		Record record = Db.findFirst("select * from Z_WOBO_REDUCTION where tp_id=? ",tpId);
+		Map<String,Object> map = null;
+		if(record !=null && record.getColumns() !=null ){
+			map = record.getColumns();
+		}
+		return map;
+	}
+	
+	public boolean saveReduction(String tpId,String PLAN_REDUCTION,String MEASURES_REDUCTION){
+		Db.update("delete from Z_WOBO_REDUCTION where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("PLAN_REDUCTION", PLAN_REDUCTION);
+		record.set("MEASURES_REDUCTION", MEASURES_REDUCTION);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_REDUCTION", record);
+	}
+	
+	public Map<String,Object> initTransfer(String tpId){
+		Record record = Db.findFirst("select * from Z_WOBO_TRANSFER where tp_id=? ",tpId);
+		Map<String,Object> map = null;
+		if(record !=null && record.getColumns() !=null ){
+			map = record.getColumns();
+		}
+		return map;
+	}
+	
+	public List<Map<String,Object>> initProductFacility(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_FACILITY where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public List<Map<String,Object>> initProductCc(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_CC where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public List<Map<String,Object>> initProductYs(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_YS where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public boolean saveTransfer(String tpId,String CC_1,String CC_2,String CC_3,String CC_4,String CC_5,String CC_PROCESS){
+		Db.update("delete from Z_WOBO_TRANSFER where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("CC_1", CC_1);
+		record.set("CC_2", CC_2);
+		record.set("CC_3", CC_3);
+		record.set("CC_4", CC_4);
+		record.set("CC_5", CC_5);
+		record.set("CC_PROCESS", CC_PROCESS);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_TRANSFER", record);
+	}
+	
+	public boolean saveTransferFacility(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_TRANSFER_FACILITY where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("NAME", map.get("NAME"));
+			record.set("STORE", map.get("STORE"));
+			record.set("UNIT", map.get("UNIT"));
+			record.set("NUM", map.get("NUM"));
+			record.set("NUM_UNIT", map.get("NUM_UNIT"));
+			record.set("AREA", map.get("AREA"));
+			record.set("AREA_UNIT", map.get("AREA_UNIT"));
+			record.set("TYPE", map.get("TYPE"));
+			res = Db.save("Z_WOBO_TRANSFER_FACILITY", record);
+		}
+		return res;
+	}
+	
+	public boolean saveTransferCc(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_TRANSFER_CC where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("D_NAME", map.get("D_NAME"));
+			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
+			record.set("BIG_CATEGORY_NAME", map.get("BIG_CATEGORY_NAME"));
+			record.set("STORE_REASON", map.get("STORE_REASON"));
+			record.set("STORE_PLAN", map.get("STORE_PLAN"));
+			record.set("STORE_PLAN_UNIT", map.get("STORE_PLAN_UNIT"));
+			record.set("STORE_LAST", map.get("STORE_LAST"));
+			record.set("STORE_LAST_UNIT", map.get("STORE_LAST_UNIT"));
+			record.set("STORE_LASTSUM", map.get("STORE_LASTSUM"));
+			record.set("STORE_LASTSUM_UNIT", map.get("STORE_LASTSUM_UNIT"));
+			res = Db.save("Z_WOBO_TRANSFER_CC", record);
+		}
+		return res;
+	}
+	
+	public boolean saveTransferYs(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_TRANSFER_YS where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("EN_ID_YS", map.get("EN_ID_YS"));
+			record.set("EN_NAME_YS", map.get("EN_NAME_YS"));
+			record.set("YS_ZZ", map.get("YS_ZZ"));
+			record.set("YS_1", map.get("YS_1"));
+			record.set("YS_2", map.get("YS_2"));
+			record.set("YS_3", map.get("YS_3"));
+			record.set("YS_PROCESS", map.get("YS_PROCESS"));
+			res = Db.save("Z_WOBO_TRANSFER_YS", record);
+		}
+		return res;
+	}
+	
+	public Map<String,Object> initHandleSelf(String tpId){
+		Record record = Db.findFirst("select * from Z_WOBO_HANDLE_SELF where tp_id=? ",tpId);
+		Map<String,Object> map = null;
+		if(record !=null && record.getColumns() !=null ){
+			map = record.getColumns();
+		}
+		return map;
+	}
+	
+	public List<Map<String,Object>> initHandleSelfList(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_HANDLESELF_LIST where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public boolean saveHandleSelf(String tpId,Map<String,String> map){
+		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("FACILITY_NAME", map.get("FACILITY_NAME"));
+		record.set("FACILITY_TYPE", map.get("FACILITY_TYPE"));
+		record.set("FACILITY_ADDRESS", map.get("FACILITY_ADDRESS"));
+		record.set("INVEST_SUM", map.get("INVEST_SUM"));
+		record.set("INVEST_SUM_UNIT", map.get("INVEST_SUM_UNIT"));
+		record.set("DESIGN", map.get("DESIGN"));
+		record.set("DESIGN_TIME", map.get("DESIGN_TIME"));
+		record.set("RUN_TIME", map.get("RUN_TIME"));
+		record.set("RUN_MONEY", map.get("RUN_MONEY"));
+		record.set("RUN_MONEY_UNIT", map.get("RUN_MONEY_UNIT"));
+		record.set("FACILITY_SUM", map.get("FACILITY_SUM"));
+		record.set("HANDLE_EFFECT", map.get("HANDLE_EFFECT"));
+		record.set("DB_1", map.get("DB_1"));
+		record.set("DB_2", map.get("DB_2"));
+		record.set("DESC_CONTENT", map.get("DESC_CONTENT"));
+		record.set("MEASURE", map.get("MEASURE"));
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_HANDLE_SELF", record);
+	}
+	
+	public boolean saveHandleSelfList(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("D_NAME", map.get("D_NAME"));
+			record.set("STORE_YEAR", map.get("STORE_YEAR"));
+			record.set("STORE_PLAN_UNIT", map.get("STORE_PLAN_UNIT"));
+			record.set("STORE_LAST", map.get("STORE_LAST"));
+			record.set("STORE_LAST_UNIT", map.get("STORE_LAST_UNIT"));
+			res = Db.save("Z_WOBO_HANDLESELF_LIST", record);
+		}
+		return res;
+	}
+	
+	public List<Map<String,Object>> initHandleList(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_HANDLE_LIST where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public List<Map<String,Object>> initEpCzList(){
+		List<Record> records = Db.find("select EP_ID EN_ID_CZ, EP_NAME EN_NAME_CZ from ENTERPRISE where IF_HANDLE = '1' and status = '2' ");
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public boolean saveHandle(String tpId){
+		Db.update("delete from Z_WOBO_HANDLE_MAIN where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_HANDLE_MAIN", record);
+	}
+	
+	public boolean saveHandleList(String tpId,List<Map<String,Object>> list){
+		Db.update("delete from Z_WOBO_HANDLE_LIST where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("Id", i+1);
+			record.set("EN_ID_CZ", map.get("EN_ID_CZ"));
+			record.set("EN_NAME_CZ", map.get("EN_NAME_CZ"));
+			record.set("LINCENSE_NO", map.get("LINCENSE_NO"));
+			record.set("D_NAME", map.get("D_NAME"));
+			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
+			record.set("SAMLL_CATEGORY_ID", map.get("SAMLL_CATEGORY_ID"));
+			record.set("HANDLE_TYPE", map.get("HANDLE_TYPE"));
+			record.set("YEAR_NUM", map.get("YEAR_NUM"));
+			record.set("LAST_NUM", map.get("LAST_NUM"));
+			record.set("UNIT", map.get("UNIT"));
+			res = Db.save("Z_WOBO_HANDLE_LIST", record);
 		}
 		return res;
 	}

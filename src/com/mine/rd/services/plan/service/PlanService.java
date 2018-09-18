@@ -245,8 +245,8 @@ public class PlanService extends BaseService{
 		String epId = controller.getMyParam("EP_ID").toString();
 		Map<String,Object> map = dao.initBaseInfo(epId,tpId);
 		Map<String,Object> mapEpExtend = dao.queryEpExtend(epId);
-		controller.setAttr("initRes", map);
-		controller.setAttr("initEpExtend", mapEpExtend);
+		controller.setAttr("initRes", map == null ? "" : map);
+		controller.setAttr("initEpExtend", mapEpExtend == null ? "" : mapEpExtend);
 	}
 	
 	private void saveBaseInfo(){
@@ -292,7 +292,7 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductOri = dao.initProductOri(tpId);
 		List<Map<String,Object>> initProductEqu = dao.initProductEqu(tpId);
 		List<Map<String,Object>> initProductOutput = dao.initProductOutput(tpId);
-		controller.setAttr("initProductInfo", initProductInfo);
+		controller.setAttr("initProductInfo", initProductInfo == null ? "" : initProductInfo);
 		controller.setAttr("initProductOri", initProductOri);
 		controller.setAttr("initProductEqu", initProductEqu);
 		controller.setAttr("initProductOutput", initProductOutput);
@@ -344,7 +344,7 @@ public class PlanService extends BaseService{
 	private void initReduction(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		Map<String,Object> initReduction = dao.initReduction(tpId);
-		controller.setAttr("initReduction", initReduction);
+		controller.setAttr("initReduction", initReduction == null ? "" : initReduction);
 	}
 	
 	private void saveReduction(){
@@ -368,7 +368,7 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductCc = dao.initProductCc(tpId);
 		List<Map<String,Object>> initProductYs = dao.initProductYs(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
-		controller.setAttr("initTransfer", initTransfer);
+		controller.setAttr("initTransfer", initTransfer == null ? "" : initTransfer);
 		controller.setAttr("initProductFacility", initProductFacility);
 		controller.setAttr("initProductCc", initProductCc);
 		controller.setAttr("initProductYs", initProductYs);
@@ -404,7 +404,7 @@ public class PlanService extends BaseService{
 		Map<String,Object> initHandleSelf = dao.initHandleSelf(tpId);
 		List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
-		controller.setAttr("initHandleSelf", initHandleSelf);
+		controller.setAttr("initHandleSelf", initHandleSelf == null ? "" : initHandleSelf);
 		controller.setAttr("initHandleSelfList", initHandleSelfList);
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
@@ -464,6 +464,7 @@ public class PlanService extends BaseService{
 		controller.setAttr("initHandleList", initHandleList);
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("initEpCzList", initEpCzList);
+		controller.setAttr("sumHandleList", dao.sumHandleList(tpId));
 	}
 	
 	private void saveHandle(){

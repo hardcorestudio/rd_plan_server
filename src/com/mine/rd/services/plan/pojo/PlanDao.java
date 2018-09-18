@@ -337,6 +337,19 @@ public class PlanDao extends BaseDao {
 		return list;
 	}
 	
+	public List<Map<String,Object>> sumHandleList(String tpId){
+		List<Record> records = Db.find("select unit , sum(cast(last_num as numeric(18,2))) last_num_sum,sum(cast(year_num as numeric(18,2))) year_num_sum from Z_WOBO_HANDLE_LIST where tp_id=? group by unit",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			Record record = records.get(i);
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("last_num_sum", record.get("last_num_sum")+record.getStr("unit"));
+			map.put("year_num_sum", record.get("year_num_sum")+record.getStr("unit"));
+			list.add(map);
+		}
+		return list;
+	}
+	
 	public boolean saveOverview(String tpId){
 		Db.update("delete from Z_WOBO_OVERVIEW where tp_id = ? " ,tpId);
 		Record record = new Record();
@@ -380,16 +393,14 @@ public class PlanDao extends BaseDao {
 		return resList;
 	}
 	
-	public List<Map<String,List<Record>>> getSmallCategoryList(){
+	public Map<String,List<Record>> getSmallCategoryList(){
 		List<Record> list = Db.find("select * from BIG_CATEGORY where big_id like 'HW%' order by big_id");
-		List<Map<String,List<Record>>> resList = new ArrayList<Map<String,List<Record>>>();
+		Map<String,List<Record>> map = new HashMap<String,List<Record>>();
 		for(int i = 0 ; i<list.size(); i++){
-			Map<String,List<Record>> map = new HashMap<String,List<Record>>();
 			List<Record> smallList = Db.find("select * from SMALL_CATEGORY where big_id = ? ",list.get(i).getStr("BIG_ID"));
 			map.put(list.get(i).getStr("BIG_ID"), smallList);
-			resList.add(map);
 		}
-		return resList;
+		return map;
 	}
 	
 	public Map<String,Object> initReduction(String tpId){
@@ -624,7 +635,8 @@ public class PlanDao extends BaseDao {
 			record.set("TP_ID", tpId);
 			record.set("Id", i+1);
 			record.set("EN_ID_CZ", map.get("EN_ID_CZ"));
-			record.set("EN_NAME_CZ", map.get("EN_NAME_CZ"));
+			String ep_name = Db.queryStr("select ep_name from ENTERPRISE where ep_id = ?",map.get("EN_ID_CZ"));
+			record.set("EN_NAME_CZ", ep_name);
 			record.set("LINCENSE_NO", map.get("LINCENSE_NO"));
 			record.set("D_NAME", map.get("D_NAME"));
 			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));

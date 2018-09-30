@@ -87,6 +87,18 @@ public class PlanService extends BaseService{
 	            	else if("saveHandle".equals(getLastMethodName(7))){
 	            		saveHandle();
 	            	}
+	            	else if("initEnv".equals(getLastMethodName(7))){
+	            		initEnv();
+	            	}
+	            	else if("saveEnv".equals(getLastMethodName(7))){
+	            		saveEnv();
+	            	}
+	            	else if("initLastInfo".equals(getLastMethodName(7))){
+	            		initLastInfo();
+	            	}
+	            	else if("saveLastInfo".equals(getLastMethodName(7))){
+	            		saveLastInfo();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -473,6 +485,57 @@ public class PlanService extends BaseService{
 		boolean flag = dao.saveHandle(tpId);
 		boolean flag_list = dao.saveHandleList(tpId,handleList);
 		if(flag && flag_list){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initEnv(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initEnv = dao.initEnv(tpId);
+		controller.setAttr("initEnv", initEnv == null ? "" : initEnv);
+	}
+	
+	private void saveEnv(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String ENV1 = controller.getMyParam("ENV1").toString();
+		String ENV2 = controller.getMyParam("ENV2").toString();
+		String ENV3 = controller.getMyParam("ENV3").toString();
+		String ENV4 = controller.getMyParam("ENV4").toString();
+		boolean flag = dao.saveEnv(tpId,ENV1,ENV2,ENV3,ENV4);
+		if(flag){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void initLastInfo(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initLastInfo = dao.initLastInfo(tpId);
+		controller.setAttr("initLastInfo", initLastInfo == null ? "" : initLastInfo);
+	}
+	
+	private void saveLastInfo(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String li1 = controller.getMyParam("LI_1").toString();
+		String li2 = controller.getMyParam("LI_2").toString();
+		String c1 = controller.getMyParam("C_1").toString();
+		String c2 = controller.getMyParam("C_2").toString();
+		String c3 = controller.getMyParam("C_3").toString();
+		String c4 = controller.getMyParam("C_4").toString();
+		String c5 = controller.getMyParam("C_5").toString();
+		String c6 = controller.getMyParam("C_6").toString();
+		String c7 = controller.getMyParam("C_7").toString();
+		String c8 = controller.getMyParam("C_8").toString();
+		String c9 = controller.getMyParam("C_9").toString();
+		boolean flag = dao.saveLastInfo(tpId,li1,li2,c1,c2,c3,c4,c5,c6,c7,c8,c9);
+		if(flag){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
 		}else{

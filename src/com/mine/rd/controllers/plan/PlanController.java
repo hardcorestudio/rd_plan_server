@@ -292,4 +292,64 @@ public class PlanController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	public void initEnv()
+	{
+		logger.info("进入环境监测情况");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("进入环境监测情况异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void saveEnv()
+	{
+		logger.info("保存环境监测情况");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存环境监测情况异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void initLastInfo()
+	{
+		logger.info("进入上年度管理计划回顾");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("进入上年度管理计划回顾异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void saveLastInfo()
+	{
+		logger.info("保存上年度管理计划回顾");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存上年度管理计划回顾异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

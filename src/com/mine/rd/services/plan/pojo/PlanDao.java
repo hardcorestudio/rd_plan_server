@@ -649,4 +649,55 @@ public class PlanDao extends BaseDao {
 		}
 		return res;
 	}
+	
+	public Map<String,Object> initEnv(String tpId){
+		Record record = Db.findFirst("select * from Z_WOBO_ENV where tp_id=? ",tpId);
+		Map<String,Object> map = null;
+		if(record !=null && record.getColumns() !=null ){
+			map = record.getColumns();
+		}
+		return map;
+	}
+	
+	public boolean saveEnv(String tpId,String env1,String env2,String env3,String env4){
+		Db.update("delete from Z_WOBO_ENV where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("ENV1", env1);
+		record.set("ENV2", env2);
+		record.set("ENV3", env3);
+		record.set("ENV4", env4);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_REDUCTION", record);
+	}
+	
+	public Map<String,Object> initLastInfo(String tpId){
+		Record record = Db.findFirst("select * from Z_WOBO_LASTINFO where tp_id=? ",tpId);
+		Map<String,Object> map = null;
+		if(record !=null && record.getColumns() !=null ){
+			map = record.getColumns();
+		}
+		return map;
+	}
+	
+	public boolean saveLastInfo(String tpId,String li1,String li2,String c1,String c2,String c3,String c4,String c5,String c6,String c7,String c8,String c9){
+		Db.update("delete from Z_WOBO_LASTINFO where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("LI_1", li1);
+		record.set("LI_2", li2);
+		record.set("C_1", c1);
+		record.set("C_2", c2);
+		record.set("C_3", c3);
+		record.set("C_4", c4);
+		record.set("C_5", c5);
+		record.set("C_6", c6);
+		record.set("C_7", c7);
+		record.set("C_8", c8);
+		record.set("C_9", c9);
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_REDUCTION", record);
+	}
 }

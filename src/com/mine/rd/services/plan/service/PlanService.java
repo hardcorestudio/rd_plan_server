@@ -336,6 +336,7 @@ public class PlanService extends BaseService{
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("bigCategoryList", dao.getBigCategoryList());
 		controller.setAttr("smallCategoryList", dao.getSmallCategoryList());
+		controller.setAttr("smallCategoryType", dao.getSmallCategoryType());
 		controller.setAttr("sumOverviewList", dao.sumOverviewList(tpId));
 	}
 	
@@ -476,6 +477,7 @@ public class PlanService extends BaseService{
 		controller.setAttr("initHandleList", initHandleList);
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("initEpCzList", initEpCzList);
+		controller.setAttr("HANDLE_TYPE_LIST", dao.getHandleType());
 		controller.setAttr("sumHandleList", dao.sumHandleList(tpId));
 	}
 	

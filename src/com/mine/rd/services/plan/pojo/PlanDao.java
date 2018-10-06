@@ -403,6 +403,24 @@ public class PlanDao extends BaseDao {
 		return map;
 	}
 	
+	public List<String> getSmallCategoryType(){
+		List<Record> list = Db.find("select text from Z_WOBO_TYPE where status = '1' and type='category' ");
+		List<String> types = new ArrayList<String>();
+		for(int i = 0 ; i<list.size(); i++){
+			types.add(list.get(i).getStr("text"));
+		}
+		return types;
+	}
+	
+	public List<String> getHandleType(){
+		List<Record> list = Db.find("select text from Z_WOBO_TYPE where status = '1' and type='handle' ");
+		List<String> types = new ArrayList<String>();
+		for(int i = 0 ; i<list.size(); i++){
+			types.add(list.get(i).getStr("text"));
+		}
+		return types;
+	}
+	
 	public Map<String,Object> initReduction(String tpId){
 		Record record = Db.findFirst("select * from Z_WOBO_REDUCTION where tp_id=? ",tpId);
 		Map<String,Object> map = null;
@@ -609,7 +627,7 @@ public class PlanDao extends BaseDao {
 	}
 	
 	public List<Map<String,Object>> initEpCzList(){
-		List<Record> records = Db.find("select EP_ID EN_ID_CZ, EP_NAME EN_NAME_CZ from ENTERPRISE where IF_HANDLE = '1' and status = '2' ");
+		List<Record> records = Db.find("select EP_ID EN_ID_CZ, EP_NAME EN_NAME_CZ,LICENSE_NO from HANDLE_LICENSE ");
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 		for(int i = 0; i<records.size() ; i++){
 			list.add(records.get(i).getColumns());
@@ -663,13 +681,13 @@ public class PlanDao extends BaseDao {
 		Db.update("delete from Z_WOBO_ENV where tp_id = ? " ,tpId);
 		Record record = new Record();
 		record.set("TP_ID", tpId);
-		record.set("ENV1", env1);
-		record.set("ENV2", env2);
-		record.set("ENV3", env3);
-		record.set("ENV4", env4);
+		record.set("ENV_1", env1);
+		record.set("ENV_2", env2);
+		record.set("ENV_3", env3);
+		record.set("ENV_4", env4);
 		record.set("STATUS", "00");
 		record.set("sysdate", getSysdate());
-		return Db.save("Z_WOBO_REDUCTION", record);
+		return Db.save("Z_WOBO_ENV", record);
 	}
 	
 	public Map<String,Object> initLastInfo(String tpId){
@@ -698,6 +716,6 @@ public class PlanDao extends BaseDao {
 		record.set("C_9", c9);
 		record.set("STATUS", "00");
 		record.set("sysdate", getSysdate());
-		return Db.save("Z_WOBO_REDUCTION", record);
+		return Db.save("Z_WOBO_LASTINFO", record);
 	}
 }

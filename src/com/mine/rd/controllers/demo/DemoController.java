@@ -25,7 +25,9 @@ import com.ext.kit.excel.PoiExporter;
 import com.ext.kit.excel.PoiImporter;
 import com.ext.kit.excel.Rule;
 import com.ext.render.excel.PoiRender;
+import com.itextpdf.text.DocumentException;
 import com.jfinal.aop.Clear;
+import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -33,6 +35,7 @@ import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.upload.UploadFile;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.kit.DateKit;
+import com.mine.pub.kit.ITextKit;
 import com.mine.pub.service.Service;
 import com.mine.rd.services.demo.pojo.DemoDao;
 import com.mine.rd.services.demo.service.DemoService;
@@ -47,6 +50,15 @@ public class DemoController extends BaseController{
 	public void renderCaptcha1() {
 		// TODO Auto-generated method stub
 		renderMyCaptcha("AAA");
+	}
+	public void exportPdf() throws IOException, DocumentException{
+		String DEST = PathKit.getWebRootPath()+"/output/1.pdf";
+		System.out.println("===>>"+DEST);
+		String HTML = PathKit.getWebRootPath()+"/templates/headers.html";
+		File file = new File(DEST);
+		file.getParentFile().mkdirs();
+		ITextKit.createPdf(DEST, HTML);
+		renderJson();
 	}
 	/**
 	 * @author woody

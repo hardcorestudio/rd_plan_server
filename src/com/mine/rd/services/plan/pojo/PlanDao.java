@@ -663,7 +663,7 @@ public class PlanDao extends BaseDao {
 			record.set("EN_ID_CZ", map.get("EN_ID_CZ"));
 			String ep_name = Db.queryStr("select ep_name from ENTERPRISE where ep_id = ?",map.get("EN_ID_CZ"));
 			record.set("EN_NAME_CZ", ep_name);
-			record.set("LINCENSE_NO", map.get("LINCENSE_NO"));
+			record.set("LICENSE_NO", map.get("LICENSE_NO"));
 			record.set("D_NAME", map.get("D_NAME"));
 			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
 			record.set("SAMLL_CATEGORY_ID", map.get("SAMLL_CATEGORY_ID"));

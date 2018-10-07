@@ -372,9 +372,9 @@ public class PlanDao extends BaseDao {
 			record.set("LAST_NUM", map.get("LAST_NUM"));
 			record.set("YEAR_NUM", map.get("YEAR_NUM"));
 			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
-			record.set("BIG_CATEGORY_NAME", map.get("BIG_CATEGORY_NAME"));
+			record.set("BIG_CATEGORY_NAME", getBigCategoryName(map.get("BIG_CATEGORY_ID").toString()));
 			record.set("SAMLL_CATEGORY_ID", map.get("SAMLL_CATEGORY_ID"));
-			record.set("SAMLL_CATEGORY_NAME", map.get("SAMLL_CATEGORY_NAME"));
+			record.set("SAMLL_CATEGORY_NAME", getSmallCategoryName(map.get("SAMLL_CATEGORY_ID").toString()));
 			record.set("W_SHAPE", map.get("W_SHAPE"));
 			record.set("W_NAME", map.get("W_NAME"));
 			record.set("CHARACTER", map.get("CHARACTER"));
@@ -382,6 +382,14 @@ public class PlanDao extends BaseDao {
 			res = Db.save("Z_WOBO_OVERVIEWLIST", record);
 		}
 		return res;
+	}
+	
+	public String getBigCategoryName(String id){
+		return Db.queryStr("select big_name from BIG_CATEGORY where big_id = ? ",id);
+	}
+	
+	public String getSmallCategoryName(String id){
+		return Db.queryStr("select small_name from SMALL_CATEGORY where small_id = ? ",id);
 	}
 	
 	public List<Map<String,Object>> getBigCategoryList(){

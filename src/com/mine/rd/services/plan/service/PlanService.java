@@ -236,6 +236,8 @@ public class PlanService extends BaseService{
 			controller.setAttr("transferStuationFlag", dao.initTransfer(TP_ID) == null ? "0" : "1");
 			controller.setAttr("selfDisposalMeasuresFlag", dao.initHandleSelf(TP_ID) == null ? "0" : "1");
 			controller.setAttr("entrustDisposalMeasuresFlag", dao.initHandleList(TP_ID) == null || dao.initHandleList(TP_ID).size() == 0 ? "0" : "1");
+			controller.setAttr("envFlag", dao.initEnv(TP_ID) == null  ? "0" : "1");
+			controller.setAttr("lastInfoFlag", dao.initLastInfo(TP_ID) == null ? "0" : "1");
 		}
 	}
 	
@@ -503,10 +505,10 @@ public class PlanService extends BaseService{
 	
 	private void saveEnv(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		String ENV1 = controller.getMyParam("ENV1").toString();
-		String ENV2 = controller.getMyParam("ENV2").toString();
-		String ENV3 = controller.getMyParam("ENV3").toString();
-		String ENV4 = controller.getMyParam("ENV4").toString();
+		String ENV1 = controller.getMyParam("ENV_1").toString();
+		String ENV2 = controller.getMyParam("ENV_2").toString();
+		String ENV3 = controller.getMyParam("ENV_3").toString();
+		String ENV4 = controller.getMyParam("ENV_4").toString();
 		boolean flag = dao.saveEnv(tpId,ENV1,ENV2,ENV3,ENV4);
 		if(flag){
 			controller.setAttr("resFlag", "0");

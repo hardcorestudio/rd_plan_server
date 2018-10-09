@@ -485,6 +485,15 @@ public class PlanDao extends BaseDao {
 		return list;
 	}
 	
+	public List<Map<String,Object>> initEPys(){
+		List<Record> records = Db.find("select EP_ID,EP_NAME from ENTERPRISE where status = '2' and IF_TRANSPORT = '1' order by ep_id  ");
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
 	public boolean saveTransfer(String tpId,String CC_1,String CC_2,String CC_3,String CC_4,String CC_5,String CC_PROCESS){
 		Db.update("delete from Z_WOBO_TRANSFER where tp_id = ? " ,tpId);
 		Record record = new Record();
@@ -726,4 +735,5 @@ public class PlanDao extends BaseDao {
 		record.set("sysdate", getSysdate());
 		return Db.save("Z_WOBO_LASTINFO", record);
 	}
+	
 }

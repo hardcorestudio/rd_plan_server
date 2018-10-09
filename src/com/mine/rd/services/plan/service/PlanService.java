@@ -1,5 +1,6 @@
 package com.mine.rd.services.plan.service;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.plan.pojo.PlanDao;
+import com.mine.rd.websocket.MyWebSocket;
 
 public class PlanService extends BaseService{
 
@@ -382,11 +384,13 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductFacility = dao.initProductFacility(tpId);
 		List<Map<String,Object>> initProductCc = dao.initProductCc(tpId);
 		List<Map<String,Object>> initProductYs = dao.initProductYs(tpId);
+		List<Map<String,Object>> initEPys = dao.initEPys();
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		controller.setAttr("initTransfer", initTransfer == null ? "" : initTransfer);
 		controller.setAttr("initProductFacility", initProductFacility);
 		controller.setAttr("initProductCc", initProductCc);
 		controller.setAttr("initProductYs", initProductYs);
+		controller.setAttr("initEPys", initEPys);
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
 	
@@ -513,6 +517,7 @@ public class PlanService extends BaseService{
 		if(flag){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("env","func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -545,6 +550,20 @@ public class PlanService extends BaseService{
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
+		}
+	}
+	
+	private void ws(String key,String value){
+		for(MyWebSocket item: MyWebSocket.webSocketSet){  
+            try {
+            	String userId = item.wsMap.get("userId").toString();
+            	if(userId.equals(controller.getMySession("userId").toString())){
+            		item.sendMessage("{key:'"+key+"',value:'"+value+"'}");
+            	}
+            } catch (IOException e) {
+                e.printStackTrace();
+                continue;
+            }
 		}
 	}
 }

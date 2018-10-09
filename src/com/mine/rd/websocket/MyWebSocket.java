@@ -1,7 +1,6 @@
 package com.mine.rd.websocket;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -30,40 +29,38 @@ public class MyWebSocket {
     
     public String IWBSESSION;
     
-    public Map paramMap=null;
+	public Map<String,Object> wsMap=null;
     
     public BaseController controller;
     /**
      * 连接建立成功调用的方法
      * @param session  可选的参数。session为与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
-    @SuppressWarnings("static-access")
 	@OnOpen
     public void onOpen(Session session){
     	this.session = session;
-        Map<String, List<String>> m =session.getRequestParameterMap();
-        Map<String, Object> mySession = CacheKit.get("mySession",  m.get("IWBSESSION") == null ? "" :m.get("IWBSESSION").get(0));
-        if (mySession == null ) {
-        	 addOnlineCount(); 
-        	 String sessionId = m.get("sessionId") == null ? "" : m.get("sessionId").get(0);
-        	 if(!"".equals(sessionId))
-        	 {
-        		paramMap=new HashMap<String, Object>();
-        		paramMap.put("sessionId", sessionId);
+        Map<String, List<String>> paramMap =session.getRequestParameterMap();
+        String sessionId = paramMap.get("IWBSESSION") == null ? "" : paramMap.get("IWBSESSION").get(0);
+        if(sessionId != null && !"".equals(sessionId)){
+        	 Map<String, Object> mySession = CacheKit.get("mySession", sessionId);
+        	 boolean flag = true;
+        	 for(MyWebSocket item: webSocketSet){
+        		 String userId = item.wsMap.get("userId").toString();
+        		 if(userId.equals(mySession.get("userId").toString())){
+        			 flag = false;
+        		 }
         	 }
-        	 webSocketSet.add(this); 
-        	 System.out.println("连接建立成功调用的方法,"+"当前在线人数为" + getOnlineCount());
-		}
-        else if ("".equals(m.get("IWBSESSION").get(0))) {
-        	 this.getOnlineCount();
-        	 System.out.println("连接建立成功调用的方法,"+"有新连接加入！但IWBSESSION为空,当前在线人数为" + getOnlineCount());
-		}else {
-//			userId = mySession.get("userId")+"";
-			IWBSESSION = m.get("IWBSESSION").get(0);
-	        webSocketSet.add(this);     //加入set中
-	        addOnlineCount();           //在线数加1
-	        System.out.println("连接建立成功调用的方法,"+"有新连接加入！当前在线人数为" + getOnlineCount());
-		}
+        	 if(flag){
+        		 wsMap = mySession;
+            	 webSocketSet.add(this); 
+            	 addOnlineCount();           //在线数加1
+            	 System.out.println("连接建立成功调用的方法,"+"当前在线人数为" + getOnlineCount());
+        	 }else{
+        		 System.out.println("连接建立成功调用的方法,"+"但是有重复的数据，不增加队列,当前在线人数为" + getOnlineCount());
+        	 }	 
+        }else{
+       	 	System.out.println("连接建立成功调用的方法,"+"有新连接加入！但IWBSESSION为空，不增加队列,当前在线人数为" + getOnlineCount());
+        }
         System.out.println(this);
     }
     /**
@@ -111,54 +108,13 @@ public class MyWebSocket {
         if(map.get("key") != null && "1".equals(map.get("key"))){
         	if(map.get("res") != null && "0".equals(map.get("res"))){
 				Map<String, Object> info = (Map<String, Object>) map.get("info");
-        		if(false){
-            		System.out.println("============>true");
-            	}else{
+        		if(info.isEmpty()){
             		System.out.println("============>false");
+            	}else{
+            		System.out.println("============>true");
             	}
         	}
         	
-        }
-        else if(map.get("key") != null && "2".equals(map.get("key"))){
-    		String json = Jackson.getJson().toJson("");
-    		String mName = map.get("mName").toString();
-    		if(!"queryPositionByLp".equals(mName))
-    		{
-    			String qc = map.get("qc") == null ? "" : map.get("qc").toString();
-        		paramMap.put("mName", mName);
-        		paramMap.put("qc", qc);
-    		}
-    		try {
-				sendMessage(json);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}  
-        }
-        else if(map.get("key") != null && "3".equals(map.get("key"))){
-        	String json = Jackson.getJson().toJson("");
-        	try {
-				sendMessage(json);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}  
-        }
-        else if(map.get("key") != null && "4".equals(map.get("key"))){
-        	paramMap.put("mName", "");
-        }
-        else if(map.get("key") != null && "5".equals(map.get("key"))){
-        	webSocketSet.remove(this);
-        	this.onClose(this.session);
-        }
-        else if(map.get("key") != null && "6".equals(map.get("key"))){
-        	Map<String, Object> info = (Map<String, Object>) map.get("info");
-        }
-        else if(map.get("key") != null && "7".equals(map.get("key"))){
-        	String json = Jackson.getJson().toJson("");
-        	try {
-				sendMessage(json);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}  
         }
         System.out.println("=======================================");
    

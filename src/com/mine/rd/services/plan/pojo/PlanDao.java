@@ -2,6 +2,7 @@ package com.mine.rd.services.plan.pojo;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +63,7 @@ public class PlanDao extends BaseDao {
 	}
 	
 	public int checkApply(String epId){
-		String sql = "select count(1) as num from Z_WOBO_PLAN_MAIN where DATEDIFF(yyyy,BEGINDATE,GETDATE()) = 0 and ep_id = ? ";
+		String sql = "select count(1) as num from Z_WOBO_PLAN_MAIN where DATEDIFF(yyyy,BEGINDATE,DATEADD(MONTH,1,GETDATE())) = 0 and ep_id = ? ";
 		Record record = Db.findFirst(sql,epId);
 		if(record != null){
 			return record.getInt("num");
@@ -77,8 +78,14 @@ public class PlanDao extends BaseDao {
 		record.set("EP_ID", epId);
 		record.set("EP_NAME", epName);
 		record.set("STATUS", "00");
-		String begindate = DateKit.toStr(super.getSysdate(), "yyyy-01-01");
-		String enddate = DateKit.toStr(super.getSysdate(), "yyyy-12-31");
+		String sysdate_str =DateKit.toStr(super.getSysdate(), "yyyy-MM-dd");
+		Date sysdate_date = DateKit.toDate(sysdate_str, "yyyy-MM-dd");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(sysdate_date);
+		calendar.add(Calendar.MONTH, 1);
+		Date date_new = calendar.getTime();
+		String begindate = DateKit.toStr(date_new, "yyyy-01-01");
+		String enddate = DateKit.toStr(date_new, "yyyy-12-31");
 		record.set("BEGINDATE", begindate);
 		record.set("ENDDATE",  enddate);
 		record.set("sysdate", super.getSysdate());

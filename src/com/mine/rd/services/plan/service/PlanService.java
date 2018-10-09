@@ -296,6 +296,7 @@ public class PlanService extends BaseService{
 		if(flag && flagSon){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("baseInfo", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -328,6 +329,7 @@ public class PlanService extends BaseService{
 		if(flag_info && flag_ori && flag_equ && flag_output){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("productInfo", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -352,6 +354,7 @@ public class PlanService extends BaseService{
 		if(flag && flag_list){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("overview", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -372,6 +375,7 @@ public class PlanService extends BaseService{
 		if(flag){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("reduction", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -412,6 +416,7 @@ public class PlanService extends BaseService{
 		if(flag && flag_f && flag_c && flag_y){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("transfer", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -469,6 +474,7 @@ public class PlanService extends BaseService{
 		if(flag && flag_handle){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("handleSelf", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -495,6 +501,7 @@ public class PlanService extends BaseService{
 		if(flag && flag_list){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("handle", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -547,6 +554,7 @@ public class PlanService extends BaseService{
 		if(flag){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
+			this.ws("lastInfo", "func_done");
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");

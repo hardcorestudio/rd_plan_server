@@ -1,6 +1,7 @@
 package com.mine.rd.services.user.service;
 
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.jfinal.plugin.activerecord.Db;
@@ -28,9 +29,9 @@ public class UserService extends BaseService {
 	private void logout(){
 		String sessionId = controller.getMyParam("IWBSESSION").toString();
 		String userId = controller.getMySession("userId").toString();
+		this.wsClose(userId);
 		dao.logout(sessionId);
 		CacheKit.remove("mySession", sessionId);
-		this.wsClose(userId);
 		controller.setAttr("resFlag","0");
 		controller.setAttr("msg","注销成功！");
 	}
@@ -39,7 +40,12 @@ public class UserService extends BaseService {
 		for(MyWebSocket item: MyWebSocket.webSocketSet){  
 			String userId = item.wsMap.get("userId").toString();
         	if(userId.equals(userId_param)){
-        		item.onClose(item.getSession());
+        		try {
+					item.sendMessage("{key:'close',value:'close'}");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
         	}
 		}
 	}

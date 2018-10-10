@@ -75,6 +75,7 @@ public class MyWebSocket {
         if(sessionId != null && !"".equals(sessionId)){
         	Map<String, Object> mySession = CacheKit.get("mySession", sessionId);
         	if(mySession == null){
+        		subOnlineCount();           //在线数减1    
         		System.out.println("连接关闭调用的方法,但该请求没有缓存"+"当前在线人数为" + getOnlineCount()); 
         	}
         	else{

@@ -66,25 +66,24 @@ public class MyWebSocket {
     /**
      * 连接关闭调用的方法
      */
-    @SuppressWarnings("static-access")
 	@OnClose
     public void onClose(Session session){
         webSocketSet.remove(this); 
         this.session = session;
-        Map<String, List<String>> m =session.getRequestParameterMap();
-        Map<String, Object> mySession = CacheKit.get("mySession",  m.get("IWBSESSION") ==null ? "" :m.get("IWBSESSION").get(0));
-        //从set中删除
-        if (mySession == null ) {
-        	subOnlineCount();  
-       	    System.out.println("连接关闭调用的方法,"+"当前在线人数为" + getOnlineCount()); 
-		}
-        else if ("".equals(m.get("IWBSESSION").get(0))) {
-       	    this.getOnlineCount();
-       	    System.out.println("连接关闭调用的方法,"+"有一连接关闭！但IWBSESSION为空,当前在线人数为" + getOnlineCount());
-		}else {
-			subOnlineCount();           //在线数减1    
-	        System.out.println("连接关闭调用的方法,"+"有一连接关闭！当前在线人数为" + getOnlineCount());
-		}
+        Map<String, List<String>> paramMap =session.getRequestParameterMap();
+        String sessionId = paramMap.get("IWBSESSION") == null ? "" : paramMap.get("IWBSESSION").get(0);
+        if(sessionId != null && !"".equals(sessionId)){
+        	Map<String, Object> mySession = CacheKit.get("mySession", sessionId);
+        	if(mySession == null){
+        		System.out.println("连接关闭调用的方法,但该请求没有缓存"+"当前在线人数为" + getOnlineCount()); 
+        	}
+        	else{
+        		subOnlineCount();           //在线数减1    
+    	        System.out.println("连接关闭调用的方法,"+"有一连接关闭！当前在线人数为" + getOnlineCount());
+        	}
+        }else{
+        	System.out.println("连接关闭调用的方法,"+"有一连接关闭！但传参为空即IWBSESSION为空,当前在线人数为" + getOnlineCount());
+        }
     }
     /**
      * 收到客户端消息后调用的方法
@@ -95,10 +94,10 @@ public class MyWebSocket {
     @SuppressWarnings("unchecked")
     public void onMessage(String message, Session session) {
 		System.out.println("来自客户端的消息:" + message);
-		if(message.equals("netWorkTest"))
+		if(message.equals("ping"))
 		{
 			try {
-				sendMessage("success");
+				sendMessage("{key:'ping',value:'success'}");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}  
@@ -114,7 +113,6 @@ public class MyWebSocket {
             		System.out.println("============>true");
             	}
         	}
-        	
         }
         System.out.println("=======================================");
    
@@ -162,4 +160,7 @@ public class MyWebSocket {
     public static synchronized void subOnlineCount() {
     	MyWebSocket.onlineCount--;
     }
+	public Session getSession() {
+		return session;
+	}
 }

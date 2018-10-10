@@ -9,6 +9,7 @@ import com.jfinal.plugin.ehcache.CacheKit;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.user.pojo.UserDao;
+import com.mine.rd.websocket.MyWebSocket;
 
 public class UserService extends BaseService {
 
@@ -26,10 +27,21 @@ public class UserService extends BaseService {
 	 */
 	private void logout(){
 		String sessionId = controller.getMyParam("IWBSESSION").toString();
+		String userId = controller.getMySession("userId").toString();
 		dao.logout(sessionId);
 		CacheKit.remove("mySession", sessionId);
+		this.wsClose(userId);
 		controller.setAttr("resFlag","0");
 		controller.setAttr("msg","注销成功！");
+	}
+	
+	private void wsClose(String userId_param){
+		for(MyWebSocket item: MyWebSocket.webSocketSet){  
+			String userId = item.wsMap.get("userId").toString();
+        	if(userId.equals(userId_param)){
+        		item.onClose(item.getSession());
+        	}
+		}
 	}
 	
 	/**

@@ -25,6 +25,86 @@ public class AdminService extends BaseService{
 		super(controller);
 	}
 	
+	@Override
+	public void doService() throws Exception {
+		Db.tx(new IAtom() {
+	        @Override
+	        public boolean run() throws SQLException {
+        		try {
+	            	if("adminTaskNum".equals(getLastMethodName(7))){
+	        			adminTaskNum();
+	        		}else if("adminTask".equals(getLastMethodName(7))){
+	        			adminTask();
+	        		}else if("adminDealTask".equals(getLastMethodName(7))){
+	        			adminDealTask();
+	        		}else if("checkApproveDetail".equals(getLastMethodName(7))){
+	        			checkApproveDetail();
+	        		}else if("checkApplyInfo".equals(getLastMethodName(7))){
+	        			checkApplyInfo();
+	        		}else if("queryForgetPwdApplyList".equals(getLastMethodName(7))){
+	        			queryForgetPwdApplyList();
+	        		}else if("queryEpPwd".equals(getLastMethodName(7))){
+	        			queryEpPwd();
+	        		}else if("disagreeSendMail".equals(getLastMethodName(7))){
+	        			disagreeSendMail();
+	        		}else if("sendMail".equals(getLastMethodName(7))){
+	        			sendMail();
+	        		}else if("queryUnsubmitPlanEp".equals(getLastMethodName(7))){
+	        			queryUnsubmitPlanEp();
+	        		}else if("queryEpList".equals(getLastMethodName(7))){
+	        			queryEpList();
+	        		}else if("queryData".equals(getLastMethodName(7))){
+	        			queryData();
+	        		}else if("queryPlanList".equals(getLastMethodName(7))){
+	        			queryPlanList();
+	        		}
+	            } catch (AuthenticationFailedException e) {
+	            	controller.setAttr("msg", "发送失败，请检查邮箱地址和密码！");
+	    			controller.setAttr("resFlag", "1");
+	    			return false;
+	            } catch (SMTPAddressFailedException e) {
+	            	controller.setAttr("msg", "输入邮箱有误，请检查邮箱地址！");
+	    			controller.setAttr("resFlag", "1");
+	    			return false;
+	            } catch (SendFailedException e) {
+	            	controller.setAttr("msg", "发送失败，请检查收件邮箱地址！");
+	    			controller.setAttr("resFlag", "1");
+	    			return false;
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            	controller.setAttr("msg", "系统异常，请重新登录！");
+	    			controller.setAttr("resFlag", "1");
+	                return false;
+	            }
+	            return true;
+	        }
+	    });
+		//处理需要发送邮件的业务（如审批单位信息完善业务）
+		if("adminDealTask".equals(getLastMethodName())){
+			if("0".equals(controller.getAttr("resFlag"))){
+				Map<String, Object> mailMap = controller.getAttr("mailMap");
+				if(mailMap != null && mailMap.get("subject") != null && !"".equals(mailMap.get("subject"))){
+					try{
+						dao.sendMail(mailMap.get("acceptMail").toString(), mailMap.get("subject").toString(), mailMap.get("content").toString(), mailMap.get("mail").toString(), mailMap.get("mailPwd").toString());
+					} catch (AuthenticationFailedException e) {
+						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
+		    			controller.setAttr("resFlag", "0");
+		            } catch (SMTPAddressFailedException e) {
+						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
+		    			controller.setAttr("resFlag", "0");
+		            } catch (SendFailedException e) {
+						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
+		    			controller.setAttr("resFlag", "0");
+		            } catch (Exception e) {
+		                e.printStackTrace();
+	                	controller.setAttr("msg", "系统异常，请重新登录！");
+		    			controller.setAttr("resFlag", "1");
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * @author ouyangxu
 	 * @date 20170222
@@ -282,7 +362,7 @@ public class AdminService extends BaseService{
 				billNumI = 0;
 			}
 		}else if("epCs".equals(userType) || "epCz".equals(userType)){	//epCs-医疗单位  epCz-医疗处置单位
-			String epId = controller.getMyParam("epId").toString();
+//			String epId = controller.getMyParam("epId").toString();
 //			finishedTaskNumI = Integer.parseInt(dao.epTask(epId, action, pn, ps, "").get("totalRow").toString());
 			finishedTaskNumI = 0;
 		}else if("CSEP".equals(userType) ){	
@@ -290,7 +370,7 @@ public class AdminService extends BaseService{
 			finishedTaskNumI = Integer.parseInt(dao.epTask(epId, action, pn, ps, "").get("totalRow").toString());
 		}else if("sysAdmin".equals(userType)){		//sysAdmin-系统管理员
 		}else{
-			String epId = controller.getMyParam("epId").toString();
+//			String epId = controller.getMyParam("epId").toString();
 			finishedTaskNumI = 0;
 			agreementNumI = 0;
 //			finishedTaskNumI = Integer.parseInt(dao.epAdminTask(epId, action, pn, ps, "").get("totalRow").toString());
@@ -311,84 +391,23 @@ public class AdminService extends BaseService{
 		controller.setAttr("hualNumI", hualNumI);
 		controller.setAttr("billNumI", billNumI);
 	}
-	
-	@Override
-	public void doService() throws Exception {
-		Db.tx(new IAtom() {
-	        @Override
-	        public boolean run() throws SQLException {
-        		try {
-	            	if("adminTaskNum".equals(getLastMethodName(7))){
-	        			adminTaskNum();
-	        		}else if("adminTask".equals(getLastMethodName(7))){
-	        			adminTask();
-	        		}else if("adminDealTask".equals(getLastMethodName(7))){
-	        			adminDealTask();
-	        		}else if("checkApproveDetail".equals(getLastMethodName(7))){
-	        			checkApproveDetail();
-	        		}else if("checkApplyInfo".equals(getLastMethodName(7))){
-	        			checkApplyInfo();
-	        		}else if("queryForgetPwdApplyList".equals(getLastMethodName(7))){
-	        			queryForgetPwdApplyList();
-	        		}else if("queryEpPwd".equals(getLastMethodName(7))){
-	        			queryEpPwd();
-	        		}else if("disagreeSendMail".equals(getLastMethodName(7))){
-	        			disagreeSendMail();
-	        		}else if("sendMail".equals(getLastMethodName(7))){
-	        			sendMail();
-	        		}else if("queryUnsubmitPlanEp".equals(getLastMethodName(7))){
-	        			queryUnsubmitPlanEp();
-	        		}else if("queryEpList".equals(getLastMethodName(7))){
-	        			queryEpList();
-	        		}else if("queryData".equals(getLastMethodName(7))){
-	        			queryData();
-	        		}
-	            } catch (AuthenticationFailedException e) {
-	            	controller.setAttr("msg", "发送失败，请检查邮箱地址和密码！");
-	    			controller.setAttr("resFlag", "1");
-	    			return false;
-	            } catch (SMTPAddressFailedException e) {
-	            	controller.setAttr("msg", "输入邮箱有误，请检查邮箱地址！");
-	    			controller.setAttr("resFlag", "1");
-	    			return false;
-	            } catch (SendFailedException e) {
-	            	controller.setAttr("msg", "发送失败，请检查收件邮箱地址！");
-	    			controller.setAttr("resFlag", "1");
-	    			return false;
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            	controller.setAttr("msg", "系统异常，请重新登录！");
-	    			controller.setAttr("resFlag", "1");
-	                return false;
-	            }
-	            return true;
-	        }
-	    });
-		//处理需要发送邮件的业务（如审批单位信息完善业务）
-		if("adminDealTask".equals(getLastMethodName())){
-			if("0".equals(controller.getAttr("resFlag"))){
-				Map<String, Object> mailMap = controller.getAttr("mailMap");
-				if(mailMap != null && mailMap.get("subject") != null && !"".equals(mailMap.get("subject"))){
-					try{
-						dao.sendMail(mailMap.get("acceptMail").toString(), mailMap.get("subject").toString(), mailMap.get("content").toString(), mailMap.get("mail").toString(), mailMap.get("mailPwd").toString());
-					} catch (AuthenticationFailedException e) {
-						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
-		    			controller.setAttr("resFlag", "0");
-		            } catch (SMTPAddressFailedException e) {
-						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
-		    			controller.setAttr("resFlag", "0");
-		            } catch (SendFailedException e) {
-						controller.setAttr("msg", "操作成功，邮件发送失败，请检查邮箱地址和密码！");
-		    			controller.setAttr("resFlag", "0");
-		            } catch (Exception e) {
-		                e.printStackTrace();
-	                	controller.setAttr("msg", "系统异常，请重新登录！");
-		    			controller.setAttr("resFlag", "1");
-					}
-				}
-			}
-		}
+
+	/**
+	 * @author woody
+	 * @date 20181015
+	 * 方法：管理员查看单位列表
+	 */
+	private void queryPlanList(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		String ROLEID = controller.getMyParam("ROLEID").toString();
+		String orgCode = controller.getMyParam("orgCode").toString();
+		Object searchContent = controller.getMyParam("searchContent");
+		Object statusValue = controller.getMyParam("statusValue");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.queryPlanList(pn, ps, orgCode, ROLEID, searchContent, statusValue, sepaValue, statusCache));
+		controller.setAttr("resFlag", "0");
 	}
-
-
 }

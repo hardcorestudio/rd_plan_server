@@ -287,4 +287,23 @@ public class AdminController extends BaseController {
 		setAttrs(map);
 		renderJsonForCors();
 	}
+	
+	/**
+	 * @author woody
+	 * @date 20181015
+	 * 方法：管理员查看管理计划列表
+	 */
+	public void queryPlanList(){
+		logger.info("管理员查看管理计划列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("管理员查看管理计划列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

@@ -1009,4 +1009,55 @@ public class AdminDao extends BaseDao {
 		return list;
 	}
 	
+	/**
+	 * @author ouyangxu
+	 * @date 20170526
+	 * 方法：管理员查看单位列表
+	 */
+	public Map<String, Object> queryPlanList(int pn, int ps, String area, String ROLEID, Object searchContent, Object statusValue, Object sepaValue, List<Object> statusCache){
+		String sql = "";
+		if("SJSPROLE".equals(ROLEID)){		//SJSPROLE-市级管理员
+			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status='05' ";
+			if(searchContent != null && !"".equals(searchContent)){
+				sql = sql + " and (A.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or CONVERT(varchar(50), A.BEGINDATE, 126)  like '%"+searchContent+"%' or CONVERT(varchar(50), A.sysdate, 126)  like '%"+searchContent+"%') ";
+			}
+			if(sepaValue != null && !"".equals(sepaValue)){
+				sql = sql + " and c.BELONG_SEPA in ("+sepaValue+")";
+			}
+			sql = sql + " order by A.sysdate desc";
+		}else{		//区级管理员
+			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.ep_id = c.ep_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status='05' and c.BELONG_SEPA = '"+area+"' ";
+			if(searchContent != null && !"".equals(searchContent)){
+				sql = sql + " and (A.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or CONVERT(varchar(50), A.BEGINDATE, 126)  like '%"+searchContent+"%' or CONVERT(varchar(50), A.sysdate, 126)  like '%"+searchContent+"%') ";
+			}
+			sql = sql + " order by a.sysdate desc ";
+		}
+		Page<Record> page = Db.paginate(pn, ps, "select A.* ,b.dict_value statusname,c.ayl_id as applyId  ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> planList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				Map<String, Object> map = new HashMap<>();
+				map.put("TP_ID", record.get("TP_ID"));
+				map.put("EP_ID", record.get("EP_ID"));
+				map.put("EP_NAME", record.get("EP_NAME"));
+				map.put("BEGINDATE", record.get("BEGINDATE"));
+				map.put("ENDDATE", record.get("ENDDATE"));
+				map.put("STATUS", record.get("STATUS"));
+				map.put("STATUSNAME", record.get("statusname"));
+				map.put("applyYear", DateKit.toStr(record.getDate("BEGINDATE"), "YYYY"));
+				map.put("applyDate", DateKit.toStr(record.getDate("sysdate"), "YYYY-MM-dd"));
+				map.put("applyId", record.get("applyId"));
+				planList.add(map);
+			}
+		}
+		resMap.put("planList", planList);
+		if("SJSPROLE".equals(ROLEID)){
+			resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		}
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
 }

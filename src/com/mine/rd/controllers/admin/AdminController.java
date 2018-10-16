@@ -306,4 +306,23 @@ public class AdminController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	/**
+	 * @author woody
+	 * @date 20181016
+	 * 方法：监管管理计划列表
+	 */
+	public void queryMonitorList(){
+		logger.info("监管管理计划列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("监管管理计划列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

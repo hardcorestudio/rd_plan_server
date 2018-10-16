@@ -1010,9 +1010,9 @@ public class AdminDao extends BaseDao {
 	}
 	
 	/**
-	 * @author ouyangxu
-	 * @date 20170526
-	 * 方法：管理员查看单位列表
+	 * @author woody
+	 * @date 20181016
+	 * 方法：管理员查看管理计划列表
 	 */
 	public Map<String, Object> queryPlanList(int pn, int ps, String area, String ROLEID, Object searchContent, Object statusValue, Object sepaValue, List<Object> statusCache){
 		String sql = "";
@@ -1060,4 +1060,59 @@ public class AdminDao extends BaseDao {
 		resMap.put("totalRow", page.getTotalRow());
 		return resMap;
 	}
+	
+	/**
+	 * @author woody
+	 * @date 20181016
+	 * 方法：管理员监管管理计划列表
+	 */
+	public Map<String, Object> queryMonitorList(int pn, int ps, String area, String ROLEID, Object searchContent, Object statusValue, Object sepaValue, List<Object> statusCache,String monitorScale){
+		StringBuffer sql = new StringBuffer();
+		sql.append(" from ");
+		sql.append(" (select a.AYL_ID applyId,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID ,sum(cast(c.YEAR_NUM AS decimal(22,2))) sum_num,c.UNIT ");
+		sql.append(" from Z_WOBO_APPLY_LIST a, Z_WOBO_PLAN_MAIN b ,Z_WOBO_HANDLE_LIST c ");
+		sql.append(" where a.BIZ_ID = b.TP_ID and b.TP_ID =c.TP_ID  ");
+//		sql.append(" and b.status='05' ");
+		sql.append(" GROUP BY a.AYL_ID ,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID,c.UNIT) aa,  ");
+		sql.append(" (select a.AYL_ID applyId,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID ,sum(cast(d.UNIT_NUM AS decimal(22,2))) sum_num_real,d.UNIT ");
+		sql.append(" from Z_WOBO_APPLY_LIST a, Z_WOBO_PLAN_MAIN b ,TRANSFERPLAN_BILL c,TRANSFERPLAN_BILL_LIST d ");
+		sql.append(" where a.BIZ_ID = b.TP_ID and b.TP_ID =c.TP_ID and c.TP_ID = d.TP_ID and c.status in ('03','08') ");
+//		sql.append(" and b.status='05' ");
+		sql.append(" GROUP BY a.AYL_ID ,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID,d.UNIT) bb ");
+		sql.append(" where aa.TP_ID = bb.TP_ID and aa.UNIT = bb.UNIT ");
+		sql.append(" and aa.sum_num*"+monitorScale+" >= bb.sum_num_real");
+		if(searchContent != null && !"".equals(searchContent)){
+			sql.append( " and (aa.EP_NAME like '%"+searchContent+"%' or aa.EP_ID like '%"+searchContent+"%' or aa.unit  like '%"+searchContent+"%' or aa.sum_num  like '%"+searchContent+"%' or bb.sum_num_real  like '%"+searchContent+"%') ");
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql.append(" and aa.BELONG_SEPA in ("+sepaValue+")");
+		}
+		Page<Record> page = Db.paginate(pn, ps, "select aa.applyId,aa.EP_ID,aa.EP_NAME,aa.BELONG_SEPA,aa.TP_ID,aa.sum_num,bb.sum_num_real,aa.UNIT ", sql.toString());
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> planList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				Map<String, Object> map = new HashMap<>();
+				map.put("TP_ID", record.get("TP_ID"));
+				map.put("EP_ID", record.get("EP_ID"));
+				map.put("EP_NAME", record.get("EP_NAME"));
+				map.put("sum_num", record.get("sum_num"));
+				map.put("sum_num_real", record.get("sum_num_real"));
+				map.put("UNIT", record.get("UNIT"));
+				map.put("BELONG_SEPA", record.get("BELONG_SEPA"));
+				map.put("SEPA_NAME", convert(cityList, record.get("BELONG_SEPA")) + "环保局");
+				map.put("applyId", record.get("applyId"));
+				planList.add(map);
+			}
+		}
+		resMap.put("planList", planList);
+		if("SJSPROLE".equals(ROLEID)){
+			resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		}
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
 }

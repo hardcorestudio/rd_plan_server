@@ -57,6 +57,8 @@ public class AdminService extends BaseService{
 	        			queryData();
 	        		}else if("queryPlanList".equals(getLastMethodName(7))){
 	        			queryPlanList();
+	        		}else if("queryMonitorList".equals(getLastMethodName(7))){
+	        			queryMonitorList();
 	        		}
 	            } catch (AuthenticationFailedException e) {
 	            	controller.setAttr("msg", "发送失败，请检查邮箱地址和密码！");
@@ -408,6 +410,26 @@ public class AdminService extends BaseService{
 		@SuppressWarnings("unchecked")
 		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
 		controller.setAttrs(dao.queryPlanList(pn, ps, orgCode, ROLEID, searchContent, statusValue, sepaValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	/**
+	 * @author woody
+	 * @date 20181016
+	 * 方法：监管管理计划列表
+	 */
+	private void queryMonitorList(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		String ROLEID = controller.getMyParam("ROLEID").toString();
+		String orgCode = controller.getMyParam("orgCode").toString();
+		String monitorScale = controller.getMyParam("monitorScale").toString();
+		Object searchContent = controller.getMyParam("searchContent");
+		Object statusValue = controller.getMyParam("statusValue");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.queryMonitorList(pn, ps, orgCode, ROLEID, searchContent, statusValue, sepaValue, statusCache,monitorScale));
 		controller.setAttr("resFlag", "0");
 	}
 }

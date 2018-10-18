@@ -310,6 +310,7 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductEqu = dao.initProductEqu(tpId);
 		List<Map<String,Object>> initProductOutput = dao.initProductOutput(tpId);
 		controller.setAttr("initProductInfo", initProductInfo == null ? "" : initProductInfo);
+		controller.setAttr("ifsave", initProductInfo == null ? "0" : "1");
 		controller.setAttr("initProductOri", initProductOri);
 		controller.setAttr("initProductEqu", initProductEqu);
 		controller.setAttr("initProductOutput", initProductOutput);
@@ -317,19 +318,35 @@ public class PlanService extends BaseService{
 	
 	private void saveProductInfo(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		String epId = controller.getMyParam("EP_ID").toString();
-		String PRODUCT_DESC = controller.getMyParam("PRODUCT_DESC").toString();
-		List<Map<String, Object>> PRODUCT_ORI = controller.getMyParamList("PRODUCT_ORI");
-		List<Map<String, Object>> PRODUCT_EQU = controller.getMyParamList("PRODUCT_EQU");
-		List<Map<String, Object>> PRODUCT_OUTPUT = controller.getMyParamList("PRODUCT_OUTPUT");
-		boolean flag_info = dao.saveProductInfo(tpId,epId,PRODUCT_DESC);
-		boolean flag_ori = dao.saveProductOri(tpId,PRODUCT_ORI);
-		boolean flag_equ = dao.saveProductEqu(tpId,PRODUCT_EQU);
-		boolean flag_output = dao.saveProductOutput(tpId,PRODUCT_OUTPUT);
+		String ifsave = controller.getMyParam("ifsave").toString();
+		boolean flag_info = false;
+		boolean flag_ori = false;
+		boolean flag_equ = false;
+		boolean flag_output = false;
+		if("1".equals(ifsave)){
+			String epId = controller.getMyParam("EP_ID").toString();
+			String PRODUCT_DESC = controller.getMyParam("PRODUCT_DESC").toString();
+			List<Map<String, Object>> PRODUCT_ORI = controller.getMyParamList("PRODUCT_ORI");
+			List<Map<String, Object>> PRODUCT_EQU = controller.getMyParamList("PRODUCT_EQU");
+			List<Map<String, Object>> PRODUCT_OUTPUT = controller.getMyParamList("PRODUCT_OUTPUT");
+			flag_info = dao.saveProductInfo(tpId,epId,PRODUCT_DESC);
+			flag_ori = dao.saveProductOri(tpId,PRODUCT_ORI);
+			flag_equ = dao.saveProductEqu(tpId,PRODUCT_EQU);
+			flag_output = dao.saveProductOutput(tpId,PRODUCT_OUTPUT);
+		}else{
+			flag_info = dao.deleteProductInfo(tpId);
+			flag_ori = dao.deleteProductOri(tpId);
+			flag_equ = dao.deleteProductEqu(tpId);
+			flag_output = dao.deleteProductOutput(tpId);
+		}
 		if(flag_info && flag_ori && flag_equ && flag_output){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
-			this.ws("productInfo", "func_done");
+			if("1".equals(ifsave)){
+				this.ws("productInfo", "func_done");
+			}else{
+				this.ws("productInfo", "func_class");
+			}
 		}else{
 			controller.setAttr("resFlag", "1");
 			controller.setAttr("resMsg", "提交失败");
@@ -435,49 +452,64 @@ public class PlanService extends BaseService{
 	
 	private void saveHandleSelf(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		String FACILITY_NAME = controller.getMyParam("FACILITY_NAME").toString();
-		String FACILITY_TYPE = controller.getMyParam("FACILITY_TYPE").toString();
-		String FACILITY_ADDRESS = controller.getMyParam("FACILITY_ADDRESS").toString();
-		String INVEST_SUM = controller.getMyParam("INVEST_SUM").toString();
-		String INVEST_SUM_UNIT = controller.getMyParam("INVEST_SUM_UNIT").toString();
-		String DESIGN = controller.getMyParam("DESIGN").toString();
-		String DESIGN_TIME = controller.getMyParam("DESIGN_TIME").toString();
-		String RUN_TIME = controller.getMyParam("RUN_TIME").toString();
-		String RUN_MONEY = controller.getMyParam("RUN_MONEY").toString();
-		String RUN_MONEY_UNIT = controller.getMyParam("RUN_MONEY_UNIT").toString();
-		String FACILITY_SUM = controller.getMyParam("FACILITY_SUM").toString();
-		String HANDLE_EFFECT = controller.getMyParam("HANDLE_EFFECT").toString();
-		String DB_1 = controller.getMyParam("DB_1").toString();
-		String DB_2 = controller.getMyParam("DB_2").toString();
-		String DESC_CONTENT = controller.getMyParam("DESC_CONTENT").toString();
-		String MEASURE = controller.getMyParam("MEASURE").toString();
-		Map<String,String> map = new HashMap<String, String>();
-		map.put("FACILITY_NAME", FACILITY_NAME);
-		map.put("FACILITY_TYPE", FACILITY_TYPE);
-		map.put("FACILITY_ADDRESS", FACILITY_ADDRESS);
-		map.put("INVEST_SUM", INVEST_SUM);
-		map.put("INVEST_SUM_UNIT", INVEST_SUM_UNIT);
-		map.put("DESIGN", DESIGN);
-		map.put("DESIGN_TIME", DESIGN_TIME);
-		map.put("RUN_TIME", RUN_TIME);
-		map.put("RUN_MONEY", RUN_MONEY);
-		map.put("RUN_MONEY_UNIT", RUN_MONEY_UNIT);
-		map.put("FACILITY_SUM", FACILITY_SUM);
-		map.put("HANDLE_EFFECT", HANDLE_EFFECT);
-		map.put("DB_1", DB_1);
-		map.put("DB_2", DB_2);
-		map.put("DESC_CONTENT", DESC_CONTENT);
-		map.put("MEASURE", MEASURE);
-		List<Map<String, Object>> HANDLE_LIST = controller.getMyParamList("HANDLE_LIST");
-		boolean flag = dao.saveHandleSelf(tpId,map);
-		boolean flag_handle = dao.saveHandleSelfList(tpId, HANDLE_LIST);
-		if(flag && flag_handle){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("resMsg", "提交成功");
-			this.ws("handleSelf", "func_done");
-		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("resMsg", "提交失败");
+		String ifsave = controller.getMyParam("ifsave").toString();
+		if("1".equals(ifsave)){
+			String FACILITY_NAME = controller.getMyParam("FACILITY_NAME").toString();
+			String FACILITY_TYPE = controller.getMyParam("FACILITY_TYPE").toString();
+			String FACILITY_ADDRESS = controller.getMyParam("FACILITY_ADDRESS").toString();
+			String INVEST_SUM = controller.getMyParam("INVEST_SUM").toString();
+			String INVEST_SUM_UNIT = controller.getMyParam("INVEST_SUM_UNIT").toString();
+			String DESIGN = controller.getMyParam("DESIGN").toString();
+			String DESIGN_TIME = controller.getMyParam("DESIGN_TIME").toString();
+			String RUN_TIME = controller.getMyParam("RUN_TIME").toString();
+			String RUN_MONEY = controller.getMyParam("RUN_MONEY").toString();
+			String RUN_MONEY_UNIT = controller.getMyParam("RUN_MONEY_UNIT").toString();
+			String FACILITY_SUM = controller.getMyParam("FACILITY_SUM").toString();
+			String HANDLE_EFFECT = controller.getMyParam("HANDLE_EFFECT").toString();
+			String DB_1 = controller.getMyParam("DB_1").toString();
+			String DB_2 = controller.getMyParam("DB_2").toString();
+			String DESC_CONTENT = controller.getMyParam("DESC_CONTENT").toString();
+			String MEASURE = controller.getMyParam("MEASURE").toString();
+			Map<String,String> map = new HashMap<String, String>();
+			map.put("FACILITY_NAME", FACILITY_NAME);
+			map.put("FACILITY_TYPE", FACILITY_TYPE);
+			map.put("FACILITY_ADDRESS", FACILITY_ADDRESS);
+			map.put("INVEST_SUM", INVEST_SUM);
+			map.put("INVEST_SUM_UNIT", INVEST_SUM_UNIT);
+			map.put("DESIGN", DESIGN);
+			map.put("DESIGN_TIME", DESIGN_TIME);
+			map.put("RUN_TIME", RUN_TIME);
+			map.put("RUN_MONEY", RUN_MONEY);
+			map.put("RUN_MONEY_UNIT", RUN_MONEY_UNIT);
+			map.put("FACILITY_SUM", FACILITY_SUM);
+			map.put("HANDLE_EFFECT", HANDLE_EFFECT);
+			map.put("DB_1", DB_1);
+			map.put("DB_2", DB_2);
+			map.put("DESC_CONTENT", DESC_CONTENT);
+			map.put("MEASURE", MEASURE);
+			List<Map<String, Object>> HANDLE_LIST = controller.getMyParamList("HANDLE_LIST");
+			boolean flag = dao.saveHandleSelf(tpId,map);
+			boolean flag_handle = dao.saveHandleSelfList(tpId, HANDLE_LIST);
+			if(flag && flag_handle){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+				this.ws("handleSelf", "func_done");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
+		}
+		else{
+			boolean flag = dao.deleteHandleSelf(tpId);
+			boolean flag_handle = dao.deleteHandleSelfList(tpId);
+			if(flag && flag_handle){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+				this.ws("handleSelf", "func_class");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
 		}
 	}
 	

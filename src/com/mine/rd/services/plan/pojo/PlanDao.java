@@ -271,6 +271,11 @@ public class PlanDao extends BaseDao {
 		return Db.save("Z_WOBO_PRODUCT_INFO", record);
 	}
 	
+	public boolean deleteProductInfo(String tpId){
+		Db.update("delete from Z_WOBO_PRODUCT_INFO where tp_id = ? " ,tpId);
+		return true;
+	}
+	
 	public boolean saveProductOri(String tpId,List<Map<String,Object>> list){
 		Db.update("delete from Z_WOBO_PRODUCT_ORI where tp_id = ? " ,tpId);
 		boolean res = false;
@@ -286,6 +291,11 @@ public class PlanDao extends BaseDao {
 			res = Db.save("Z_WOBO_PRODUCT_ORI", record);
 		}
 		return res;
+	}
+	
+	public boolean deleteProductOri(String tpId){
+		Db.update("delete from Z_WOBO_PRODUCT_ORI where tp_id = ? " ,tpId);
+		return true;
 	}
 	
 	public boolean saveProductEqu(String tpId,List<Map<String,Object>> list){
@@ -305,6 +315,11 @@ public class PlanDao extends BaseDao {
 		return res;
 	}
 	
+	public boolean deleteProductEqu(String tpId){
+		Db.update("delete from Z_WOBO_PRODUCT_EQU where tp_id = ? " ,tpId);
+		return true;
+	}
+	
 	public boolean saveProductOutput(String tpId,List<Map<String,Object>> list){
 		Db.update("delete from Z_WOBO_PRODUCT_OUTPUT where tp_id = ? " ,tpId);
 		boolean res = false;
@@ -320,6 +335,11 @@ public class PlanDao extends BaseDao {
 			res = Db.save("Z_WOBO_PRODUCT_OUTPUT", record);
 		}
 		return res;
+	}
+	
+	public boolean deleteProductOutput(String tpId){
+		Db.update("delete from Z_WOBO_PRODUCT_OUTPUT where tp_id = ? " ,tpId);
+		return true;
 	}
 	
 	public List<Map<String,Object>> initOverviewList(String tpId){
@@ -623,6 +643,11 @@ public class PlanDao extends BaseDao {
 		return Db.save("Z_WOBO_HANDLE_SELF", record);
 	}
 	
+	public boolean deleteHandleSelf(String tpId){
+		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
+		return true;
+	}
+	
 	public boolean saveHandleSelfList(String tpId,List<Map<String,Object>> list){
 		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
 		boolean res = false;
@@ -639,6 +664,11 @@ public class PlanDao extends BaseDao {
 			res = Db.save("Z_WOBO_HANDLESELF_LIST", record);
 		}
 		return res;
+	}
+	
+	public boolean deleteHandleSelfList(String tpId){
+		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
+		return true;
 	}
 	
 	public List<Map<String,Object>> initHandleList(String tpId){

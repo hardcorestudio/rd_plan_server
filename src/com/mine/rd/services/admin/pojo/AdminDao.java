@@ -1072,12 +1072,12 @@ public class AdminDao extends BaseDao {
 		sql.append(" (select a.AYL_ID applyId,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID ,sum(cast(c.YEAR_NUM AS decimal(22,2))) sum_num,c.UNIT ");
 		sql.append(" from Z_WOBO_APPLY_LIST a, Z_WOBO_PLAN_MAIN b ,Z_WOBO_HANDLE_LIST c ");
 		sql.append(" where a.BIZ_ID = b.TP_ID and b.TP_ID =c.TP_ID  ");
-//		sql.append(" and b.status='05' ");
+		sql.append(" and b.status='05' ");
 		sql.append(" GROUP BY a.AYL_ID ,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID,c.UNIT) aa,  ");
 		sql.append(" (select a.AYL_ID applyId,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID ,sum(cast(d.UNIT_NUM AS decimal(22,2))) sum_num_real,d.UNIT ");
 		sql.append(" from Z_WOBO_APPLY_LIST a, Z_WOBO_PLAN_MAIN b ,TRANSFERPLAN_BILL c,TRANSFERPLAN_BILL_LIST d ");
 		sql.append(" where a.BIZ_ID = b.TP_ID and b.TP_ID =c.TP_ID and c.TP_ID = d.TP_ID and c.status in ('03','08') ");
-//		sql.append(" and b.status='05' ");
+		sql.append(" and b.status='05' ");
 		sql.append(" GROUP BY a.AYL_ID ,b.EP_ID ,b.EP_NAME,a.BELONG_SEPA,b.TP_ID,d.UNIT) bb ");
 		sql.append(" where aa.TP_ID = bb.TP_ID and aa.UNIT = bb.UNIT ");
 		sql.append(" and aa.sum_num*"+monitorScale+" >= bb.sum_num_real");

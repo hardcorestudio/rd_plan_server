@@ -486,6 +486,7 @@ public class AdminDao extends BaseDao {
 				status = "04";
 				f = "05";
 				emailContent = "申请被市级通过";
+				savePlan(bizId);
 			}
 		}else if("qjsp".equals(bizStep)){		//qjsp-区级审批
 			if("00".equals(checkResult)){
@@ -1115,4 +1116,72 @@ public class AdminDao extends BaseDao {
 		return resMap;
 	}
 	
+	private void savePlan(String tpId){
+		List<Record> Z_WOBO_HANDLE_LIST = Db.find("select EN_ID_CZ ,EN_NAME_CZ  from Z_WOBO_HANDLE_LIST where tp_id = ? GROUP BY EN_ID_CZ ,EN_NAME_CZ ",tpId);
+		List<Record> Z_WOBO_TRANSFER_YS = Db.find("select *  from Z_WOBO_TRANSFER_YS where tp_id = ? ",tpId);
+		StringBuffer ys_sb_id = new StringBuffer();
+		StringBuffer ys_sb_name = new StringBuffer();
+		for(int i = 0 ; i < Z_WOBO_TRANSFER_YS.size() ; i++){
+			if(i < Z_WOBO_TRANSFER_YS.size()-1){
+				ys_sb_id.append(Z_WOBO_TRANSFER_YS.get(i).getStr("EN_ID_YS")).append(";");
+				ys_sb_name.append(Z_WOBO_TRANSFER_YS.get(i).getStr("EN_NAME_YS")).append(";");
+			}else{
+				ys_sb_id.append(Z_WOBO_TRANSFER_YS.get(i).getStr("EN_ID_YS"));
+				ys_sb_name.append(Z_WOBO_TRANSFER_YS.get(i).getStr("EN_NAME_YS"));
+			}
+		}
+		Record Z_WOBO_PLAN_MAIN = Db.findFirst("select * from Z_WOBO_PLAN_MAIN where tp_id = ? ",tpId);
+		Record Z_WOBO_EP_EXTEND = Db.findFirst("select * from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
+		for(Record recordtmp : Z_WOBO_HANDLE_LIST){
+			String id = super.getSeqId("Z_WOBO_PLAN_MAIN");
+			Record record = new Record();
+			record.set("TP_ID", id);
+			record.set("TP_MAIN_ID", id);
+			record.set("AM_ID", "none");
+			record.set("MAIN_ID", tpId);
+			record.set("EN_ID_CS", Z_WOBO_PLAN_MAIN.getStr("EP_ID"));
+			record.set("EN_ID_YS", ys_sb_id.toString());
+			record.set("EN_ID_CZ", recordtmp.getStr("EN_ID_CZ"));
+			record.set("EN_NAME_CS", Z_WOBO_PLAN_MAIN.getStr("EP_NAME"));
+			record.set("EN_NAME_YS", ys_sb_name.toString());
+			record.set("EN_NAME_CZ",recordtmp.getStr("EN_ID_NAME"));
+			record.set("BEGINTIME", Z_WOBO_PLAN_MAIN.getDate("BEGINDATE"));
+			record.set("ENDTIME", Z_WOBO_PLAN_MAIN.getDate("ENDDATE"));
+			record.set("IF_ADDITIONAL", "0");
+			record.set("IF_TP_ADDITIONAL", "0");
+			record.set("LINKMAN", Z_WOBO_EP_EXTEND.getStr("LINKMAN"));
+			record.set("LINKTEL", Z_WOBO_EP_EXTEND.getStr("LINK_NUM"));
+			record.set("STATUS", "2");
+			record.set("PROCESSINSTID", 0);
+			record.set("ACTIONDATE", getSysdate());
+			record.set("LINKPHONE", Z_WOBO_EP_EXTEND.getStr("LINK_NUM"));
+			record.set("sysdate", getSysdate());
+			Db.save("Z_TRANSFER_PLAN", record);
+			savePlanList(tpId, id, recordtmp.getStr("EN_ID_CZ"));
+		}
+	}
+	
+	private void savePlanList(String tpId,String id,String en_id_cz){
+		List<Record> list = Db.find("select * from Z_WOBO_HANDLE_LIST where TP_ID = ? and en_id_cz =? ",tpId,en_id_cz);
+		for(int i = 0 ; i < list.size() ; i++){
+			Record tmp = Db.findFirst("select * from Z_WOBO_OVERVIEWLIST where tp_id = ? and d_name = ? ",tpId,list.get(i).getStr("D_NAME"));
+			Record record = new Record();
+			int orderNo = i + 1;
+			record.set("TL_ID", "00000"+orderNo);
+			record.set("TP_ID", id);
+			record.set("AM_ID", "none");
+			record.set("AL_ID", "none");
+			record.set("UNIT", list.get(i).getStr("UNIT"));
+			record.set("UNIT_NUM",  list.get(i).getStr("YEAR_NUM"));
+			record.set("BIG_CATEGORY_ID",tmp.getStr("BIG_CATEGORY_ID"));
+			record.set("BIG_CATEGORY_NAME", tmp.getStr("BIG_CATEGORY_NAME"));
+			record.set("SAMLL_CATEGORY_ID", tmp.getStr("SAMLL_CATEGORY_ID"));
+			record.set("SAMLL_CATEGORY_NAME", tmp.getStr("SAMLL_CATEGORY_NAME"));
+			record.set("D_NAME", tmp.getStr("D_NAME"));
+			record.set("SHAPE", tmp.getStr("W_SHAPE"));
+			record.set("METERIAL", tmp.getStr("W_NAME"));
+			record.set("sysdate", getSysdate());
+			Db.save("Z_TRANSFER_PLAN_LIST", record);
+		}
+	}
 }

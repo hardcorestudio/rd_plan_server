@@ -231,7 +231,7 @@ public class PlanService extends BaseService{
 		controller.setAttr("applyListStatus", map == null ? "" : map.get("STATUS"));
 		if(map != null)
 		{
-			controller.setAttr("baseInfoFlag", dao.queryEpExtend(map.get("EP_ID").toString()) == null ? "0" : "1");
+			controller.setAttr("baseInfoFlag", dao.queryEpExtend(TP_ID) == null ? "0" : "1");
 			controller.setAttr("productionSituationFlag", dao.initProductInfo(TP_ID) == null ? "0" : "1");
 			controller.setAttr("produceSituationFlag", dao.initOverviewList(TP_ID) == null || dao.initOverviewList(TP_ID).size() == 0 ? "0" : "1");
 			controller.setAttr("decrementPlanFlag", dao.initReduction(TP_ID) == null ? "0" : "1");
@@ -245,27 +245,35 @@ public class PlanService extends BaseService{
 	
 	private void apply2q(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		boolean flag = dao.updateApply(tpId);
-		boolean flagMain = dao.updatePlanMain(tpId);
-		if(flag && flagMain){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("resMsg", "提交成功");
+		boolean check = dao.checkSub(tpId);
+		if(check){
+			boolean flag = dao.updateApply(tpId);
+			boolean flagMain = dao.updatePlanMain(tpId);
+			if(flag && flagMain){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
 		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("resMsg", "提交失败");
+			controller.setAttr("resFlag", "3");
+			controller.setAttr("resMsg", "基本信息,危险废物产生概况,危险废物转移情况,危险废物委托利用/处置措施为必录项");
 		}
+		
 	}
 	
 	private void initBaseInfo(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		String epId = controller.getMyParam("EP_ID").toString();
 		Map<String,Object> map = dao.initBaseInfo(epId,tpId);
-		Map<String,Object> mapEpExtend = dao.queryEpExtend(epId);
+		Map<String,Object> mapEpExtend = dao.queryEpExtend(tpId);
 		controller.setAttr("initRes", map == null ? "" : map);
 		controller.setAttr("initEpExtend", mapEpExtend == null ? "" : mapEpExtend);
 	}
 	
 	private void saveBaseInfo(){
+		String tpId = controller.getMyParam("TP_ID").toString();
 		String epId = controller.getMyParam("EP_ID").toString();
 		String TOTAL_INVESTMENT = controller.getMyParam("TOTAL_INVESTMENT").toString();
 		String TOTAL_INVESTMENT_UNIT = controller.getMyParam("TOTAL_INVESTMENT_UNIT").toString();
@@ -291,8 +299,8 @@ public class PlanService extends BaseService{
 		String SYS_ACCIDENT = controller.getMyParam("SYS_ACCIDENT").toString();
 		String MANAGEMENT_ORG = controller.getMyParam("MANAGEMENT_ORG").toString();
 		List<Map<String, Object>> sons = controller.getMyParamList("sons");
-		boolean flag = dao.saveBaseInfo(epId,TOTAL_INVESTMENT,TOTAL_INVESTMENT_UNIT,TOTAL_OUTPUTVALUE,TOTAL_OUTPUTVALUE_UNIT,FLOOR_AREA,FLOOR_AREA_UNIT,EMPLOYEES_NUM,PRINCIPAL,LINKMAN,LINK_NUM,FAX_TEL,MAIL,WEBSITE,DEPARTMENT,DEPARTMENT_HEAD,MANAGER,SYS_MANAGER,SYS_RESPONSIBILITY,SYS_OPERATION,SYS_LEDGER,SYS_TRAINING,SYS_ACCIDENT,MANAGEMENT_ORG);
-		boolean flagSon = dao.saveBaseInfoList(epId,sons);
+		boolean flag = dao.saveBaseInfo(tpId,epId,TOTAL_INVESTMENT,TOTAL_INVESTMENT_UNIT,TOTAL_OUTPUTVALUE,TOTAL_OUTPUTVALUE_UNIT,FLOOR_AREA,FLOOR_AREA_UNIT,EMPLOYEES_NUM,PRINCIPAL,LINKMAN,LINK_NUM,FAX_TEL,MAIL,WEBSITE,DEPARTMENT,DEPARTMENT_HEAD,MANAGER,SYS_MANAGER,SYS_RESPONSIBILITY,SYS_OPERATION,SYS_LEDGER,SYS_TRAINING,SYS_ACCIDENT,MANAGEMENT_ORG);
+		boolean flagSon = dao.saveBaseInfoList(tpId,epId,sons);
 		if(flag && flagSon){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
@@ -446,6 +454,7 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		controller.setAttr("initHandleSelf", initHandleSelf == null ? "" : initHandleSelf);
+		controller.setAttr("ifsave", initHandleSelf == null ? "0" : "1");
 		controller.setAttr("initHandleSelfList", initHandleSelfList);
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
@@ -596,9 +605,11 @@ public class PlanService extends BaseService{
 	private void ws(String key,String value){
 		for(MyWebSocket item: MyWebSocket.webSocketSet){  
             try {
-            	String userId = item.wsMap.get("userId").toString();
-            	if(userId.equals(controller.getMySession("userId").toString())){
-            		item.sendMessage("{key:'"+key+"',value:'"+value+"'}");
+            	if(item != null && item.wsMap !=null ){
+            		String userId = item.wsMap.get("userId").toString();
+                	if(userId.equals(controller.getMySession("userId").toString())){
+                		item.sendMessage("{key:'"+key+"',value:'"+value+"'}");
+                	}
             	}
             } catch (IOException e) {
                 e.printStackTrace();

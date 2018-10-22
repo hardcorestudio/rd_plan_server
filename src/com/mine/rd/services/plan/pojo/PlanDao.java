@@ -63,7 +63,8 @@ public class PlanDao extends BaseDao {
 	}
 	
 	public int checkApply(String epId){
-		String sql = "select count(1) as num from Z_WOBO_PLAN_MAIN where DATEDIFF(yyyy,BEGINDATE,DATEADD(MONTH,1,GETDATE())) = 0 and ep_id = ? ";
+//		String sql = "select count(1) as num from Z_WOBO_PLAN_MAIN where DATEDIFF(yyyy,BEGINDATE,DATEADD(MONTH,1,GETDATE())) = 0 and ep_id = ? ";
+		String sql = "select count(1) as num from Z_WOBO_PLAN_MAIN where DATEDIFF(yyyy,BEGINDATE,GETDATE()) = 0 and ep_id = ? ";
 		Record record = Db.findFirst(sql,epId);
 		if(record != null){
 			return record.getInt("num");
@@ -78,14 +79,16 @@ public class PlanDao extends BaseDao {
 		record.set("EP_ID", epId);
 		record.set("EP_NAME", epName);
 		record.set("STATUS", "00");
-		String sysdate_str =DateKit.toStr(super.getSysdate(), "yyyy-MM-dd");
-		Date sysdate_date = DateKit.toDate(sysdate_str, "yyyy-MM-dd");
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(sysdate_date);
-		calendar.add(Calendar.MONTH, 1);
-		Date date_new = calendar.getTime();
-		String begindate = DateKit.toStr(date_new, "yyyy-01-01");
-		String enddate = DateKit.toStr(date_new, "yyyy-12-31");
+//		String sysdate_str =DateKit.toStr(super.getSysdate(), "yyyy-MM-dd");
+//		Date sysdate_date = DateKit.toDate(sysdate_str, "yyyy-MM-dd");
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(sysdate_date);
+//		calendar.add(Calendar.MONTH, 1);
+//		Date date_new = calendar.getTime();
+//		String begindate = DateKit.toStr(date_new, "yyyy-01-01");
+//		String enddate = DateKit.toStr(date_new, "yyyy-12-31");
+		String begindate = DateKit.toStr(super.getSysdate(), "yyyy-01-01");
+		String enddate = DateKit.toStr(super.getSysdate(), "yyyy-12-31");
 		record.set("BEGINDATE", begindate);
 		record.set("ENDDATE",  enddate);
 		record.set("sysdate", super.getSysdate());
@@ -148,12 +151,12 @@ public class PlanDao extends BaseDao {
 		return map;
 	}
 	
-	public Map<String,Object> queryEpExtend(String epId){
-		Record recordExtend =  Db.findFirst("select * from Z_WOBO_EP_EXTEND where ep_id = ? " , epId);
+	public Map<String,Object> queryEpExtend(String tpId){
+		Record recordExtend =  Db.findFirst("select * from Z_WOBO_EP_EXTEND where tp_id = ? " , tpId);
 		Map<String,Object> map = null;
 		if(recordExtend != null && recordExtend.get("EP_ID") != null){
 			map = recordExtend.getColumns();
-			List<Record> list = Db.find("select * from Z_WOBO_EP_PEOPLE where  EP_ID =? ",epId);
+			List<Record> list = Db.find("select * from Z_WOBO_EP_PEOPLE where  tp_ID =? ",tpId);
 			List<Map<String,Object>> sons = new ArrayList<Map<String,Object>>();
 			for(int i=0;i<list.size(); i++){
 				sons.add(list.get(i).getColumns());
@@ -163,23 +166,24 @@ public class PlanDao extends BaseDao {
 		return map;
 	}
 	
-	public boolean saveBaseInfo(String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
-		Record record = Db.findFirst("select count(1) num from Z_WOBO_EP_EXTEND where ep_id = ? ",epId);
+	public boolean saveBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
+		Record record = Db.findFirst("select count(1) num from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
 		if(record != null){
 			int num = record.getInt("num");
 			if(num > 0){
-				int resInt = Db.update("delete from Z_WOBO_EP_EXTEND where ep_id = ? ",epId);
-				return resInt < 0 ? false : saveRecordBaseInfo(epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+				int resInt = Db.update("delete from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
+				return resInt < 0 ? false : saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
 			}else{
-				return saveRecordBaseInfo(epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+				return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
 			}
 		}else{
-			return saveRecordBaseInfo(epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+			return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
 		}
 	}
 	
-	private boolean saveRecordBaseInfo(String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
+	private boolean saveRecordBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
 		Record baseInfo = new Record();
+		baseInfo.set("TP_ID", tpId);
 		baseInfo.set("EP_ID", epId);
 		baseInfo.set("TOTAL_INVESTMENT", TOTAL_INVESTMENT);
 		baseInfo.set("TOTAL_INVESTMENT_UNIT", TOTAL_INVESTMENT_UNIT);
@@ -209,12 +213,13 @@ public class PlanDao extends BaseDao {
 		return Db.save("Z_WOBO_EP_EXTEND", baseInfo);
 	}
 	
-	public boolean saveBaseInfoList(String epId,List<Map<String, Object>> sons){
-		Db.update("delete from Z_WOBO_EP_PEOPLE where ep_id = ? ",epId);
+	public boolean saveBaseInfoList(String tpId,String epId,List<Map<String, Object>> sons){
+		Db.update("delete from Z_WOBO_EP_PEOPLE where tp_id = ? ",tpId);
 		boolean res = false;
 		for(int i = 0 ; i < sons.size() ; i++){
 			Record record = new Record();
 			Map<String,Object> map = sons.get(i);
+			record.set("TP_ID", tpId);
 			record.set("EP_ID", epId);
 			record.set("ID", i+1);
 			record.set("TECHNICAL_DIRECTER",map.get("TECHNICAL_DIRECTER"));
@@ -712,7 +717,7 @@ public class PlanDao extends BaseDao {
 			record.set("LICENSE_NO", map.get("LICENSE_NO"));
 			record.set("D_NAME", map.get("D_NAME"));
 			record.set("BIG_CATEGORY_ID", map.get("BIG_CATEGORY_ID"));
-			record.set("SAMLL_CATEGORY_ID", map.get("SAMLL_CATEGORY_ID"));
+			record.set("SAMLL_CATEGORY_ID", map.get("SMALL_CATEGORY_ID"));
 			record.set("HANDLE_TYPE", map.get("HANDLE_TYPE"));
 			record.set("YEAR_NUM", map.get("YEAR_NUM"));
 			record.set("LAST_NUM", map.get("LAST_NUM"));
@@ -772,5 +777,13 @@ public class PlanDao extends BaseDao {
 		record.set("sysdate", getSysdate());
 		return Db.save("Z_WOBO_LASTINFO", record);
 	}
-	
+
+	public boolean checkSub(String tpId){
+		Record r1 = Db.findFirst("select count(1) num from Z_WOBO_EP_EXTEND a,Z_WOBO_OVERVIEW b ,Z_WOBO_TRANSFER c ,Z_WOBO_HANDLE_MAIN d where a.tp_id = b.tp_id and a.tp_id = c.tp_id and a.tp_id = d.tp_id and a.status != '02' and b.status != '02' and c.status != '02' and d.status != '02' and a.tp_id = ? ",tpId);
+		boolean flag = false;
+		if(r1 != null && r1.getInt("num") > 0){
+			flag = true;
+		}
+		return flag;
+	}
 }

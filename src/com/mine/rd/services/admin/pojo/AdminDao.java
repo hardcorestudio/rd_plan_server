@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
@@ -15,7 +14,6 @@ import com.mine.pub.kit.DateKit;
 import com.mine.pub.kit.mail.EmailConst;
 import com.mine.pub.kit.mail.EmailUtils;
 import com.mine.pub.pojo.BaseDao;
-import com.mine.rd.services.login.pojo.LoginDao;
 
 public class AdminDao extends BaseDao {
 	
@@ -470,6 +468,7 @@ public class AdminDao extends BaseDao {
 	 * @date 20170222
 	 * 方法：管理员处理任务(修改WOBO_APPLY_LIST表状态)
 	 */
+	@SuppressWarnings("unused")
 	public Map<String, Object> updateApplyStatus(String bizStep, String checkResult, String applyId, String epId, Map<String, Object> map) throws Exception{
 		String status = "";
 		String f = "";

@@ -785,4 +785,107 @@ public class PlanDao extends BaseDao {
 		}
 		return flag;
 	}
+	
+	public Map<String,Object> previewPlan(String epId,String tpId){
+		Map<String,Object> map = new HashMap<String,Object>();
+		StringBuffer epSql = new StringBuffer();
+		epSql.append("select a.EP_NAME,a.EP_ADRESS_S,a.EP_ADRESS_Q,a.EP_ADRESS_J ,a.LINKMAN fr,a.INDUSTRY_CODE, ");
+		epSql.append("b.LINKMAN,b.LINK_NUM,b.MAIL ");
+		epSql.append("from ENTERPRISE a , Z_WOBO_EP_EXTEND b ");
+		epSql.append("where a.ep_id = ? and a.EP_ID = b.EP_ID and b.TP_ID = ?  ");
+		Record ep = Db.findFirst(epSql.toString(),epId,tpId);
+		if(ep != null && ep.getColumns() != null){
+			map.put("EP_NAME", ep.getStr("EP_NAME"));
+			StringBuffer epAddress = new StringBuffer();
+			epAddress.append("022".equals(ep.getStr("EP_ADRESS_S")) ? "天津市" : "外省");
+			epAddress.append(convert(cityList, ep.get("EP_ADRESS_Q")));
+			epAddress.append(ep.getStr("EP_ADRESS_J"));
+			map.put("epAdress", epAddress.toString());
+			String industryCode = ep.get("INDUSTRY_CODE") == null ? "" : ep.get("INDUSTRY_CODE").toString();
+			map.put("industryName", Db.queryStr("select dictname from EOS_DICT_ENTRY where dictid = ? ",industryCode));
+			map.put("fr", ep.getStr("fr"));
+			map.put("LINKINFO",ep.getStr("LINKMAN") + "/" + ep.getStr("LINK_NUM"));
+			map.put("MAIL", ep.getStr("MAIL"));
+		}else{
+			map.put("EP_NAME", "");
+			map.put("epAdress", "");
+			map.put("industryName", "");
+			map.put("fr", "");
+			map.put("LINKINFO", "");
+			map.put("MAIL", "");
+		}
+		//危险废物产生规模及数量
+		String outputSql = "select name, sum(cast(year_num as numeric(18,2))) num ,UNIT from Z_WOBO_PRODUCT_OUTPUT where tp_id = ? GROUP BY name, UNIT";
+		List<Record> output = Db.find(outputSql,tpId);
+		StringBuffer outputSb = new StringBuffer();
+		for(int i = 0 ; i < output.size() ; i++){
+			outputSb.append(output.get(i).getStr("name")).append(":").append(output.get(i).get("num")).append(output.get(i).getStr("UNIT")).append(";");
+		}
+		map.put("output",outputSb.toString());
+		//危险废物名称及类别
+		String overviewSql = "select D_NAME, BIG_CATEGORY_ID  from Z_WOBO_OVERVIEWLIST where tp_id = ? GROUP BY D_NAME, BIG_CATEGORY_ID ";
+		List<Record> overview = Db.find(overviewSql,tpId);
+		StringBuffer overviewSb = new StringBuffer();
+		for(int i = 0 ; i < overview.size() ; i++){
+			overviewSb.append(overview.get(i).getStr("D_NAME")).append(":").append(overview.get(i).getStr("BIG_CATEGORY_ID")).append(";");
+		}
+		map.put("overview",overviewSb.toString());
+		//计划委托利用/处置危险废物数量
+		String handleSql = "select D_NAME, sum(cast(year_num as numeric(18,2))) num ,UNIT from Z_WOBO_HANDLE_LIST where tp_id = ? GROUP BY D_NAME, UNIT";
+		List<Record> handle = Db.find(handleSql,tpId);
+		StringBuffer handleSb = new StringBuffer();
+		for(int i = 0 ; i < handle.size() ; i++){
+			handleSb.append(handle.get(i).getStr("D_NAME")).append(":").append(handle.get(i).get("num")).append(handle.get(i).getStr("UNIT")).append(";");
+		}
+		map.put("handle",handleSb.toString());
+		//计划委托利用/处置危险废物数量
+		String handleSelfSql = "select D_NAME, sum(cast(STORE_YEAR as numeric(18,2))) num ,STORE_PLAN_UNIT from Z_WOBO_HANDLESELF_LIST where tp_id = ? GROUP BY D_NAME, STORE_PLAN_UNIT";
+		List<Record> handleSelf = Db.find(handleSelfSql,tpId);
+		StringBuffer handleSelfSb = new StringBuffer();
+		for(int i = 0 ; i < handleSelf.size() ; i++){
+			handleSelfSb.append(handleSelf.get(i).getStr("D_NAME")).append(":").append(handleSelf.get(i).get("num")).append(handleSelf.get(i).getStr("STORE_PLAN_UNIT")).append(";");
+		}
+		map.put("handleSelf",handleSelfSb.toString());
+		return map;
+	}
+	
+	public boolean checkIfupdateOverview(String tpId,String names,String namebigIds,String namebigsmallIds){
+		boolean ccflag = true;
+		Record ccRecord = Db.findFirst("select count(1) num from Z_WOBO_TRANSFER_CC where tp_id = ? ",tpId);
+		if(ccRecord != null){
+			if(ccRecord.getInt("num") > 0 ){
+				Record ccRecord2 = Db.findFirst("select count(1) num from Z_WOBO_TRANSFER_CC where tp_id = ? and D_NAME+BIG_CATEGORY_ID in ("+ namebigIds +") ",tpId);
+				if(ccRecord2 != null){
+					if(ccRecord.getInt("num").intValue() != ccRecord2.getInt("num").intValue()){
+						ccflag = false;
+					}
+				}
+			}
+		}
+		boolean selfflag = true;
+		Record selfRecord = Db.findFirst("select count(1) num from Z_WOBO_HANDLESELF_LIST where tp_id = ? ",tpId);
+		if(selfRecord != null){
+			if(selfRecord.getInt("num") > 0 ){
+				Record selfRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLESELF_LIST where  tp_id = ? and  D_NAME in ("+names+") ",tpId);
+				if(selfRecord2 != null){
+					if(selfRecord2.getInt("num").intValue() != selfRecord.getInt("num").intValue() ){
+						selfflag = false;
+					}
+				}
+			}
+		}
+		boolean handleflag = true;
+		Record handleRecord = Db.findFirst("select count(1) num from Z_WOBO_HANDLE_LIST where tp_id = ? ",tpId);
+		if(handleRecord != null){
+			if(handleRecord.getInt("num") > 0 ){
+				Record handleRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLE_LIST where tp_id = ? and D_NAME+BIG_CATEGORY_ID+SAMLL_CATEGORY_ID in ("+namebigsmallIds+") ",tpId);
+				if(handleRecord2 != null){
+					if(handleRecord2.getInt("num").intValue() != handleRecord.getInt("num").intValue() ){
+						handleflag = false;
+					}
+				}
+			}
+		}
+		return ccflag && selfflag && handleflag;
+	}
 }

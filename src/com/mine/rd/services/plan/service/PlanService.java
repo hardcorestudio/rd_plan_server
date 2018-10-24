@@ -101,6 +101,9 @@ public class PlanService extends BaseService{
 	            	else if("saveLastInfo".equals(getLastMethodName(7))){
 	            		saveLastInfo();
 	            	}
+	            	else if("previewPlan".equals(getLastMethodName(7))){
+	            		previewPlan();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -374,15 +377,36 @@ public class PlanService extends BaseService{
 	private void saveOverview(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		List<Map<String, Object>> overviewList = controller.getMyParamList("LIST");
-		boolean flag = dao.saveOverview(tpId);
-		boolean flag_list = dao.saveOverviewList(tpId,overviewList);
-		if(flag && flag_list){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("resMsg", "提交成功");
-			this.ws("overview", "func_done");
+		StringBuffer names = new StringBuffer();
+		StringBuffer namebigIds = new StringBuffer();
+		StringBuffer namebigsmallIds = new StringBuffer();
+		for(int i = 0 ; i < overviewList.size() ; i++){
+			if(i < overviewList.size() - 1){
+				names.append("'").append(overviewList.get(i).get("D_NAME")).append("'").append(",");
+				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append("'").append(",");
+				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append("'").append(",");
+			}else{
+				names.append("'").append(overviewList.get(i).get("D_NAME")).append("'");
+				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append("'");
+				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append("'");
+			}
+		}
+		boolean checkflag = true;
+		checkflag = dao.checkIfupdateOverview(tpId,names.toString(),namebigIds.toString(),namebigsmallIds.toString());
+		if(!checkflag){
+			controller.setAttr("resFlag", "2");
+			controller.setAttr("resMsg", "请检查表5，表6，表7的危险废物信息");
 		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("resMsg", "提交失败");
+			boolean flag = dao.saveOverview(tpId);
+			boolean flag_list = dao.saveOverviewList(tpId,overviewList);
+			if(flag && flag_list){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+				this.ws("overview", "func_done");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
 		}
 	}
 	
@@ -616,5 +640,12 @@ public class PlanService extends BaseService{
                 continue;
             }
 		}
+	}
+	
+	private void previewPlan(){
+		String epId = controller.getMyParam("EP_ID").toString();
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> previewPlan = dao.previewPlan(epId,tpId);
+		controller.setAttr("previewPlan", previewPlan == null ? "" : previewPlan);
 	}
 }

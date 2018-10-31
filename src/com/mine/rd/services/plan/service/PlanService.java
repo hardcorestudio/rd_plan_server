@@ -133,80 +133,89 @@ public class PlanService extends BaseService{
 	
 	private void planMain(){
 		String url = controller.getMyParam("url").toString();
-		if("baseInfo".equals(url)){
-			this.baseInfo();
-		}
-		else if("productionSituation".equals(url)){
-			this.productionSituation();
-		}
-		else if("produceSituation".equals(url)){
-			this.produceSituation();
-		}
-		else if("decrementPlan".equals(url)){
-			this.decrementPlan();
-		}
-		else if("transferStuation".equals(url)){
-			this.transferStuation();
-		}
-		else if("selfDisposalMeasures".equals(url)){
-			this.selfDisposalMeasures();
-		}
-		else if("entrustDisposalMeasures".equals(url)){
-			this.entrustDisposalMeasures();
-		}
-		else if("environmentalMonitoring".equals(url)){
-			this.environmentalMonitoring();
-		}
-		else if("lastYearManagePlanRecord".equals(url)){
-			this.lastYearManagePlanRecord();
-		}
+//		if("baseInfo".equals(url)){
+//			this.baseInfo();
+//		}
+//		else if("productionSituation".equals(url)){
+//			this.productionSituation();
+//		}
+//		else if("produceSituation".equals(url)){
+//			this.produceSituation();
+//		}
+//		else if("decrementPlan".equals(url)){
+//			this.decrementPlan();
+//		}
+//		else if("transferStuation".equals(url)){
+//			this.transferStuation();
+//		}
+//		else if("selfDisposalMeasures".equals(url)){
+//			this.selfDisposalMeasures();
+//		}
+//		else if("entrustDisposalMeasures".equals(url)){
+//			this.entrustDisposalMeasures();
+//		}
+//		else if("environmentalMonitoring".equals(url)){
+//			this.environmentalMonitoring();
+//		}
+//		else if("lastYearManagePlanRecord".equals(url)){
+//			this.lastYearManagePlanRecord();
+//		}
+//		else if("previewPlan".equals(url)){
+//			this.previewPlanPage();
+//		}
 		controller.setAttr("sub_url", getUrl(url));
+		controller.setAttr("resFlag", "0");
 	}
 		
-	private void baseInfo(){
-		controller.setAttr("sub_url", PropKit.get("rd_plan_sub_url")+"/baseInfo");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void productionSituation(){
-		controller.setAttr("sub_url", PropKit.get("rd_plan_sub_url")+"/productionSituation");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void produceSituation(){
-		controller.setAttr("sub_url",  PropKit.get("rd_plan_sub_url")+"/produceSituation");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void decrementPlan(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/decrementPlan");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void transferStuation(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/transferStuation");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void selfDisposalMeasures(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/selfDisposalMeasures");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void entrustDisposalMeasures(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/entrustDisposalMeasures");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void environmentalMonitoring(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/environmentalMonitoring");
-		controller.setAttr("resFlag", "0");
-	}
-	
-	private void lastYearManagePlanRecord(){
-		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/lastYearManagePlanRecord");
-		controller.setAttr("resFlag", "0");
-	}
+//	private void baseInfo(){
+//		controller.setAttr("sub_url", PropKit.get("rd_plan_sub_url")+"/baseInfo");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void productionSituation(){
+//		controller.setAttr("sub_url", PropKit.get("rd_plan_sub_url")+"/productionSituation");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void produceSituation(){
+//		controller.setAttr("sub_url",  PropKit.get("rd_plan_sub_url")+"/produceSituation");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void decrementPlan(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/decrementPlan");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void transferStuation(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/transferStuation");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void selfDisposalMeasures(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/selfDisposalMeasures");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void entrustDisposalMeasures(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/entrustDisposalMeasures");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void environmentalMonitoring(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/environmentalMonitoring");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void lastYearManagePlanRecord(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/lastYearManagePlanRecord");
+//		controller.setAttr("resFlag", "0");
+//	}
+//	
+//	private void previewPlanPage(){
+//		controller.setAttr("sub_url", "http://localhost:9002/rdplan/rd_plan_sub/index.html#/registrationForm");
+//		controller.setAttr("resFlag", "0");
+//	}
 	
 	private void apply() throws ParseException{
 		String epId = controller.getMyParam("epId").toString();

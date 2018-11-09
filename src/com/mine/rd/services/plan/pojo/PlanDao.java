@@ -888,4 +888,15 @@ public class PlanDao extends BaseDao {
 		}
 		return ccflag && selfflag && handleflag;
 	}
+	public String checkLastYearId(String tpId){
+		String res = "";
+		String epId = Db.queryStr("select ep_id from Z_WOBO_PLAN_MAIN where tp_Id = ? ",tpId);
+		StringBuffer sql = new StringBuffer();
+		sql.append("select TP_ID from Z_WOBO_PLAN_MAIN where status != '02' and DATEDIFF(yyyy,BEGINDATE,DATEADD(year,-1,GETDATE())) = 0 and ep_id = ? ");
+		Record record = Db.findFirst(sql.toString(),epId);
+		if(record != null){
+			res = record.getStr("TP_ID");
+		}
+		return res;
+	}
 }

@@ -280,6 +280,12 @@ public class PlanService extends BaseService{
 		String epId = controller.getMyParam("EP_ID").toString();
 		Map<String,Object> map = dao.initBaseInfo(epId,tpId);
 		Map<String,Object> mapEpExtend = dao.queryEpExtend(tpId);
+		if(mapEpExtend == null){
+			String last_tpId = dao.checkLastYearId(tpId);
+			if(!"".equals(last_tpId)){
+				mapEpExtend = dao.queryEpExtend(last_tpId);
+			}
+		}
 		controller.setAttr("initRes", map == null ? "" : map);
 		controller.setAttr("initEpExtend", mapEpExtend == null ? "" : mapEpExtend);
 	}
@@ -329,6 +335,27 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductOri = dao.initProductOri(tpId);
 		List<Map<String,Object>> initProductEqu = dao.initProductEqu(tpId);
 		List<Map<String,Object>> initProductOutput = dao.initProductOutput(tpId);
+		String last_tpId = dao.checkLastYearId(tpId);
+		if(initProductInfo == null){
+			if(!"".equals(last_tpId)){
+				initProductInfo = dao.initProductInfo(last_tpId);
+			}
+		}
+		if(initProductOri.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductOri = dao.initProductOri(last_tpId);
+			}
+		}
+		if(initProductEqu.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductEqu = dao.initProductEqu(last_tpId);
+			}
+		}
+		if(initProductOutput.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductOutput = dao.initProductOutput(last_tpId);
+			}
+		}
 		controller.setAttr("initProductInfo", initProductInfo == null ? "" : initProductInfo);
 		controller.setAttr("ifsave", initProductInfo == null ? "0" : "1");
 		controller.setAttr("initProductOri", initProductOri);
@@ -376,6 +403,12 @@ public class PlanService extends BaseService{
 	private void initOverview(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		if(initOverviewList.size() < 1){
+			String last_tpId = dao.checkLastYearId(tpId);
+			if(!"".equals(last_tpId)){
+				initOverviewList = dao.initOverviewList(last_tpId);
+			}
+		}
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("bigCategoryList", dao.getBigCategoryList());
 		controller.setAttr("smallCategoryList", dao.getSmallCategoryList());
@@ -422,6 +455,12 @@ public class PlanService extends BaseService{
 	private void initReduction(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		Map<String,Object> initReduction = dao.initReduction(tpId);
+		if(initReduction == null){
+			String last_tpId = dao.checkLastYearId(tpId);
+			if(!"".equals(last_tpId)){
+				initReduction = dao.initReduction(last_tpId);
+			}
+		}
 		controller.setAttr("initReduction", initReduction == null ? "" : initReduction);
 	}
 	
@@ -448,6 +487,32 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initProductYs = dao.initProductYs(tpId);
 		List<Map<String,Object>> initEPys = dao.initEPys();
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		String last_tpId = dao.checkLastYearId(tpId);
+		if(initTransfer == null){
+			if(!"".equals(last_tpId)){
+				initTransfer = dao.initTransfer(last_tpId);
+			}
+		}
+		if(initProductFacility.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductFacility = dao.initProductFacility(last_tpId);
+			}
+		}
+		if(initProductCc.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductCc = dao.initProductCc(last_tpId);
+			}
+		}
+		if(initProductYs.size() < 1){
+			if(!"".equals(last_tpId)){
+				initProductYs = dao.initProductYs(last_tpId);
+			}
+		}
+		if(initOverviewList.size() < 1){
+			if(!"".equals(last_tpId)){
+				initOverviewList = dao.initOverviewList(last_tpId);
+			}
+		}
 		controller.setAttr("initTransfer", initTransfer == null ? "" : initTransfer);
 		controller.setAttr("initProductFacility", initProductFacility);
 		controller.setAttr("initProductCc", initProductCc);
@@ -486,6 +551,22 @@ public class PlanService extends BaseService{
 		Map<String,Object> initHandleSelf = dao.initHandleSelf(tpId);
 		List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		String last_tpId = dao.checkLastYearId(tpId);
+		if(initHandleSelf == null){
+			if(!"".equals(last_tpId)){
+				initHandleSelf = dao.initHandleSelf(last_tpId);
+			}
+		}
+		if(initHandleSelfList.size() < 1){
+			if(!"".equals(last_tpId)){
+				initHandleSelfList = dao.initHandleSelfList(last_tpId);
+			}
+		}
+		if(initOverviewList.size() < 1){
+			if(!"".equals(last_tpId)){
+				initOverviewList = dao.initOverviewList(last_tpId);
+			}
+		}
 		controller.setAttr("initHandleSelf", initHandleSelf == null ? "" : initHandleSelf);
 		controller.setAttr("ifsave", initHandleSelf == null ? "0" : "1");
 		controller.setAttr("initHandleSelfList", initHandleSelfList);
@@ -560,6 +641,17 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initHandleList = dao.initHandleList(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		List<Map<String,Object>> initEpCzList = dao.initEpCzList();
+		String last_tpId = dao.checkLastYearId(tpId);
+		if(initHandleList.size() < 1){
+			if(!"".equals(last_tpId)){
+				initHandleList = dao.initHandleList(last_tpId);
+			}
+		}
+		if(initOverviewList.size() < 1){
+			if(!"".equals(last_tpId)){
+				initOverviewList = dao.initOverviewList(last_tpId);
+			}
+		}
 		controller.setAttr("initHandleList", initHandleList);
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("initEpCzList", initEpCzList);
@@ -585,6 +677,12 @@ public class PlanService extends BaseService{
 	private void initEnv(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		Map<String,Object> initEnv = dao.initEnv(tpId);
+		if(initEnv == null){
+			String last_tpId = dao.checkLastYearId(tpId);
+			if(!"".equals(last_tpId)){
+				initEnv = dao.initEnv(last_tpId);
+			}
+		}
 		controller.setAttr("initEnv", initEnv == null ? "" : initEnv);
 	}
 	
@@ -608,6 +706,12 @@ public class PlanService extends BaseService{
 	private void initLastInfo(){
 		String tpId = controller.getMyParam("TP_ID").toString();
 		Map<String,Object> initLastInfo = dao.initLastInfo(tpId);
+		if(initLastInfo == null){
+			String last_tpId = dao.checkLastYearId(tpId);
+			if(!"".equals(last_tpId)){
+				initLastInfo = dao.initLastInfo(last_tpId);
+			}
+		}
 		controller.setAttr("initLastInfo", initLastInfo == null ? "" : initLastInfo);
 	}
 	

@@ -1,8 +1,5 @@
 package com.mine.run.config;
 
-import cn.dreampie.quartz.QuartzPlugin;
-
-import com.ext.plugin.scheduler.SchedulerPlugin;
 import com.jfinal.config.Constants;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;

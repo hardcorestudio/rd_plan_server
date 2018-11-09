@@ -899,4 +899,17 @@ public class PlanDao extends BaseDao {
 		}
 		return res;
 	}
+	public String getLastTBSum(String epId,String en_cz_id,String bigId,String smallId,String unit){
+		String last_unit_num = "";
+		StringBuffer sb = new StringBuffer();
+		sb.append("select sum(cast(b.UNIT_NUM as numeric(18,2))) as last_unit_num from TRANSFERPLAN_BILL a , TRANSFERPLAN_BILL_LIST b ");
+		sb.append(" where a.TB_ID = b.TB_ID and status in ('03','10','11','12') ");
+		sb.append(" and b.UNIT = ? and b.BIG_CATEGORY_ID = ? and SAMLL_CATEGORY_ID = ? and EN_ID_CS = ? and EN_ID_CZ = ? ");
+		sb.append(" and DATEDIFF(yyyy,a.ACTIONDATE,DATEADD(year,-1,GETDATE())) = 0 ");
+		Record record = Db.findFirst(sb.toString(),unit,bigId,smallId,epId,en_cz_id);
+		if(record != null){
+			last_unit_num = record.get("last_unit_num") + "";
+		}
+		return last_unit_num;
+	}
 }

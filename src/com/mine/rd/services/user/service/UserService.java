@@ -1,7 +1,6 @@
 package com.mine.rd.services.user.service;
 
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 import com.jfinal.plugin.activerecord.Db;
@@ -26,7 +25,7 @@ public class UserService extends BaseService {
 	 * 方法：退出登录
 	 * 
 	 */
-	private void logout(){
+	private void logout() throws Exception{
 		String sessionId = controller.getMyParam("IWBSESSION").toString();
 		String userId = controller.getMySession("userId").toString();
 		this.wsClose(userId);
@@ -36,17 +35,14 @@ public class UserService extends BaseService {
 		controller.setAttr("msg","注销成功！");
 	}
 	
-	private void wsClose(String userId_param){
-		for(MyWebSocket item: MyWebSocket.webSocketSet){  
-			String userId = item.wsMap.get("userId").toString();
-        	if(userId.equals(userId_param)){
-        		try {
+	private void wsClose(String userId_param) throws Exception{
+		for(MyWebSocket item: MyWebSocket.webSocketSet){
+			if(item.wsMap.get("userId") != null){
+				String userId = item.wsMap.get("userId").toString();
+	        	if(userId.equals(userId_param)){
 					item.sendMessage("{key:'close',value:'close'}");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        	}
+	        	}
+			}
 		}
 	}
 	

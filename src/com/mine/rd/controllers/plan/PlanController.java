@@ -366,4 +366,18 @@ public class PlanController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	public void getLastTBSum(){
+		logger.info("获取去年实际转移量");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("获取去年实际转移量异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

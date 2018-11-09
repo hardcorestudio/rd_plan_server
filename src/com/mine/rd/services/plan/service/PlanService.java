@@ -104,6 +104,9 @@ public class PlanService extends BaseService{
 	            	else if("previewPlan".equals(getLastMethodName(7))){
 	            		previewPlan();
 	            	}
+	            	else if("getLastTBSum".equals(getLastMethodName(7))){
+	            		getLastTBSum();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -760,5 +763,15 @@ public class PlanService extends BaseService{
 		String tpId = controller.getMyParam("TP_ID").toString();
 		Map<String,Object> previewPlan = dao.previewPlan(epId,tpId);
 		controller.setAttr("previewPlan", previewPlan == null ? "" : previewPlan);
+	}
+	
+	private void getLastTBSum(){
+		String epId = controller.getMyParam("EP_ID").toString();
+		String EN_ID_CZ = controller.getMyParam("EN_ID_CZ").toString();
+		String BIG_CATEGORY_ID = controller.getMyParam("BIG_CATEGORY_ID").toString();
+		String SAMLL_CATEGORY_ID = controller.getMyParam("SAMLL_CATEGORY_ID").toString();
+		String UNIT = controller.getMyParam("UNIT").toString();
+		String last_unit_num = dao.getLastTBSum(epId,EN_ID_CZ,BIG_CATEGORY_ID,SAMLL_CATEGORY_ID,UNIT);
+		controller.setAttr("last_unit_num", last_unit_num);
 	}
 }

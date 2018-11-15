@@ -427,13 +427,13 @@ public class PlanService extends BaseService{
 		StringBuffer namebigsmallIds = new StringBuffer();
 		for(int i = 0 ; i < overviewList.size() ; i++){
 			if(i < overviewList.size() - 1){
-				names.append("'").append(overviewList.get(i).get("D_NAME")).append("'").append(",");
-				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append("'").append(",");
-				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append("'").append(",");
+				names.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("UNIT")).append("'").append(",");
+				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("UNIT")).append("'").append(",");
+				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append(overviewList.get(i).get("UNIT")).append("'").append(",");
 			}else{
-				names.append("'").append(overviewList.get(i).get("D_NAME")).append("'");
-				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append("'");
-				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append("'");
+				names.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("UNIT")).append("'");
+				namebigIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("UNIT")).append("'");
+				namebigsmallIds.append("'").append(overviewList.get(i).get("D_NAME")).append(overviewList.get(i).get("BIG_CATEGORY_ID")).append(overviewList.get(i).get("SAMLL_CATEGORY_ID")).append(overviewList.get(i).get("UNIT")).append("'");
 			}
 		}
 		boolean checkflag = true;

@@ -854,7 +854,7 @@ public class PlanDao extends BaseDao {
 		Record ccRecord = Db.findFirst("select count(1) num from Z_WOBO_TRANSFER_CC where tp_id = ? ",tpId);
 		if(ccRecord != null){
 			if(ccRecord.getInt("num") > 0 ){
-				Record ccRecord2 = Db.findFirst("select count(1) num from Z_WOBO_TRANSFER_CC where tp_id = ? and D_NAME+BIG_CATEGORY_ID in ("+ namebigIds +") ",tpId);
+				Record ccRecord2 = Db.findFirst("select count(1) num from Z_WOBO_TRANSFER_CC where tp_id = ? and D_NAME+BIG_CATEGORY_ID+STORE_PLAN_UNIT in ("+ namebigIds +") ",tpId);
 				if(ccRecord2 != null){
 					if(ccRecord.getInt("num").intValue() != ccRecord2.getInt("num").intValue()){
 						ccflag = false;
@@ -866,7 +866,7 @@ public class PlanDao extends BaseDao {
 		Record selfRecord = Db.findFirst("select count(1) num from Z_WOBO_HANDLESELF_LIST where tp_id = ? ",tpId);
 		if(selfRecord != null){
 			if(selfRecord.getInt("num") > 0 ){
-				Record selfRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLESELF_LIST where  tp_id = ? and  D_NAME in ("+names+") ",tpId);
+				Record selfRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLESELF_LIST where  tp_id = ? and  D_NAME+STORE_PLAN_UNIT in ("+names+") ",tpId);
 				if(selfRecord2 != null){
 					if(selfRecord2.getInt("num").intValue() != selfRecord.getInt("num").intValue() ){
 						selfflag = false;
@@ -878,7 +878,7 @@ public class PlanDao extends BaseDao {
 		Record handleRecord = Db.findFirst("select count(1) num from Z_WOBO_HANDLE_LIST where tp_id = ? ",tpId);
 		if(handleRecord != null){
 			if(handleRecord.getInt("num") > 0 ){
-				Record handleRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLE_LIST where tp_id = ? and D_NAME+BIG_CATEGORY_ID+SAMLL_CATEGORY_ID in ("+namebigsmallIds+") ",tpId);
+				Record handleRecord2 = Db.findFirst("select count(1) num from Z_WOBO_HANDLE_LIST where tp_id = ? and D_NAME+BIG_CATEGORY_ID+SAMLL_CATEGORY_ID+UNIT in ("+namebigsmallIds+") ",tpId);
 				if(handleRecord2 != null){
 					if(handleRecord2.getInt("num").intValue() != handleRecord.getInt("num").intValue() ){
 						handleflag = false;

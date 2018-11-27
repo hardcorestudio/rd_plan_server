@@ -118,20 +118,22 @@ public class LoginService extends BaseService {
 			Map<String, Object> admin = dao.epAdminLogin(REGISTERCODE);
 			if(admin.size() > 0){
 				if(Md5kit.MD5_64bit(PWD).equals(admin.get("pwd"))){
-					controller.setMySession("userId", admin.get("USER_ID"));
-					controller.setMySession("nickName", admin.get("NAME"));
-					controller.setMySession("userType", "CSEP");
-					controller.setMySession("ifLogin","0");
-					controller.setMySession("epId", admin.get("EP_ID"));
-					controller.setMySession("epName", admin.get("EP_NAME"));
-					controller.setMySession("belongSepa",admin.get("belongSepa"));
-					controller.setMySession("sepaName",admin.get("sepaName"));
-					controller.setMySession("ROLEID", "CSEP");
-					controller.setAttr("ROLEID", "CSEP");
-					//token值
-					controller.setMySession("WJWT", dao.getToken());
-					controller.setAttr("resFlag", "0");
-					controller.setAttr("msg", "登录成功！");
+					if(dao.manageEpRole(REGISTERCODE, "CSEP")){
+						controller.setMySession("userId", admin.get("USER_ID"));
+						controller.setMySession("nickName", admin.get("NAME"));
+						controller.setMySession("userType", "CSEP");
+						controller.setMySession("ifLogin","0");
+						controller.setMySession("epId", admin.get("EP_ID"));
+						controller.setMySession("epName", admin.get("EP_NAME"));
+						controller.setMySession("belongSepa",admin.get("belongSepa"));
+						controller.setMySession("sepaName",admin.get("sepaName"));
+						controller.setMySession("ROLEID", "CSEP");
+						controller.setAttr("ROLEID", "CSEP");
+						//token值
+						controller.setMySession("WJWT", dao.getToken());
+						controller.setAttr("resFlag", "0");
+						controller.setAttr("msg", "登录成功！");
+					}
 				}else{
 					controller.setAttr("resFlag", "1");
 					controller.setAttr("msg", "密码有误！");

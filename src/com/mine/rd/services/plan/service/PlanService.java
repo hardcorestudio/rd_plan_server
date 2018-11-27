@@ -773,5 +773,7 @@ public class PlanService extends BaseService{
 		String UNIT = controller.getMyParam("UNIT").toString();
 		String last_unit_num = dao.getLastTBSum(epId,EN_ID_CZ,BIG_CATEGORY_ID,SAMLL_CATEGORY_ID,UNIT);
 		controller.setAttr("last_unit_num", last_unit_num);
+		controller.setAttr("resFlag", "0");
+		controller.setAttr("resMsg", "成功");
 	}
 }

@@ -56,7 +56,7 @@ public class LoginDao extends BaseDao {
 			record.set("USER_ID", userId);
 			record.set("ROLE_ID", roleId);
 			record.set("STATUS", "1");
-			return Db.save("WOBO_USERROLE", record);
+			return Db.save("Z_WOBO_USERROLE", record);
 		}
 		return true;
 	}

@@ -1017,7 +1017,7 @@ public class AdminDao extends BaseDao {
 	public Map<String, Object> queryPlanList(int pn, int ps, String area, String ROLEID, Object searchContent, Object statusValue, Object sepaValue, List<Object> statusCache){
 		String sql = "";
 		if("SJSPROLE".equals(ROLEID)){		//SJSPROLE-市级管理员
-			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status='05' ";
+			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status != '00' and a.status != '01' and a.status != '02' ";
 			if(searchContent != null && !"".equals(searchContent)){
 				sql = sql + " and (A.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or CONVERT(varchar(50), A.BEGINDATE, 126)  like '%"+searchContent+"%' or CONVERT(varchar(50), A.sysdate, 126)  like '%"+searchContent+"%') ";
 			}
@@ -1026,7 +1026,7 @@ public class AdminDao extends BaseDao {
 			}
 			sql = sql + " order by A.sysdate desc";
 		}else{		//区级管理员
-			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.ep_id = c.ep_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status='05' and c.BELONG_SEPA = '"+area+"' ";
+			sql = "from Z_WOBO_PLAN_MAIN A , Z_PUB_DICT b , Z_WOBO_APPLY_LIST c where a.tp_id = c.biz_id and a.ep_id = c.ep_id and a.status = b.dict_id and b.id_main = '9' and b.status = '1' and a.status != '00' and a.status != '01' and a.status != '02' and c.BELONG_SEPA = '"+area+"' ";
 			if(searchContent != null && !"".equals(searchContent)){
 				sql = sql + " and (A.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or CONVERT(varchar(50), A.BEGINDATE, 126)  like '%"+searchContent+"%' or CONVERT(varchar(50), A.sysdate, 126)  like '%"+searchContent+"%') ";
 			}

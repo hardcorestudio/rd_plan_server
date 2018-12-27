@@ -59,6 +59,17 @@ public class AdminService extends BaseService{
 	        			queryPlanList();
 	        		}else if("queryMonitorList".equals(getLastMethodName(7))){
 	        			queryMonitorList();
+	        		}else if("queryHandleLicenseList".equals(getLastMethodName(7))){
+	        			queryHandleLicenseList();
+	        		}
+	        		else if("queryHandleLicense".equals(getLastMethodName(7))){
+	        			queryHandleLicense();
+	        		}
+	        		else if("addCzLicense".equals(getLastMethodName(7))){
+	        			addCzLicense();
+	        		}
+	        		else if("delCzLicense".equals(getLastMethodName(7))){
+	        			delCzLicense();
 	        		}
 	            } catch (AuthenticationFailedException e) {
 	            	controller.setAttr("msg", "发送失败，请检查邮箱地址和密码！");
@@ -431,5 +442,47 @@ public class AdminService extends BaseService{
 		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
 		controller.setAttrs(dao.queryMonitorList(pn, ps, orgCode, ROLEID, searchContent, statusValue, sepaValue, statusCache,monitorScale));
 		controller.setAttr("resFlag", "0");
+	}
+	
+	/**
+	 * @author woody
+	 * @date 20181211
+	 * 方法：处置单位许可证维护
+	 */
+	private void queryHandleLicenseList(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		controller.setAttrs(dao.queryHandleLicenseList(pn, ps, searchContent));
+		controller.setAttr("resFlag", "0");
+	}
+	private void queryHandleLicense(){
+		String epId = controller.getMyParam("epId").toString();
+		controller.setAttr("resData", dao.queryHandleLicense(epId));
+		controller.setAttr("resFlag", "0");
+	}
+	private void addCzLicense(){
+		String epId = controller.getMyParam("epId").toString();
+		String epName = controller.getMyParam("epName").toString();
+		String licenseNo = controller.getMyParam("licenseNo").toString();
+		if(dao.addCzLicense(epId,epName,licenseNo)){
+			controller.setAttr("msg", "操作成功");
+			controller.setAttr("resFlag", "0");
+		}
+		else{
+			controller.setAttr("msg", "操作失败！");
+			controller.setAttr("resFlag", "1");
+		}
+	}
+	private void delCzLicense(){
+		String epId = controller.getMyParam("epId").toString();
+		if(dao.delCzLicense(epId)){
+			controller.setAttr("msg", "操作成功");
+			controller.setAttr("resFlag", "0");
+		}
+		else{
+			controller.setAttr("msg", "操作失败！");
+			controller.setAttr("resFlag", "1");
+		}
 	}
 }

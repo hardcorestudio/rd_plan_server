@@ -380,4 +380,32 @@ public class PlanController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	public void initPt(){
+		logger.info("进入跨省转移计划");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("进入跨省转移计划异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void savePt(){
+		logger.info("保存跨省转移计划");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存跨省转移计划异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

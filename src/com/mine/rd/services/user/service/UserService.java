@@ -37,7 +37,7 @@ public class UserService extends BaseService {
 	
 	private void wsClose(String userId_param) throws Exception{
 		for(MyWebSocket item: MyWebSocket.webSocketSet){
-			if(item.wsMap.get("userId") != null){
+			if(item != null && item.wsMap != null && item.wsMap.get("userId") != null){
 				String userId = item.wsMap.get("userId").toString();
 	        	if(userId.equals(userId_param)){
 					item.sendMessage("{key:'close',value:'close'}");

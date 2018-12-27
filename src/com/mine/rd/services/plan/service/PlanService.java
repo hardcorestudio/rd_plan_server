@@ -11,6 +11,7 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
+import com.mine.pub.kit.JsonMyKit;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.plan.pojo.PlanDao;
 import com.mine.rd.websocket.MyWebSocket;
@@ -106,6 +107,12 @@ public class PlanService extends BaseService{
 	            	}
 	            	else if("getLastTBSum".equals(getLastMethodName(7))){
 	            		getLastTBSum();
+	            	}
+	            	else if("initPt".equals(getLastMethodName(7))){
+	            		initPt();
+	            	}
+	            	else if("savePt".equals(getLastMethodName(7))){
+	            		savePt();
 	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -251,10 +258,11 @@ public class PlanService extends BaseService{
 			controller.setAttr("produceSituationFlag", dao.initOverviewList(TP_ID) == null || dao.initOverviewList(TP_ID).size() == 0 ? "0" : "1");
 			controller.setAttr("decrementPlanFlag", dao.initReduction(TP_ID) == null ? "0" : "1");
 			controller.setAttr("transferStuationFlag", dao.initTransfer(TP_ID) == null ? "0" : "1");
-			controller.setAttr("selfDisposalMeasuresFlag", dao.initHandleSelf(TP_ID) == null ? "0" : "1");
+			controller.setAttr("selfDisposalMeasuresFlag", dao.initHandleSelf(TP_ID) == null || dao.initHandleSelf(TP_ID).size() == 0 ? "0" : "1");
 			controller.setAttr("entrustDisposalMeasuresFlag", dao.initHandleList(TP_ID) == null || dao.initHandleList(TP_ID).size() == 0 ? "0" : "1");
 			controller.setAttr("envFlag", dao.initEnv(TP_ID) == null  ? "0" : "1");
 			controller.setAttr("lastInfoFlag", dao.initLastInfo(TP_ID) == null ? "0" : "1");
+			controller.setAttr("ptFlag", dao.initPt(TP_ID) == null ? "0" : "1");
 		}
 	}
 	
@@ -551,18 +559,21 @@ public class PlanService extends BaseService{
 	
 	private void initHandleSelf(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		Map<String,Object> initHandleSelf = dao.initHandleSelf(tpId);
-		List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId);
+		List<Map<String,Object>> initHandleSelfs = dao.initHandleSelf(tpId);
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		String last_tpId = dao.checkLastYearId(tpId);
-		if(initHandleSelf == null){
+		if(initHandleSelfs == null){
 			if(!"".equals(last_tpId)){
-				initHandleSelf = dao.initHandleSelf(last_tpId);
+				initHandleSelfs = dao.initHandleSelf(last_tpId);
+				for(Map<String,Object> initHandleSelf : initHandleSelfs){
+					List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(last_tpId,initHandleSelf.get("ID").toString());
+					initHandleSelf.put("initHandleSelfList", initHandleSelfList);
+				}
 			}
-		}
-		if(initHandleSelfList.size() < 1){
-			if(!"".equals(last_tpId)){
-				initHandleSelfList = dao.initHandleSelfList(last_tpId);
+		}else{
+			for(Map<String,Object> initHandleSelf : initHandleSelfs){
+				List<Map<String,Object>> initHandleSelfList = dao.initHandleSelfList(tpId,initHandleSelf.get("ID").toString());
+				initHandleSelf.put("initHandleSelfList", initHandleSelfList);
 			}
 		}
 		if(initOverviewList.size() < 1){
@@ -570,9 +581,8 @@ public class PlanService extends BaseService{
 				initOverviewList = dao.initOverviewList(last_tpId);
 			}
 		}
-		controller.setAttr("initHandleSelf", initHandleSelf == null ? "" : initHandleSelf);
-		controller.setAttr("ifsave", initHandleSelf == null ? "0" : "1");
-		controller.setAttr("initHandleSelfList", initHandleSelfList);
+		controller.setAttr("initHandleSelfs", initHandleSelfs == null ? "" : initHandleSelfs);
+		controller.setAttr("ifsave", initHandleSelfs == null ? "0" : "1");
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
 	
@@ -580,42 +590,51 @@ public class PlanService extends BaseService{
 		String tpId = controller.getMyParam("TP_ID").toString();
 		String ifsave = controller.getMyParam("ifsave").toString();
 		if("1".equals(ifsave)){
-			String FACILITY_NAME = controller.getMyParam("FACILITY_NAME").toString();
-			String FACILITY_TYPE = controller.getMyParam("FACILITY_TYPE").toString();
-			String FACILITY_ADDRESS = controller.getMyParam("FACILITY_ADDRESS").toString();
-			String INVEST_SUM = controller.getMyParam("INVEST_SUM").toString();
-			String INVEST_SUM_UNIT = controller.getMyParam("INVEST_SUM_UNIT").toString();
-			String DESIGN = controller.getMyParam("DESIGN").toString();
-			String DESIGN_TIME = controller.getMyParam("DESIGN_TIME").toString();
-			String RUN_TIME = controller.getMyParam("RUN_TIME").toString();
-			String RUN_MONEY = controller.getMyParam("RUN_MONEY").toString();
-			String RUN_MONEY_UNIT = controller.getMyParam("RUN_MONEY_UNIT").toString();
-			String FACILITY_SUM = controller.getMyParam("FACILITY_SUM").toString();
-			String HANDLE_EFFECT = controller.getMyParam("HANDLE_EFFECT").toString();
-			String DB_1 = controller.getMyParam("DB_1").toString();
-			String DB_2 = controller.getMyParam("DB_2").toString();
-			String DESC_CONTENT = controller.getMyParam("DESC_CONTENT").toString();
-			String MEASURE = controller.getMyParam("MEASURE").toString();
-			Map<String,String> map = new HashMap<String, String>();
-			map.put("FACILITY_NAME", FACILITY_NAME);
-			map.put("FACILITY_TYPE", FACILITY_TYPE);
-			map.put("FACILITY_ADDRESS", FACILITY_ADDRESS);
-			map.put("INVEST_SUM", INVEST_SUM);
-			map.put("INVEST_SUM_UNIT", INVEST_SUM_UNIT);
-			map.put("DESIGN", DESIGN);
-			map.put("DESIGN_TIME", DESIGN_TIME);
-			map.put("RUN_TIME", RUN_TIME);
-			map.put("RUN_MONEY", RUN_MONEY);
-			map.put("RUN_MONEY_UNIT", RUN_MONEY_UNIT);
-			map.put("FACILITY_SUM", FACILITY_SUM);
-			map.put("HANDLE_EFFECT", HANDLE_EFFECT);
-			map.put("DB_1", DB_1);
-			map.put("DB_2", DB_2);
-			map.put("DESC_CONTENT", DESC_CONTENT);
-			map.put("MEASURE", MEASURE);
-			List<Map<String, Object>> HANDLE_LIST = controller.getMyParamList("HANDLE_LIST");
-			boolean flag = dao.saveHandleSelf(tpId,map);
-			boolean flag_handle = dao.saveHandleSelfList(tpId, HANDLE_LIST);
+			List<Map<String, Object>> handleSelfs = controller.getMyParamList("handleSelfs");
+			boolean flag = false;
+			boolean flag_handle = false;
+			int count = 1;
+			for(Map<String, Object> handleSelf : handleSelfs){
+				String FACILITY_NAME = handleSelf.get("FACILITY_NAME").toString();
+				String FACILITY_TYPE = handleSelf.get("FACILITY_TYPE").toString();
+				String FACILITY_ADDRESS = handleSelf.get("FACILITY_ADDRESS").toString();
+				String INVEST_SUM = handleSelf.get("INVEST_SUM").toString();
+				String INVEST_SUM_UNIT = handleSelf.get("INVEST_SUM_UNIT").toString();
+				String DESIGN = handleSelf.get("DESIGN").toString();
+				String DESIGN_TIME = handleSelf.get("DESIGN_TIME").toString();
+				String RUN_TIME = handleSelf.get("RUN_TIME").toString();
+				String RUN_MONEY = handleSelf.get("RUN_MONEY").toString();
+				String RUN_MONEY_UNIT = handleSelf.get("RUN_MONEY_UNIT").toString();
+				String FACILITY_SUM = handleSelf.get("FACILITY_SUM").toString();
+				String HANDLE_EFFECT = handleSelf.get("HANDLE_EFFECT").toString();
+				String DB_1 = handleSelf.get("DB_1").toString();
+				String DB_2 = handleSelf.get("DB_2").toString();
+				String DESC_CONTENT = handleSelf.get("DESC_CONTENT").toString();
+				String MEASURE = handleSelf.get("MEASURE").toString();
+				Map<String,String> map = new HashMap<String, String>();
+				map.put("FACILITY_NAME", FACILITY_NAME);
+				map.put("FACILITY_TYPE", FACILITY_TYPE);
+				map.put("FACILITY_ADDRESS", FACILITY_ADDRESS);
+				map.put("INVEST_SUM", INVEST_SUM);
+				map.put("INVEST_SUM_UNIT", INVEST_SUM_UNIT);
+				map.put("DESIGN", DESIGN);
+				map.put("DESIGN_TIME", DESIGN_TIME);
+				map.put("RUN_TIME", RUN_TIME);
+				map.put("RUN_MONEY", RUN_MONEY);
+				map.put("RUN_MONEY_UNIT", RUN_MONEY_UNIT);
+				map.put("FACILITY_SUM", FACILITY_SUM);
+				map.put("HANDLE_EFFECT", HANDLE_EFFECT);
+				map.put("DB_1", DB_1);
+				map.put("DB_2", DB_2);
+				map.put("DESC_CONTENT", DESC_CONTENT);
+				map.put("MEASURE", MEASURE);
+				map.put("ID",count+"");
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> HANDLE_LIST = (List<Map<String, Object>>) JsonMyKit.parse(handleSelf.get("HANDLE_LIST").toString(), Map.class);
+				flag = dao.saveHandleSelf(tpId,map);
+				flag_handle = dao.saveHandleSelfList(tpId,count+"", HANDLE_LIST);
+				count++;
+			}
 			if(flag && flag_handle){
 				controller.setAttr("resFlag", "0");
 				controller.setAttr("resMsg", "提交成功");
@@ -775,5 +794,46 @@ public class PlanService extends BaseService{
 		controller.setAttr("last_unit_num", last_unit_num);
 		controller.setAttr("resFlag", "0");
 		controller.setAttr("resMsg", "成功");
+	}
+	
+	private void initPt(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		Map<String,Object> initPt = dao.initPt(tpId);
+		List<Map<String,Object>> initPtList = dao.initPtList(tpId);
+		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
+		controller.setAttr("initPt", initPt == null ? "" : initPt);
+		controller.setAttr("initPtList", initPtList);
+		controller.setAttr("initOverviewList", initOverviewList);
+	}
+	
+	private void savePt(){
+		String tpId = controller.getMyParam("TP_ID").toString();
+		String EN_ID_CS = controller.getMySession("epId").toString();
+		String EN_NAME_CS = controller.getMySession("epName").toString();
+		String LINKMAN = controller.getMyParam("LINKMAN").toString();
+		String LINKTEL = controller.getMyParam("LINKTEL").toString();
+		String ysdwmc = controller.getMyParam("ysdwmc").toString();
+		String ysdwdz = controller.getMyParam("ysdwdz").toString();
+		String ysdwlxr = controller.getMyParam("ysdwlxr").toString();
+		String ysdwlxrsj = controller.getMyParam("ysdwlxrsj").toString();
+		String ysdwdlyszh = controller.getMyParam("ysdwdlyszh").toString();
+		String fwjsdwwxfwjyxkzh = controller.getMyParam("fwjsdwwxfwjyxkzh").toString();
+		String yrsxzqhdm = controller.getMyParam("yrsxzqhdm").toString();
+		String wfjsdwmc = controller.getMyParam("wfjsdwmc").toString();
+		String wfjsdz = controller.getMyParam("wfjsdz").toString();
+		String wfjsdwlxrsj = controller.getMyParam("wfjsdwlxrsj").toString();
+		String wfjsdwlxr = controller.getMyParam("wfjsdwlxr").toString();
+		String belongSepa = controller.getMySession("belongSepa").toString();
+		List<Map<String, Object>> PT_LIST = controller.getMyParamList("PT_LIST");
+		boolean flag = dao.savePt(tpId, EN_ID_CS,EN_NAME_CS, ysdwmc,LINKMAN,LINKTEL,ysdwdz,ysdwlxr,ysdwlxrsj,ysdwdlyszh,fwjsdwwxfwjyxkzh,yrsxzqhdm,wfjsdwmc,wfjsdz,wfjsdwlxrsj,wfjsdwlxr,belongSepa);
+		boolean flag_f = dao.savePtList(tpId, PT_LIST);
+		if(flag && flag_f ){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("resMsg", "提交成功");
+			this.ws("transfer", "func_done");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("resMsg", "提交失败");
+		}
 	}
 }

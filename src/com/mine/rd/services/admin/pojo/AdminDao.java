@@ -1,6 +1,8 @@
 package com.mine.rd.services.admin.pojo;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1131,21 +1133,56 @@ public class AdminDao extends BaseDao {
 		}
 		Record Z_WOBO_PLAN_MAIN = Db.findFirst("select * from Z_WOBO_PLAN_MAIN where tp_id = ? ",tpId);
 		Record Z_WOBO_EP_EXTEND = Db.findFirst("select * from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
+		Record Z_WOBO_APPLY_LIST = Db.findFirst("select * from Z_WOBO_APPLY_LIST where biz_id = ? ",tpId);
+		List<Record> TRANSFER_PLANS = Db.find("select * from TRANSFER_PLAN where main_id = ? ",tpId);
+		int TRANSFER_PLANS_num = TRANSFER_PLANS != null ? TRANSFER_PLANS.size() : 0 ;
+		if(TRANSFER_PLANS_num > 0 ){
+			for(Record TRANSFER_PLAN : TRANSFER_PLANS){
+//				Db.update("delete from apply_list where biz_id = ? ",TRANSFER_PLAN.getStr("TP_ID"));
+//				Db.update("delete from TRANSFER_PLAN_LIST where tp_id = ? ",TRANSFER_PLAN.getStr("TP_ID"));
+//				Db.update("delete from Z_TRANSFER_PLAN_LIST where tp_id = ? ",TRANSFER_PLAN.getStr("TP_ID"));
+//				Db.update("delete from TRANSFER_PLAN    where main_id = ? ",tpId);
+//				Db.update("delete from Z_TRANSFER_PLAN  where main_id = ? ",tpId);
+				Db.update("update TRANSFER_PLAN set status='5'  where tp_id = ? ",TRANSFER_PLAN.getStr("TP_ID"));
+				Db.update("update Z_TRANSFER_PLAN set status='5' where tp_id = ? ",TRANSFER_PLAN.getStr("TP_ID"));
+			}
+		}
 		for(Record recordtmp : Z_WOBO_HANDLE_LIST){
-			String id = super.getSeqId("Z_WOBO_PLAN_MAIN");
+			String id = "";
+//			if(TRANSFER_PLANS_num > 0){
+//				for(Record TRANSFER_PLAN : TRANSFER_PLANS){
+//					if(TRANSFER_PLAN.getStr("EN_ID_CZ").equals(recordtmp.getStr("EN_ID_CZ"))){
+//						id = TRANSFER_PLAN.getStr("TP_ID");
+//						break;
+//					}
+//				}
+//				if("".equals(id)){
+//					id = super.getSeqId("Z_WOBO_PLAN_MAIN");
+//				}
+//			}else{
+//				id = super.getSeqId("Z_WOBO_PLAN_MAIN");
+//			}
+			id = super.getSeqId("Z_WOBO_PLAN_MAIN");
 			Record record = new Record();
+			Record recordApply = new Record();
 			record.set("TP_ID", id);
 			record.set("TP_MAIN_ID", id);
-			record.set("AM_ID", "none");
+			record.set("AM_ID", "");
 			record.set("MAIN_ID", tpId);
 			record.set("EN_ID_CS", Z_WOBO_PLAN_MAIN.getStr("EP_ID"));
 			record.set("EN_ID_YS", ys_sb_id.toString());
 			record.set("EN_ID_CZ", recordtmp.getStr("EN_ID_CZ"));
 			record.set("EN_NAME_CS", Z_WOBO_PLAN_MAIN.getStr("EP_NAME"));
 			record.set("EN_NAME_YS", ys_sb_name.toString());
-			record.set("EN_NAME_CZ",recordtmp.getStr("EN_ID_NAME"));
+			record.set("EN_NAME_CZ",recordtmp.getStr("EN_NAME_CZ"));
+			Date enddate = Z_WOBO_PLAN_MAIN.getDate("ENDDATE");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(enddate);
+			calendar.add(Calendar.MONTH, 3);
+			enddate = calendar.getTime();
+			String enddateStr = DateKit.toStr(enddate, "yyyy-MM-dd");
 			record.set("BEGINTIME", Z_WOBO_PLAN_MAIN.getDate("BEGINDATE"));
-			record.set("ENDTIME", Z_WOBO_PLAN_MAIN.getDate("ENDDATE"));
+			record.set("ENDTIME",enddateStr);
 			record.set("IF_ADDITIONAL", "0");
 			record.set("IF_TP_ADDITIONAL", "0");
 			record.set("LINKMAN", Z_WOBO_EP_EXTEND.getStr("LINKMAN"));
@@ -1156,6 +1193,20 @@ public class AdminDao extends BaseDao {
 			record.set("LINKPHONE", Z_WOBO_EP_EXTEND.getStr("LINK_NUM"));
 			record.set("sysdate", getSysdate());
 			Db.save("Z_TRANSFER_PLAN", record);
+			Db.save("TRANSFER_PLAN", record.remove("id"));
+			String applyId = super.getSeqId("Z_WOBO_APPLY_LIST");
+			recordApply.set("AYL_ID", applyId);
+			recordApply.set("BIZ_ID", id);
+			recordApply.set("BIZ_NAME", "危废转移计划");
+			recordApply.set("EP_ID", Z_WOBO_PLAN_MAIN.getStr("EP_ID"));
+			recordApply.set("EP_NAME", Z_WOBO_PLAN_MAIN.getStr("EP_NAME"));
+			recordApply.set("BIZ_VERSION", "1");
+			recordApply.set("PROCESSINSTID", "1");
+			recordApply.set("APPLY_DATE", getSysdate());
+			recordApply.set("STATUS", "04");
+			recordApply.set("BELONG_SEPA", Z_WOBO_APPLY_LIST.get("BELONG_SEPA"));
+			recordApply.set("sysdate", getSysdate());
+			Db.save("APPLY_LIST", recordApply);
 			savePlanList(tpId, id, recordtmp.getStr("EN_ID_CZ"));
 		}
 	}
@@ -1168,8 +1219,8 @@ public class AdminDao extends BaseDao {
 			int orderNo = i + 1;
 			record.set("TL_ID", "00000"+orderNo);
 			record.set("TP_ID", id);
-			record.set("AM_ID", "none");
-			record.set("AL_ID", "none");
+			record.set("AM_ID", "");
+			record.set("AL_ID", "");
 			record.set("UNIT", list.get(i).getStr("UNIT"));
 			record.set("UNIT_NUM",  list.get(i).getStr("YEAR_NUM"));
 			record.set("BIG_CATEGORY_ID",tmp.getStr("BIG_CATEGORY_ID"));
@@ -1181,6 +1232,50 @@ public class AdminDao extends BaseDao {
 			record.set("METERIAL", tmp.getStr("W_NAME"));
 			record.set("sysdate", getSysdate());
 			Db.save("Z_TRANSFER_PLAN_LIST", record);
+			Db.save("TRANSFER_PLAN_LIST", record.remove("id"));
 		}
+	}
+	
+	/**
+	 * @author woody
+	 * @date 20181211
+	 * 方法：处置单位许可证维护列表
+	 */
+	public Map<String, Object> queryHandleLicenseList(int pn, int ps, Object searchContent){
+		StringBuffer sql = new StringBuffer();
+		sql.append(" from ");
+		sql.append(" HANDLE_LICENSE aa ");
+		sql.append(" where 1=1 ");
+		if(searchContent != null && !"".equals(searchContent)){
+			sql.append( " and (aa.EP_NAME like '%"+searchContent+"%' or aa.EP_ID like '%"+searchContent+"%' or aa.license_no like '%"+searchContent+"%' ) ");
+		}
+		Page<Record> page = Db.paginate(pn, ps, "select * ", sql.toString());
+		List<Map<String, Object>> czlicenseList = new ArrayList<>();
+		for(Record record : page.getList()){
+			czlicenseList.add(record.getColumns());
+		}
+		Map<String, Object> resMap = new HashMap<>();
+		resMap.put("czlicenseList", czlicenseList);
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	public Map<String, Object> queryHandleLicense(String epId){
+		Record record = Db.findFirst("select * from HANDLE_LICENSE where ep_id = ? ",epId);
+		return record.getColumns();
+	}
+
+	public boolean addCzLicense(String epId, String epName, String licenseNo) {
+		Db.update("delete from HANDLE_LICENSE where ep_Id = ? ",epId);
+		Record record = new Record();
+		record.set("EP_ID", epId);
+		record.set("EP_NAME", epName);
+		record.set("LICENSE_NO", licenseNo);
+		return Db.save("HANDLE_LICENSE", record);
+	}
+
+	public boolean delCzLicense(String epId) {
+		int count = Db.update("delete from HANDLE_LICENSE where ep_Id = ? ",epId);
+		return count > 0 ? true : false;
 	}
 }

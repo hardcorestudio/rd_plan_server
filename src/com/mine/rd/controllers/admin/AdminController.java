@@ -325,4 +325,62 @@ public class AdminController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	/**
+	 * @author woody
+	 * @date 20181211
+	 * 方法：处置单位许可证信息维护
+	 */
+	public void queryHandleLicenseList(){
+		logger.info("处置单位许可证信息维护列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("处置单位许可证信息维护列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void queryHandleLicense(){
+		logger.info("处置单位许可证信息维护");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("处置单位许可证信息维护异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void addCzLicense(){
+		logger.info("保存处置单位许可证信息");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("保存处置单位许可证信息异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void delCzLicense(){
+		logger.info("删除处置单位许可证信息");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("删除处置单位许可证信息异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

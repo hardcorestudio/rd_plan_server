@@ -2,11 +2,14 @@ package com.mine.rd.controllers.demo;
 
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -468,5 +471,27 @@ public class DemoController extends BaseController{
 			e.printStackTrace();
 		}
 		renderJson();
+	}
+	public void testPost() throws IOException{
+		StringBuffer sb = new StringBuffer();
+		BufferedReader bufferedReader = null;  
+		InputStream inputStream = getRequest().getInputStream();
+		if (inputStream != null) {  
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));  
+
+            char[] charBuffer = new char[128];  
+            int bytesRead = -1;  
+
+            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {  
+                sb.append(charBuffer, 0, bytesRead);  
+            }  
+        } else {  
+            sb.append("");  
+        }  
+		System.out.println("params=====>>"+sb.toString());
+		getResponse().setHeader("Access-Control-Allow-Origin", "*");
+//		renderJson("{'id':'1'}");
+		renderJson("{\"id\":1}");
+//		renderText("aaa");
 	}
 }

@@ -73,26 +73,28 @@ public class LoginService extends BaseService {
 					if(user.get("orgArea") != null && !"".equals(user.get("orgArea"))){
 						belongQ = user.get("orgArea").toString();
 					}
-					controller.setMySession("userId",user.get("operatorId").toString());
-					controller.setMySession("nickName",username);
-					controller.setMySession("userType", "admin");
-					controller.setMySession("ifLogin","0");
-					controller.setMySession("belongQ",belongQ);
-					controller.setMySession("belongS",belongS);
-					controller.setMySession("orgCode",user.get("orgCode").toString());
-					controller.setMySession("userPortrait","");
-					controller.setMySession("belongSepa", "");
-					controller.setMySession("sepaName", belongQ);
-					controller.setMySession("ROLEID", user.get("ROLEID"));
-					controller.setAttr("btoId", user.get("btoId"));
-					controller.setAttr("btoName", user.get("btoName"));
-					controller.setAttr("btofId", user.get("btofId"));
-					controller.setAttr("btofName", user.get("btofName"));
-					controller.setAttr("ROLEID", user.get("ROLEID"));
-					//token值
-					controller.setMySession("WJWT", dao.getToken());
-					controller.setAttr("resFlag", "0");
-					controller.setAttr("msg", "登录成功！");
+					if(dao.manageEpRole(user.get("operatorId").toString(), "QJGLY")){
+						controller.setMySession("userId",user.get("operatorId").toString());
+						controller.setMySession("nickName",username);
+						controller.setMySession("userType", "admin");
+						controller.setMySession("ifLogin","0");
+						controller.setMySession("belongQ",belongQ);
+						controller.setMySession("belongS",belongS);
+						controller.setMySession("orgCode",user.get("orgCode").toString());
+						controller.setMySession("userPortrait","");
+						controller.setMySession("belongSepa", "");
+						controller.setMySession("sepaName", belongQ);
+						controller.setMySession("ROLEID", user.get("ROLEID"));
+						controller.setAttr("btoId", user.get("btoId"));
+						controller.setAttr("btoName", user.get("btoName"));
+						controller.setAttr("btofId", user.get("btofId"));
+						controller.setAttr("btofName", user.get("btofName"));
+						controller.setAttr("ROLEID", user.get("ROLEID"));
+						//token值
+						controller.setMySession("WJWT", dao.getToken());
+						controller.setAttr("resFlag", "0");
+						controller.setAttr("msg", "登录成功！");
+					}
 				}else{
 					controller.setAttr("resFlag", "1");
 					controller.setAttr("msg", "密码错误！");

@@ -109,6 +109,7 @@ public class AdminDao extends BaseDao {
 		record = page.getList();
 		List<Map<String, Object>> list = new ArrayList<>();
 		Map<String, Object> resMap = new HashMap<>();
+		String statusName = "";
 		if(record != null){
 			for(Record apply : record){
 				Map<String, Object> map = new HashMap<>();
@@ -118,6 +119,26 @@ public class AdminDao extends BaseDao {
 				map.put("BIZ_ID", apply.get("BIZ_ID"));
 				map.put("BIZ_NAME", apply.get("BIZ_NAME"));
 				map.put("STEP_NAME", stepName);
+				map.put("STATUS", apply.get("STATUS"));
+				if(apply.get("STATUS").equals("00")){
+					statusName = "已保存";
+				}
+				else if(apply.get("STATUS").equals("01")){
+					statusName = "待审批";
+				}
+				else if(apply.get("STATUS").equals("02")){
+					statusName = "在审批";
+				}
+				else if(apply.get("STATUS").equals("03")){
+					statusName = "被否决";
+				}
+				else if(apply.get("STATUS").equals("04")){
+					statusName = "审批通过";
+				}
+				else if(apply.get("STATUS").equals("05")){
+					statusName = "市级否决";
+				}
+				map.put("STATUSNAME", statusName);
 				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
 				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
 				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));

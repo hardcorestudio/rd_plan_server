@@ -62,7 +62,7 @@ public class LoginService extends BaseService {
 			}
 		}else{
 			Map<String, Object> user = dao.adminLogin(username);
-			if(user.size() > 0){
+			if(user.size() > 0 && username.length() < 10){
 				//md5加密
 				if(Md5kit.MD5_64bit(pwd).equals(user.get("pwd"))){
 					String belongS = "";

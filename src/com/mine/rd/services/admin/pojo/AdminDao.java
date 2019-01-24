@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.util.SystemOutLogger;
+
 import com.google.common.collect.Lists;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -234,6 +236,7 @@ public class AdminDao extends BaseDao {
 		record = page.getList();
 		List<Map<String, Object>> list = new ArrayList<>();
 		Map<String, Object> resMap = new HashMap<>();
+		String statusName = "";
 		if(record != null){
 			for(Record apply : record){
 				Map<String, Object> map = new HashMap<>();
@@ -243,6 +246,26 @@ public class AdminDao extends BaseDao {
 				map.put("BIZ_ID", apply.get("BIZ_ID"));
 				map.put("BIZ_NAME", apply.get("BIZ_NAME"));
 				map.put("STEP_NAME", apply.get("STEP_NAME"));
+				map.put("STATUS", apply.get("STATUS"));
+				if(apply.get("STATUS").equals("00")){
+					statusName = "已保存";
+				}
+				else if(apply.get("STATUS").equals("01")){
+					statusName = "待审批";
+				}
+				else if(apply.get("STATUS").equals("02")){
+					statusName = "在审批";
+				}
+				else if(apply.get("STATUS").equals("03")){
+					statusName = "被否决";
+				}
+				else if(apply.get("STATUS").equals("04")){
+					statusName = "审批通过";
+				}
+				else if(apply.get("STATUS").equals("05")){
+					statusName = "市级否决";
+				}
+				map.put("STATUSNAME", statusName);
 				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
 				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
 				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
@@ -1236,6 +1259,8 @@ public class AdminDao extends BaseDao {
 		List<Record> list = Db.find("select * from Z_WOBO_HANDLE_LIST where TP_ID = ? and en_id_cz =? ",tpId,en_id_cz);
 		for(int i = 0 ; i < list.size() ; i++){
 			Record tmp = Db.findFirst("select * from Z_WOBO_OVERVIEWLIST where tp_id = ? and d_name = ? ",tpId,list.get(i).getStr("D_NAME"));
+//			System.out.println("tpId====>>"+tpId);
+//			System.out.println("d_name====>>"+list.get(i).getStr("D_NAME"));
 			Record record = new Record();
 			int orderNo = i + 1;
 			record.set("TL_ID", "00000"+orderNo);

@@ -604,100 +604,28 @@ public class PlanDao extends BaseDao {
 		return res;
 	}
 	
-	public Map<String,Object> initHandleSelf(String tpId){
-		Record record = Db.findFirst("select * from Z_WOBO_HANDLE_SELF where tp_id=? ",tpId);
-		Map<String,Object> map = null;
-		if(record !=null && record.getColumns() !=null ){
-			map = record.getColumns();
-		}
-		return map;
-	}
-	
-	public List<Map<String,Object>> initHandleSelfList(String tpId){
-		List<Record> records = Db.find("select * from Z_WOBO_HANDLESELF_LIST where tp_id=? ",tpId);
-		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-		for(int i = 0; i<records.size() ; i++){
-			list.add(records.get(i).getColumns());
-		}
-		return list;
-	}
-	
-	public boolean saveHandleSelf(String tpId,Map<String,String> map){
-		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
-		Record record = new Record();
-		record.set("TP_ID", tpId);
-		record.set("FACILITY_NAME", map.get("FACILITY_NAME"));
-		record.set("FACILITY_TYPE", map.get("FACILITY_TYPE"));
-		record.set("FACILITY_ADDRESS", map.get("FACILITY_ADDRESS"));
-		record.set("INVEST_SUM", map.get("INVEST_SUM"));
-		record.set("INVEST_SUM_UNIT", map.get("INVEST_SUM_UNIT"));
-		record.set("DESIGN", map.get("DESIGN"));
-		record.set("DESIGN_TIME", map.get("DESIGN_TIME"));
-		record.set("RUN_TIME", map.get("RUN_TIME"));
-		record.set("RUN_MONEY", map.get("RUN_MONEY"));
-		record.set("RUN_MONEY_UNIT", map.get("RUN_MONEY_UNIT"));
-		record.set("FACILITY_SUM", map.get("FACILITY_SUM"));
-		record.set("HANDLE_EFFECT", map.get("HANDLE_EFFECT"));
-		record.set("DB_1", map.get("DB_1"));
-		record.set("DB_2", map.get("DB_2"));
-		record.set("DESC_CONTENT", map.get("DESC_CONTENT"));
-		record.set("MEASURE", map.get("MEASURE"));
-		record.set("STATUS", "00");
-		record.set("sysdate", getSysdate());
-		return Db.save("Z_WOBO_HANDLE_SELF", record);
-	}
-	
-	public boolean deleteHandleSelf(String tpId){
-		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
-		return true;
-	}
-	
-	public boolean saveHandleSelfList(String tpId,List<Map<String,Object>> list){
-		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
-		boolean res = false;
-		for(int i=0;i<list.size();i++){
-			Map<String,Object> map = list.get(i);
-			Record record = new Record();
-			record.set("TP_ID", tpId);
-			record.set("Id", i+1);
-			record.set("D_NAME", map.get("D_NAME"));
-			record.set("STORE_YEAR", map.get("STORE_YEAR"));
-			record.set("STORE_PLAN_UNIT", map.get("STORE_PLAN_UNIT"));
-			record.set("STORE_LAST", map.get("STORE_LAST"));
-			record.set("STORE_LAST_UNIT", map.get("STORE_LAST_UNIT"));
-			res = Db.save("Z_WOBO_HANDLESELF_LIST", record);
-		}
-		return res;
-	}
-	
-	public boolean deleteHandleSelfList(String tpId){
-		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
-		return true;
-	}
-	
-//	public List<Map<String,Object>> initHandleSelf(String tpId){
-//		List<Record> records = Db.find("select * from Z_WOBO_HANDLE_SELF where tp_id=? ",tpId);
+//	public Map<String,Object> initHandleSelf(String tpId){
+//		Record record = Db.findFirst("select * from Z_WOBO_HANDLE_SELF where tp_id=? ",tpId);
+//		Map<String,Object> map = null;
+//		if(record !=null && record.getColumns() !=null ){
+//			map = record.getColumns();
+//		}
+//		return map;
+//	}
+//	
+//	public List<Map<String,Object>> initHandleSelfList(String tpId){
+//		List<Record> records = Db.find("select * from Z_WOBO_HANDLESELF_LIST where tp_id=? ",tpId);
 //		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 //		for(int i = 0; i<records.size() ; i++){
 //			list.add(records.get(i).getColumns());
 //		}
 //		return list;
 //	}
-//	
-//	public List<Map<String,Object>> initHandleSelfList(String tpId,String mainId){
-//		List<Record> records = Db.find("select * from Z_WOBO_HANDLESELF_LIST where tp_id=? and mainId = ? ",tpId,mainId);
-//		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-//		for(int i = 0; i<records.size() ; i++){
-//			list.add(records.get(i).getColumns());
-//		}
-//		return list;
-//	}
-//	
+	
 //	public boolean saveHandleSelf(String tpId,Map<String,String> map){
 //		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
 //		Record record = new Record();
 //		record.set("TP_ID", tpId);
-//		record.set("ID", map.get("ID"));
 //		record.set("FACILITY_NAME", map.get("FACILITY_NAME"));
 //		record.set("FACILITY_TYPE", map.get("FACILITY_TYPE"));
 //		record.set("FACILITY_ADDRESS", map.get("FACILITY_ADDRESS"));
@@ -724,14 +652,13 @@ public class PlanDao extends BaseDao {
 //		return true;
 //	}
 //	
-//	public boolean saveHandleSelfList(String tpId,String mainId,List<Map<String,Object>> list){
+//	public boolean saveHandleSelfList(String tpId,List<Map<String,Object>> list){
 //		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
 //		boolean res = false;
 //		for(int i=0;i<list.size();i++){
 //			Map<String,Object> map = list.get(i);
 //			Record record = new Record();
 //			record.set("TP_ID", tpId);
-//			record.set("MAIN_ID", mainId);
 //			record.set("Id", i+1);
 //			record.set("D_NAME", map.get("D_NAME"));
 //			record.set("STORE_YEAR", map.get("STORE_YEAR"));
@@ -747,6 +674,79 @@ public class PlanDao extends BaseDao {
 //		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
 //		return true;
 //	}
+	
+	public List<Map<String,Object>> initHandleSelf(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_HANDLE_SELF where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public List<Map<String,Object>> initHandleSelfList(String tpId,String mainId){
+		List<Record> records = Db.find("select * from Z_WOBO_HANDLESELF_LIST where tp_id=? and main_Id = ? ",tpId,mainId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
+		}
+		return list;
+	}
+	
+	public boolean saveHandleSelf(String tpId,Map<String,String> map){
+//		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
+		Record record = new Record();
+		record.set("TP_ID", tpId);
+		record.set("ID", map.get("ID"));
+		record.set("FACILITY_NAME", map.get("FACILITY_NAME"));
+		record.set("FACILITY_TYPE", map.get("FACILITY_TYPE"));
+		record.set("FACILITY_ADDRESS", map.get("FACILITY_ADDRESS"));
+		record.set("INVEST_SUM", map.get("INVEST_SUM"));
+		record.set("INVEST_SUM_UNIT", map.get("INVEST_SUM_UNIT"));
+		record.set("DESIGN", map.get("DESIGN"));
+		record.set("DESIGN_TIME", map.get("DESIGN_TIME"));
+		record.set("RUN_TIME", map.get("RUN_TIME"));
+		record.set("RUN_MONEY", map.get("RUN_MONEY"));
+		record.set("RUN_MONEY_UNIT", map.get("RUN_MONEY_UNIT"));
+		record.set("FACILITY_SUM", map.get("FACILITY_SUM"));
+		record.set("HANDLE_EFFECT", map.get("HANDLE_EFFECT"));
+		record.set("DB_1", map.get("DB_1"));
+		record.set("DB_2", map.get("DB_2"));
+		record.set("DESC_CONTENT", map.get("DESC_CONTENT"));
+		record.set("MEASURE", map.get("MEASURE"));
+		record.set("STATUS", "00");
+		record.set("sysdate", getSysdate());
+		return Db.save("Z_WOBO_HANDLE_SELF", record);
+	}
+	
+	public boolean deleteHandleSelf(String tpId){
+		Db.update("delete from Z_WOBO_HANDLE_SELF where tp_id = ? " ,tpId);
+		return true;
+	}
+	
+	public boolean saveHandleSelfList(String tpId,String mainId,List<Map<String,Object>> list){
+//		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
+		boolean res = false;
+		for(int i=0;i<list.size();i++){
+			Map<String,Object> map = list.get(i);
+			Record record = new Record();
+			record.set("TP_ID", tpId);
+			record.set("MAIN_ID", mainId);
+			record.set("Id", i+1);
+			record.set("D_NAME", map.get("D_NAME"));
+			record.set("STORE_YEAR", map.get("STORE_YEAR"));
+			record.set("STORE_PLAN_UNIT", map.get("STORE_PLAN_UNIT"));
+			record.set("STORE_LAST", map.get("STORE_LAST"));
+			record.set("STORE_LAST_UNIT", map.get("STORE_LAST_UNIT"));
+			res = Db.save("Z_WOBO_HANDLESELF_LIST", record);
+		}
+		return res;
+	}
+	
+	public boolean deleteHandleSelfList(String tpId){
+		Db.update("delete from Z_WOBO_HANDLESELF_LIST where tp_id = ? " ,tpId);
+		return true;
+	}
 	
 	public List<Map<String,Object>> initHandleList(String tpId){
 		List<Record> records = Db.find("select * from Z_WOBO_HANDLE_LIST where tp_id=? ",tpId);

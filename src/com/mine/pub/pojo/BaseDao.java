@@ -49,7 +49,7 @@ public abstract class BaseDao
 	{
 		Record record = Db.findFirst("select * from Z_PUB_SEQ where TABLENAME=?", tablename);
 		String seq = "";
-		if(record.getInt("NUM") == record.getInt("MAXNUM"))
+		if(record.getInt("NUM").equals(record.getInt("MAXNUM")))
 		{
 			seq = "1";
 		}else

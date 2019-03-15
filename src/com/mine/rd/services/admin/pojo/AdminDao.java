@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.util.SystemOutLogger;
-
 import com.google.common.collect.Lists;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
@@ -85,7 +83,7 @@ public class AdminDao extends BaseDao {
 				if(sepaValue != null && !"".equals(sepaValue)){
 					sql = sql + " and A.BELONG_SEPA in ("+sepaValue+")";
 				}
-				sql = sql + " order by A.APPLY_DATE desc";
+				sql = sql + " order by A.APPLY_DATE";
 			}
 			stepName = "市级审批";
 		}else{		//区级管理员

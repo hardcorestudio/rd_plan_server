@@ -3,6 +3,7 @@ package com.mine.rd.services.plan.service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
-import com.mine.pub.kit.JsonMyKit;
 //import com.mine.pub.kit.JsonMyKit;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.plan.pojo.PlanDao;
@@ -184,7 +184,7 @@ public class PlanService extends BaseService{
 			controller.setAttr("entrustDisposalMeasuresFlag", dao.initHandleList(TP_ID) == null || dao.initHandleList(TP_ID).size() == 0 ? "0" : "1");
 			controller.setAttr("envFlag", dao.initEnv(TP_ID) == null  ? "0" : "1");
 			controller.setAttr("lastInfoFlag", dao.initLastInfo(TP_ID) == null ? "0" : "1");
-			controller.setAttr("ptFlag", dao.initPt(TP_ID) == null ? "0" : "1");
+			controller.setAttr("ptFlag", dao.initPt(TP_ID) == null || dao.initPt(TP_ID).size() == 0 ? "0" : "1");
 		}
 	}
 	
@@ -812,36 +812,52 @@ public class PlanService extends BaseService{
 	
 	private void initPt(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		Map<String,Object> initPt = dao.initPt(tpId);
-		List<Map<String,Object>> initPtList = dao.initPtList(tpId);
+		List<Map<String,Object>> initPts = dao.initPt(tpId);
+		List<Map<String,Object>> initPtInfoList = new ArrayList<Map<String,Object>>();
+		for(Map<String,Object> pt : initPts){
+			Map<String,Object> map = new HashMap<String,Object>();
+			List<Map<String,Object>> initPtList = dao.initPtList(tpId,pt.get("NO").toString());
+			map.put("initPt", pt);
+			map.put("initPtList", initPtList);
+			initPtInfoList.add(map);
+		}
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
-		controller.setAttr("initPt", initPt == null ? "" : initPt);
-		controller.setAttr("initPtList", initPtList);
+		controller.setAttr("initPtInfoList", initPtInfoList == null ? "" : initPtInfoList);
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
 	
 	private void savePt(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		String EN_ID_CS = controller.getMySession("epId").toString();
-		String EN_NAME_CS = controller.getMySession("epName").toString();
-		String LINKMAN = controller.getMyParam("LINKMAN").toString();
-		String LINKTEL = controller.getMyParam("LINKTEL").toString();
-		String ysdwmc = controller.getMyParam("ysdwmc").toString();
-		String ysdwdz = controller.getMyParam("ysdwdz").toString();
-		String ysdwlxr = controller.getMyParam("ysdwlxr").toString();
-		String ysdwlxrsj = controller.getMyParam("ysdwlxrsj").toString();
-		String ysdwdlyszh = controller.getMyParam("ysdwdlyszh").toString();
-		String fwjsdwwxfwjyxkzh = controller.getMyParam("fwjsdwwxfwjyxkzh").toString();
-		String yrsxzqhdm = controller.getMyParam("yrsxzqhdm").toString();
-		String wfjsdwmc = controller.getMyParam("wfjsdwmc").toString();
-		String wfjsdz = controller.getMyParam("wfjsdz").toString();
-		String wfjsdwlxrsj = controller.getMyParam("wfjsdwlxrsj").toString();
-		String wfjsdwlxr = controller.getMyParam("wfjsdwlxr").toString();
-		String belongSepa = controller.getMySession("belongSepa").toString();
-		List<Map<String, Object>> PT_LIST = controller.getMyParamList("PT_LIST");
-		boolean flag = dao.savePt(tpId, EN_ID_CS,EN_NAME_CS, ysdwmc,LINKMAN,LINKTEL,ysdwdz,ysdwlxr,ysdwlxrsj,ysdwdlyszh,fwjsdwwxfwjyxkzh,yrsxzqhdm,wfjsdwmc,wfjsdz,wfjsdwlxrsj,wfjsdwlxr,belongSepa);
-		boolean flag_f = dao.savePtList(tpId, PT_LIST);
-		if(flag && flag_f ){
+		List<Map<String, Object>> initPtInfoList = controller.getMyParamList("initPtInfoList");
+		boolean flag = false;
+		boolean flag_list = false;
+		int count = 1;
+		dao.deletePt(tpId);
+		dao.deletePtList(tpId);
+		for(Map<String, Object> ptInfo : initPtInfoList){
+			String EN_ID_CS = controller.getMySession("epId").toString();
+			String EN_NAME_CS = controller.getMySession("epName").toString();
+			String LINKMAN = ptInfo.get("LINKMAN").toString();
+			String LINKTEL =ptInfo.get("LINKTEL").toString();
+			String ysdwmc = ptInfo.get("ysdwmc").toString();
+			String ysdwdz = ptInfo.get("ysdwdz").toString();
+			String ysdwlxr = ptInfo.get("ysdwlxr").toString();
+			String ysdwlxrsj = ptInfo.get("ysdwlxrsj").toString();
+			String ysdwdlyszh = ptInfo.get("ysdwdlyszh").toString();
+			String fwjsdwwxfwjyxkzh = ptInfo.get("fwjsdwwxfwjyxkzh").toString();
+			String yrsxzqhdm = ptInfo.get("yrsxzqhdm").toString();
+			String wfjsdwmc = ptInfo.get("wfjsdwmc").toString();
+			String wfjsdz = ptInfo.get("wfjsdz").toString();
+			String wfjsdwlxrsj = ptInfo.get("wfjsdwlxrsj").toString();
+			String wfjsdwlxr = ptInfo.get("wfjsdwlxr").toString();
+			String belongSepa = controller.getMySession("belongSepa").toString();
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> PT_LIST = (List<Map<String, Object>>) ptInfo.get("PT_LIST");
+			flag = dao.savePt(tpId, count+"",EN_ID_CS,EN_NAME_CS, ysdwmc,LINKMAN,LINKTEL,ysdwdz,ysdwlxr,ysdwlxrsj,ysdwdlyszh,fwjsdwwxfwjyxkzh,yrsxzqhdm,wfjsdwmc,wfjsdz,wfjsdwlxrsj,wfjsdwlxr,belongSepa);
+			flag_list = dao.savePtList(tpId,count+"", PT_LIST);
+			count++;
+		}
+		if(flag && flag_list ){
 			controller.setAttr("resFlag", "0");
 			controller.setAttr("resMsg", "提交成功");
 			this.ws("transfer", "func_done");

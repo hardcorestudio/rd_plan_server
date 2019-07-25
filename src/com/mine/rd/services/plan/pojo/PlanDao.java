@@ -987,16 +987,24 @@ public class PlanDao extends BaseDao {
 		}
 		return last_unit_num;
 	}
-	public Map<String,Object> initPt(String tpId){
-		Record record = Db.findFirst("select * from Z_WOBO_TRANSFER_PLAN_PT where tp_id=? ",tpId);
-		Map<String,Object> map = null;
-		if(record !=null && record.getColumns() !=null ){
-			map = record.getColumns();
+	public List<Map<String,Object>> initPt(String tpId){
+		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_PLAN_PT where tp_id=? ",tpId);
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<records.size() ; i++){
+			list.add(records.get(i).getColumns());
 		}
-		return map;
+		return list;
 	}
-	public List<Map<String,Object>> initPtList(String tpId){
-		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id=? ",tpId);
+//	public Map<String,Object> initPt(String tpId){
+//		Record record = Db.findFirst("select * from Z_WOBO_TRANSFER_PLAN_PT where tp_id=? ",tpId);
+//		Map<String,Object> map = null;
+//		if(record !=null && record.getColumns() !=null ){
+//			map = record.getColumns();
+//		}
+//		return map;
+//	}
+	public List<Map<String,Object>> initPtList(String tpId,String no){
+		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id=? and no = ? ",tpId,no);
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 		for(int i = 0; i<records.size() ; i++){
 			list.add(records.get(i).getColumns());
@@ -1004,13 +1012,14 @@ public class PlanDao extends BaseDao {
 		return list;
 	}
 
-	public boolean savePt(String tpId, String EN_ID_CS, String EN_NAME_CS,String ysdwmc,
+	public boolean savePt(String tpId, String count,String EN_ID_CS, String EN_NAME_CS,String ysdwmc,
 			String lINKMAN, String lINKTEL, String ysdwdz, String ysdwlxr,
 			String ysdwlxrsj, String ysdwdlyszh, String fwjsdwwxfwjyxkzh, String yrsxzqhdm, String wfjsdwmc,
 			String wfjsdz, String wfjsdwlxrsj, String wfjsdwlxr, String belongSepa) {
-		Db.update("delete from Z_WOBO_TRANSFER_PLAN_PT where tp_id = ? " ,tpId);
+//		Db.update("delete from Z_WOBO_TRANSFER_PLAN_PT where tp_id = ? " ,tpId);
 		Record record = new Record();
 		record.set("TP_ID", tpId);
+		record.set("NO",count);
 		record.set("EN_ID_CS", EN_ID_CS);
 		record.set("EN_NAME_CS", EN_NAME_CS);
 		record.set("EN_NAME_YS", ysdwmc);
@@ -1053,13 +1062,14 @@ public class PlanDao extends BaseDao {
 		record.set("sysdate", super.getSysdate());
 		return Db.save("Z_WOBO_TRANSFER_PLAN_PT", record);
 	}
-	public boolean savePtList(String tpId,List<Map<String,Object>> list){
-		Db.update("delete from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id = ? " ,tpId);
+	public boolean savePtList(String tpId,String no,List<Map<String,Object>> list){
+//		Db.update("delete from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id = ? " ,tpId);
 		boolean res = false;
 		for(int i=0;i<list.size();i++){
 			Map<String,Object> map = list.get(i);
 			Record record = new Record();
 			record.set("TP_ID", tpId);
+			record.set("NO", no);
 			record.set("Id", i+1);
 			record.set("D_NAME", map.get("D_NAME"));
 			record.set("UNIT", map.get("UNIT"));
@@ -1076,5 +1086,11 @@ public class PlanDao extends BaseDao {
 			res = Db.save("Z_WOBO_TRANSFER_PLAN_LIST_PT", record);
 		}
 		return res;
+	}
+	public void deletePt(String tpId){
+		Db.update("delete from Z_WOBO_TRANSFER_PLAN_PT where tp_id = ? " ,tpId);
+	}
+	public void deletePtList(String tpId){
+		Db.update("delete from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id = ? " ,tpId);
 	}
 }

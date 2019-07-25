@@ -480,6 +480,8 @@ public class DemoController extends BaseController{
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));  
 
             char[] charBuffer = new char[128];  
+            
+            
             int bytesRead = -1;  
 
             while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {  
@@ -491,7 +493,7 @@ public class DemoController extends BaseController{
 		System.out.println("params=====>>"+sb.toString());
 		getResponse().setHeader("Access-Control-Allow-Origin", "*");
 //		renderJson("{'id':'1'}");
-		renderJson("{\"id\":1}");
+		renderJson("{\"id\":\"adfa\"}");
 //		renderText("aaa");
 	}
 }

@@ -1308,6 +1308,10 @@ public class AdminDao extends BaseDao {
 		Record record = Db.findFirst("select * from HANDLE_LICENSE where ep_id = ? ",epId);
 		return record.getColumns();
 	}
+	public Map<String, Object> lanWarnInit(){
+		Record record = Db.findFirst("select * from A_LAB_WARN ");
+		return record.getColumns();
+	}
 
 	public boolean addCzLicense(String epId, String epName, String licenseNo) {
 		Db.update("delete from HANDLE_LICENSE where ep_Id = ? ",epId);
@@ -1317,9 +1321,228 @@ public class AdminDao extends BaseDao {
 		record.set("LICENSE_NO", licenseNo);
 		return Db.save("HANDLE_LICENSE", record);
 	}
+	
+	public boolean notificationsSave(Map<String,Object> map) {
+		if(map.get("ID") == null){
+			Record record = new Record();
+			record.set("ID", getSeqId("A_LAB_NOTIFICATIONS"));
+			record.set("TITLE", map.get("TITLE"));
+			record.set("CONTENT", map.get("CONTENT"));
+			record.set("STATUS", "0");
+			record.set("sysdate", getSysdate());
+			return Db.save("A_LAB_NOTIFICATIONS","ID", record);
+		}else{
+			Record record = new Record();
+			record.set("ID", map.get("ID"));
+			record.set("TITLE", map.get("TITLE"));
+			record.set("CONTENT", map.get("CONTENT"));
+			return Db.update("A_LAB_NOTIFICATIONS","ID", record);
+		}
+	}
 
 	public boolean delCzLicense(String epId) {
 		int count = Db.update("delete from HANDLE_LICENSE where ep_Id = ? ",epId);
 		return count > 0 ? true : false;
+	}
+	
+	public boolean lanWarnSave(String title,String content) {
+		int count = Db.update("update A_LAB_WARN set title = ? ,content=? ",title,content);
+		return count > 0 ? true : false;
+	}
+	
+	public List<Map<String, Object>> notificationsList(){
+		List<Record> list = Db.find("select a.*,CONVERT(varchar(100), a.sysdate, 23) showdate from A_LAB_NOTIFICATIONS a where a.status = '0' order by a.sysdate desc");
+		List<Map<String, Object>> returnList = new ArrayList<>();
+		if(list != null){
+			for(Record item : list){
+				returnList.add(item.getColumns());
+			}
+		}
+		return returnList;
+	}
+	public boolean notificationsDel(String id) {
+		int count = Db.update("delete from A_LAB_NOTIFICATIONS where id = ? ",id);
+		return count > 0 ? true : false;
+	}
+	
+	public Map<String, Object> labEp1List(int pn, int ps, Object searchContent, Object sepaValue, List<Object> statusCache){
+		String sql = "";
+		sql = "from A_LAB_USER A where a.type = '1' and status != '2' ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (A.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or a.NAME like '%"+searchContent+"%' or a.tel  like '%"+searchContent+"%' or a.mail  like '%"+searchContent+"%' or a.address  like '%"+searchContent+"%' or a.REGISTERCODE  like '%"+searchContent+"%')  ";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and a.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by A.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select A.* ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEp2List(int pn, int ps, Object searchContent, Object sepaValue, List<Object> statusCache){
+		String sql = "";
+		sql = "from A_LAB_USER A , ENTERPRISE b where a.ep_id = b.ep_id and a.type = '2' and a.status != '2' ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (B.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or a.NAME like '%"+searchContent+"%' or a.tel  like '%"+searchContent+"%' or a.mail  like '%"+searchContent+"%'  or b.REGISTERCODE  like '%"+searchContent+"%')  ";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and B.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by A.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select B.EP_ID,B.EP_NAME,B.REGISTERCODE,A.NAME,A.TEL,A.MAIL ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEp3List(int pn, int ps, Object searchContent, Object sepaValue, List<Object> statusCache){
+		String sql = "";
+		sql = "from A_LAB_USER A , ENTERPRISE b where a.ep_id = b.ep_id and a.type = '3' and a.status != '2' ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (B.EP_NAME like '%"+searchContent+"%' or A.EP_ID like '%"+searchContent+"%' or a.NAME like '%"+searchContent+"%' or a.tel  like '%"+searchContent+"%' or a.mail  like '%"+searchContent+"%'  or b.REGISTERCODE  like '%"+searchContent+"%')  ";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and B.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by A.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select B.EP_ID,B.EP_NAME,B.REGISTERCODE,A.NAME,A.TEL,A.MAIL ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEp1Transfer(int pn, int ps, Object searchContent, Object sepaValue,Object sourceValue,Object labValue,List<Object> statusCache){
+		String sql = "";
+		sql = "from A_LAB_USER A , A_LAB_FLOW b   where a.ep_id = b.ep_id ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (b.ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or B.count like '%"+searchContent+"%' or b.NUM like '%"+searchContent+"%' or b.brand  like '%"+searchContent+"%' or b.model  like '%"+searchContent+"%' or CONVERT(varchar(100), b.actiondate, 23)  like '%"+searchContent+"%' )  ";
+		}
+		if(sourceValue != null && !"".equals(sourceValue)){
+			sql = sql + " and b.source in ("+sourceValue+")";
+		}
+		if(labValue != null && !"".equals(labValue)){
+			sql = sql + " and b.type in ("+labValue+")";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and A.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by B.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select a.EP_NAME,CONVERT(varchar(100), b.actiondate, 23) flowdate,B.*,A.BELONG_SEPA ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				record.set("SEPA_NAME", convert(cityList, record.get("BELONG_SEPA")) + "环保局");
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEp2Transfer(int pn, int ps, Object searchContent, Object sepaValue,Object sourceValue,Object labValue,List<Object> statusCache){
+		String sql = "";
+		sql = "from A_LAB_FLOWEP b,A_LAB_USER a  where b.en_id_cz = a.ep_id and b.direction = '1' ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (b.ID like '%"+searchContent+"%' or b.en_name_cs like '%"+searchContent+"%' or B.en_name_cz like '%"+searchContent+"%' or b.en_tel_cs like '%"+searchContent+"%' or b.en_tel_cz  like '%"+searchContent+"%' or b.plate_num  like '%"+searchContent+"%' or b.driver  like '%"+searchContent+"%' or CONVERT(varchar(100), b.actiondate, 23)  like '%"+searchContent+"%' )  ";
+		}
+		if(sourceValue != null && !"".equals(sourceValue)){
+			sql = sql + " and b.source in ("+sourceValue+")";
+		}
+		if(labValue != null && !"".equals(labValue)){
+			sql = sql + " and b.type in ("+labValue+")";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and A.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by B.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select B.*,CONVERT(varchar(100), b.actiondate, 23) flowdate,a.BELONG_SEPA ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				record.set("SEPA_NAME", convert(cityList, record.get("BELONG_SEPA")) + "环保局");
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEp3Transfer(int pn, int ps, Object searchContent, Object sepaValue,Object statusValue,List<Object> statusCache){
+		List<Record> tbstatusList = CacheKit.get("mydict", "tb_status");
+		String sql = "";
+		sql = "from A_LAB_FLOWEP b,A_LAB_USER a,TRANSFERPLAN_BILL c where b.tb_id=c.tb_id and b.en_id_cz = a.ep_id and b.direction = '2' ";
+		if(searchContent != null && !"".equals(searchContent)){
+			sql = sql + " and (b.ID like '%"+searchContent+"%' or b.en_name_cs like '%"+searchContent+"%' or B.en_name_cz like '%"+searchContent+"%' or b.en_tel_cs like '%"+searchContent+"%' or b.en_tel_cz  like '%"+searchContent+"%' or b.plate_num  like '%"+searchContent+"%' or b.driver  like '%"+searchContent+"%' or CONVERT(varchar(100), b.actiondate, 23)  like '%"+searchContent+"%' )  ";
+		}
+		if(statusValue != null && !"".equals(statusValue)){
+			sql = sql + " and c.status in ("+statusValue+")";
+		}
+		if(sepaValue != null && !"".equals(sepaValue)){
+			sql = sql + " and A.BELONG_SEPA in ("+sepaValue+")";
+		}
+		sql = sql + " order by B.sysdate desc";
+		Page<Record> page = Db.paginate(pn, ps, "select B.*,CONVERT(varchar(100), b.actiondate, 23) flowdate,c.STATUS,a.BELONG_SEPA ", sql);
+		List<Record> eps = page.getList();
+		List<Map<String, Object>> epList = new ArrayList<>();
+		Map<String, Object> resMap = new HashMap<>();
+		if(eps != null){
+			for(Record record : eps){
+				record.set("SEPA_NAME", convert(cityList, record.get("BELONG_SEPA")) + "环保局");
+				record.set("STATUSNAME", convert(tbstatusList, record.get("STATUS")));
+				epList.add(record.getColumns());
+			}
+		}
+		resMap.put("epList", epList);
+		resMap.put("sepaList", super.queryDict("city_q", "value", "text"));
+		resMap.put("totalPage", page.getTotalPage());
+		resMap.put("totalRow", page.getTotalRow());
+		return resMap;
+	}
+	
+	public Map<String, Object> labEpStock(String epId){
+		Record record = Db.findFirst("select * from A_LAB_STOCK where ep_id = ? ",epId);
+		return record == null ? null : record.getColumns();
 	}
 }

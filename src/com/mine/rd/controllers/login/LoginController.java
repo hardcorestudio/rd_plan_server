@@ -218,4 +218,99 @@ public class LoginController extends BaseController {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * @author woody
+	 * @throws Exception 
+	 * @date 20190725
+	 * 方法：收集网点-APP账号登录
+	 */
+	public void labLoginForAPP(){
+		logger.info("收集网点-APP账号登录");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("收集网点-APP账号登录异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
+	
+	/**
+	 * @author woody
+	 * @throws Exception 
+	 * @date 20190708
+	 * 方法：收集网点-APP账号注册
+	 */
+	public void labRegisterForAPP(){
+		logger.info("收集网点-APP账号注册");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("收集网点-APP账号注册异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
+	
+	/**
+	 * @author woody
+	 * @throws Exception 
+	 * @date 20190708
+	 * 方法：集中转运点-APP账号注册
+	 */
+	public void labRegisterForAPPEP(){
+		logger.info("集中转运点-APP账号注册");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("集中转运点-APP账号注册异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
+	
+	
+	/**
+	 * @author woody
+	 * @throws Exception 
+	 * @date 20190708
+	 * 方法：集中转运点-忘记密码
+	 */
+	public void forgetPwdEp(){
+		logger.info("集中转运点-忘记密码");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("集中转运点-忘记密码异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
+	
+	public void forgetPwd(){
+		logger.info("收集网点-忘记密码");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("收集网点-忘记密码异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
 }

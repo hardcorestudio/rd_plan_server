@@ -117,4 +117,54 @@ public class LoginDao extends BaseDao {
 		return map;
 	}
 	
+	public Map<String, Object> labLoginForAPP(String tel,String type){
+		String sql = "select * from A_LAB_USER where status != '2' and tel = ? and type=? ";
+		Record record = Db.findFirst(sql, tel,type);
+		return record != null ? record.getColumns() : null;
+	}
+	
+	public Map<String, Object> getEp(String epId){
+		String sql = "select * from ENTERPRISE where ep_id = ? ";
+		Record record = Db.findFirst(sql, epId);
+		return record != null ? record.getColumns() : null;
+	}
+	
+	public Map<String, Object> labRegisterForAPP(String tel,String pwd){
+		Record record = new Record();
+		record.set("ID", getSeqId("A_LAB_USER"));
+		record.set("EP_ID", getSeqId("EP_ID"));
+		record.set("TEL", tel);
+		record.set("PWD", pwd);
+		record.set("STATUS", "0");
+		record.set("TYPE", "1");
+		record.set("sysdate", getSysdate());
+		boolean flag = Db.save("A_LAB_USER", record);
+		return flag ? record.getColumns() : null;
+	}
+	
+	public Map<String, Object> labRegisterForAPP(String tel,String pwd,String epId,String type){
+		Record record = new Record();
+		record.set("ID", getSeqId("A_LAB_USER"));
+		record.set("EP_ID", epId);
+		record.set("TEL", tel);
+		record.set("PWD", pwd);
+		record.set("STATUS", "0");
+		record.set("TYPE", type);
+		record.set("sysdate", getSysdate());
+		boolean flag = Db.save("A_LAB_USER", record);
+		return flag ? record.getColumns() : null;
+	}
+	
+	/**
+	 * @author woody
+	 * @date 20190728
+	 * 方法：修改密码
+	 */
+	public int forgetPwdEp(String tel,String pwd,String epId){
+		return Db.update("update A_LAB_USER set pwd = ? where tel =? and ep_id = ? ",pwd,tel,epId);
+	}
+	
+	public int forgetPwd(String tel,String pwd){
+		return Db.update("update A_LAB_USER set pwd = ? where tel =? and type = '1' ",pwd,tel);
+	}
 }

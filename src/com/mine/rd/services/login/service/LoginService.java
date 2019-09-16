@@ -150,6 +150,151 @@ public class LoginService extends BaseService {
 		}
 	}
 	
+	private void labLoginForAPP() throws Exception{
+		controller.doIWBSESSION();
+		String tel = controller.getMyParam("tel").toString();
+		String pwd = controller.getMyParam("pwd").toString();
+		String type = controller.getMyParam("type").toString();
+		Map<String , Object> user = dao.labLoginForAPP(tel,type);
+		if(user != null && user.get("ID") != null && !"".equals(user.get("ID"))){
+			if(pwd.equals(user.get("PWD"))){
+				controller.setMySession("userId",user.get("ID"));
+				controller.setMySession("epId",user.get("EP_ID"));
+				controller.setMySession("tel",tel);
+				controller.setMySession("userName",user.get("EP_NAME") == null ? "" : user.get("EP_NAME"));
+				controller.setMySession("epName",user.get("EP_NAME") == null ? "" : user.get("EP_NAME"));
+				controller.setMySession("status",user.get("STATUS"));
+				controller.setMySession("ifLogin","0");
+				controller.setMySession("userPortrait",user.get("IMGPATH")== null ? "" : user.get("IMGPATH"));
+				//token值
+				controller.setMySession("WJWT", dao.getToken());
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("msg", "登录成功！");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setMySession("ifLogin","");
+				controller.setAttr("msg", "密码错误！");
+			}
+		}else{   // 查询不到用户信息
+			controller.setAttr("resFlag", "1");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "用户不存在！");
+		}
+	}
+	
+	private void labRegisterForAPP() throws Exception{
+		String tel = controller.getMyParam("tel").toString();
+		String pwd = controller.getMyParam("pwd").toString();
+		String type = controller.getMyParam("type").toString();
+		Map<String , Object> user = dao.labLoginForAPP(tel,type);
+		if(user != null && user.get("ID") != null && !"".equals(user.get("ID"))){
+			controller.setAttr("resFlag", "1");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "用户已存在！");
+		}else{   // 查询不到用户信息
+			Map<String , Object> registerUser = dao.labRegisterForAPP(tel,pwd);
+			if(registerUser != null){
+				controller.doIWBSESSION();
+				controller.setMySession("tel",tel);
+				controller.setMySession("userId",registerUser.get("ID"));
+				controller.setMySession("userName","");
+				controller.setMySession("status",registerUser.get("STATUS"));
+				controller.setMySession("ifLogin","0");
+				controller.setMySession("userPortrait","");
+				//token值
+				controller.setMySession("WJWT", dao.getToken());
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("msg", "登录成功！");
+			}
+		}
+	}
+	
+	private void labRegisterForAPPEP() throws Exception{
+		String epId = controller.getMyParam("EP_ID").toString();
+		String tel = controller.getMyParam("tel").toString();
+		String pwd = controller.getMyParam("pwd").toString();
+		String type = controller.getMyParam("type").toString();
+		Map<String , Object> user = dao.labLoginForAPP(tel,type);
+		Map<String , Object> ep = dao.getEp(epId);
+		if(user != null && user.get("ID") != null && !"".equals(user.get("ID"))){
+			controller.setAttr("resFlag", "1");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "用户已存在！");
+		}
+		else if(ep == null){
+			controller.setAttr("resFlag", "2");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "EP账号不存在！");
+		}
+		else{   // 查询不到用户信息
+			Map<String , Object> registerUser = dao.labRegisterForAPP(tel,pwd,epId,type);
+			if(registerUser != null){
+				controller.doIWBSESSION();
+				controller.setMySession("tel",tel);
+				controller.setMySession("userId",registerUser.get("ID"));
+				controller.setMySession("epId",epId);
+				controller.setMySession("userName","");
+				controller.setMySession("status",registerUser.get("STATUS"));
+				controller.setMySession("ifLogin","0");
+				controller.setMySession("userPortrait","");
+				//token值
+				controller.setMySession("WJWT", dao.getToken());
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("msg", "登录成功！");
+			}
+		}
+	}
+	
+	
+	private void forgetPwdEp() throws Exception{
+		String epId = controller.getMyParam("EP_ID").toString();
+		String tel = controller.getMyParam("tel").toString();
+		String pwd = controller.getMyParam("pwd").toString();
+		String type = controller.getMyParam("type").toString();
+		Map<String , Object> user = dao.labLoginForAPP(tel,type);
+		Map<String , Object> ep = dao.getEp(epId);
+		if(user == null){
+			controller.setAttr("resFlag", "1");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "用户不存在！");
+		}
+		else if(ep == null){
+			controller.setAttr("resFlag", "2");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "EP账号不存在！");
+		}
+		else{   
+			if(dao.forgetPwdEp(tel,pwd,epId) > 0){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("msg", "修改成功！");
+			}else{
+				controller.setAttr("resFlag", "3");
+				controller.setAttr("msg", "修改失败！");
+			}
+		}
+	}
+	
+	private void forgetPwd() throws Exception{
+		String tel = controller.getMyParam("tel").toString();
+		String pwd = controller.getMyParam("pwd").toString();
+		String type = controller.getMyParam("type").toString();
+		Map<String , Object> user = dao.labLoginForAPP(tel,type);
+		if(user == null){
+			controller.setAttr("resFlag", "1");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "用户不存在！");
+		}
+		else{   
+			if(dao.forgetPwd(tel,pwd) > 0){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("msg", "修改成功！");
+			}else{
+				controller.setAttr("resFlag", "3");
+				controller.setAttr("msg", "修改失败！");
+			}
+		}
+	}
+	
 	@Override
 	public void doService() throws Exception {
 		Db.tx(new IAtom() {
@@ -158,9 +303,25 @@ public class LoginService extends BaseService {
 	            try {
 	            	if("adminLogin".equals(getLastMethodName(7))){
 	        			adminLogin();
-	        		}else if("epAdminLogin".equals(getLastMethodName(7))){
+	        		}
+	            	else if("epAdminLogin".equals(getLastMethodName(7))){
 	        			epAdminLogin();
 	        		}
+	            	else if("labLoginForAPP".equals(getLastMethodName(7))){
+	            		labLoginForAPP();
+	            	}
+	            	else if("labRegisterForAPP".equals(getLastMethodName(7))){
+	            		labRegisterForAPP();
+	            	}
+	            	else if("labRegisterForAPPEP".equals(getLastMethodName(7))){
+	            		labRegisterForAPPEP();
+	            	}
+	            	else if("forgetPwdEp".equals(getLastMethodName(7))){
+	            		forgetPwdEp();
+	            	}
+	            	else if("forgetPwd".equals(getLastMethodName(7))){
+	            		forgetPwd();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	                controller.setAttr("msg", "系统异常，请重新登录！");

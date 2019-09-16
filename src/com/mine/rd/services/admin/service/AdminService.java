@@ -71,6 +71,42 @@ public class AdminService extends BaseService{
 	        		else if("delCzLicense".equals(getLastMethodName(7))){
 	        			delCzLicense();
 	        		}
+	        		else if("lanWarnInit".equals(getLastMethodName(7))){
+	        			lanWarnInit();
+	        		}
+	        		else if("lanWarnSave".equals(getLastMethodName(7))){
+	        			lanWarnSave();
+	        		}
+	        		else if("notificationsSave".equals(getLastMethodName(7))){
+	        			notificationsSave();
+	        		}
+	        		else if("notificationsList".equals(getLastMethodName(7))){
+	        			notificationsList();
+	        		}
+	        		else if("notificationsDel".equals(getLastMethodName(7))){
+	        			notificationsDel();
+	        		}
+	        		else if("labEp1List".equals(getLastMethodName(7))){
+	        			labEp1List();
+	        		}
+	        		else if("labEpStock".equals(getLastMethodName(7))){
+	        			labEpStock();
+	        		}
+	        		else if("labEp2List".equals(getLastMethodName(7))){
+	        			labEp2List();
+	        		}
+	        		else if("labEp3List".equals(getLastMethodName(7))){
+	        			labEp3List();
+	        		}
+	        		else if("labEp1Transfer".equals(getLastMethodName(7))){
+	        			labEp1Transfer();
+	        		}
+	        		else if("labEp2Transfer".equals(getLastMethodName(7))){
+	        			labEp2Transfer();
+	        		}
+	        		else if("labEp3Transfer".equals(getLastMethodName(7))){
+	        			labEp3Transfer();
+	        		}
 	            } catch (AuthenticationFailedException e) {
 	            	controller.setAttr("msg", "发送失败，请检查邮箱地址和密码！");
 	    			controller.setAttr("resFlag", "1");
@@ -461,6 +497,21 @@ public class AdminService extends BaseService{
 		controller.setAttr("resData", dao.queryHandleLicense(epId));
 		controller.setAttr("resFlag", "0");
 	}
+	private void lanWarnInit(){
+		controller.setAttr("resData", dao.lanWarnInit());
+		controller.setAttr("resFlag", "0");
+	}
+	private void lanWarnSave(){
+		String title = controller.getMyParam("TITLE").toString();
+		String content = controller.getMyParam("CONTENT").toString();
+		if(dao.lanWarnSave(title,content)){
+			controller.setAttr("msg", "保存成功");
+			controller.setAttr("resFlag", "0");
+		}else{
+			controller.setAttr("resData", "保存失败");
+			controller.setAttr("resFlag", "1");
+		}
+	}
 	private void addCzLicense(){
 		String epId = controller.getMyParam("epId").toString();
 		String epName = controller.getMyParam("epName").toString();
@@ -483,6 +534,112 @@ public class AdminService extends BaseService{
 		else{
 			controller.setAttr("msg", "操作失败！");
 			controller.setAttr("resFlag", "1");
+		}
+	}
+	private void notificationsSave(){
+		Map<String,Object> map = controller.getMyParamMap("parm");
+		if(dao.notificationsSave(map)){
+			controller.setAttr("msg", "操作成功");
+			controller.setAttr("resFlag", "0");
+		}
+		else{
+			controller.setAttr("msg", "操作失败！");
+			controller.setAttr("resFlag", "1");
+		}
+	}
+	private void notificationsList(){
+		controller.setAttr("resDataList", dao.notificationsList());
+		controller.setAttr("resFlag", "0");
+	}
+	private void notificationsDel(){
+		String id = controller.getMyParam("id").toString();
+		if(dao.notificationsDel(id)){
+			controller.setAttr("msg", "操作成功");
+			controller.setAttr("resFlag", "0");
+		}
+		else{
+			controller.setAttr("msg", "操作失败！");
+			controller.setAttr("resFlag", "1");
+		}
+	}
+	
+	private void labEp1List(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp1List(pn, ps, searchContent, sepaValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEp2List(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp2List(pn, ps, searchContent, sepaValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEp3List(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp3List(pn, ps, searchContent, sepaValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEp1Transfer(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		Object sourceValue = controller.getMyParam("sourceValue");
+		Object labValue = controller.getMyParam("labValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp1Transfer(pn, ps, searchContent, sepaValue,sourceValue,labValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEp2Transfer(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		Object sourceValue = controller.getMyParam("sourceValue");
+		Object labValue = controller.getMyParam("labValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp2Transfer(pn, ps, searchContent, sepaValue,sourceValue,labValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEp3Transfer(){
+		pn = Integer.parseInt(controller.getMyParam("pn").toString());
+		ps = Integer.parseInt(controller.getMyParam("ps").toString());
+		Object searchContent = controller.getMyParam("searchContent");
+		Object sepaValue = controller.getMyParam("sepaValue");
+		Object statusValue = controller.getMyParam("statusValue");
+		@SuppressWarnings("unchecked")
+		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
+		controller.setAttrs(dao.labEp3Transfer(pn, ps, searchContent, sepaValue,statusValue, statusCache));
+		controller.setAttr("resFlag", "0");
+	}
+	
+	private void labEpStock(){
+		String epId = controller.getMyParam("EP_ID").toString();
+		Map<String,Object> map = dao.labEpStock(epId);
+		if(map != null){
+			controller.setAttr("resData", map);
+			controller.setAttr("resFlag", "0");
 		}
 	}
 }

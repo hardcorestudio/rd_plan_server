@@ -383,4 +383,167 @@ public class AdminController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	public void lanWarnInit(){
+		logger.info("App首页的警告内容");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("App首页的警告内容异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void lanWarnSave(){
+		logger.info("App首页的警告内容-保存");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("App首页的警告内容-保存异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void notificationsSave(){
+		logger.info("通知-保存");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("通知-保存异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void notificationsList(){
+		logger.info("通知-列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("通知-列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void notificationsDel(){
+		logger.info("通知-删除");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("通知-删除===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void labEp1List(){
+		logger.info("收集点列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("收集点列表===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void labEp2List(){
+		logger.info("集中转运点列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("集中转运点列表===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void labEp3List(){
+		logger.info("处置单位列表");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("处置单位列表===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void labEpStock(){
+		logger.info("库存");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("库存列表===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void labEp1Transfer(){
+		logger.info("收集点回收流水");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("收集点回收流水异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void labEp2Transfer(){
+		logger.info("集中转运点回收流水");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("集中转运点回收流水异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	public void labEp3Transfer(){
+		logger.info("处置点回收流水");
+		Service service = new AdminService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("处置点回收流水异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
 }

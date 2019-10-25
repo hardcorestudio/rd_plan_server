@@ -991,6 +991,8 @@ public class PlanDao extends BaseDao {
 		List<Record> records = Db.find("select * from Z_WOBO_TRANSFER_PLAN_PT where tp_id=? ",tpId);
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 		for(int i = 0; i<records.size() ; i++){
+			records.get(i).set("ksrq", DateKit.toStr(records.get(i).getDate("ksrq"), "yyyy-MM-dd HH:mm:ss"));
+			records.get(i).set("jsrq", DateKit.toStr(records.get(i).getDate("jsrq"), "yyyy-MM-dd HH:mm:ss"));
 			list.add(records.get(i).getColumns());
 		}
 		return list;

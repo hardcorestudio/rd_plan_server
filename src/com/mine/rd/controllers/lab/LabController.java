@@ -3,6 +3,9 @@ package com.mine.rd.controllers.lab;
 import org.apache.log4j.Logger;
 import com.mine.pub.service.Service;
 import com.mine.rd.services.lab.service.LabService;
+import com.ext.plugin.config.ConfigKit;
+import com.jfinal.aop.Clear;
+import com.jfinal.kit.PropKit;
 import com.mine.pub.controller.BaseController;
 
 public class LabController extends BaseController {
@@ -257,6 +260,53 @@ public class LabController extends BaseController {
 			this.setAttr("resFlag", "1");
 			e.printStackTrace();
 		}
+		renderJsonForCors();
+	}
+	@Clear
+	public void queryEp2List(){
+		logger.info("集中转运点列表");
+		Service service = new LabService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("集中转运点列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void queryEp1List(){
+		logger.info("终端列表");
+		Service service = new LabService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("终端列表异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void updateEpStatus(){
+		logger.info("更新终端状态");
+		Service service = new LabService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("更新终端状态异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
+	public void checkVersion(){
+		setAttr("version", PropKit.get("lab_version"));
 		renderJsonForCors();
 	}
 }

@@ -80,6 +80,15 @@ public class LabService extends BaseService{
 	            	else if("addFlowEpIn".equals(getLastMethodName(7))){
 	            		addFlowEpIn();
 	            	}
+	            	else if("queryEp2List".equals(getLastMethodName(7))){
+	            		queryEp2List();
+	            	}
+	            	else if("queryEp1List".equals(getLastMethodName(7))){
+	            		queryEp1List();
+	            	}
+	            	else if("updateEpStatus".equals(getLastMethodName(7))){
+	            		updateEpStatus();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	                controller.setAttr("msg", "系统异常，请重新登录！");
@@ -182,23 +191,28 @@ public class LabService extends BaseService{
 		map.put("EN_NAME_CZ", ep.get("EP_NAME"));
 		map.put("EN_TEL_CZ", ep.get("TEL"));
 		map.put("EP_ID", ep.get("EP_ID"));
-		if(map.get("ID") == null || "".equals(map.get("ID"))){
-			if(dao.saveStockEp(map) && dao.addFlowEp(map)){
-				controller.setAttr("item", map);
-				controller.setAttr("resFlag", "0");
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "保存失败");
+		if("1".equals(map.get("TYPE")) || dao.checkCar(map)){
+			if(map.get("ID") == null || "".equals(map.get("ID"))){
+				if(dao.saveStockEp(map) && dao.addFlowEp(map)){
+					controller.setAttr("item", map);
+					controller.setAttr("resFlag", "0");
+				}else{
+					controller.setAttr("resFlag", "1");
+					controller.setAttr("msg", "保存失败");
+				}
 			}
-		}
-		else{
-			if(dao.updateStockEp(map) && dao.updateFlowEp(map)){
-				controller.setAttr("item", map);
-				controller.setAttr("resFlag", "0");
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "更新失败");
+			else{
+				if(dao.updateStockEp(map) && dao.updateFlowEp(map)){
+					controller.setAttr("item", map);
+					controller.setAttr("resFlag", "0");
+				}else{
+					controller.setAttr("resFlag", "1");
+					controller.setAttr("msg", "更新失败");
+				}
 			}
+		}else{
+			controller.setAttr("resFlag", "2");
+			controller.setAttr("msg", "该车没有在平台注册");
 		}
 	}
 	
@@ -210,23 +224,28 @@ public class LabService extends BaseService{
 		map.put("EN_NAME_CS", ep.get("EP_NAME"));
 		map.put("EN_TEL_CS", ep.get("TEL"));
 		map.put("CSY", ep.get("NAME"));
-		if(map.get("ID") == null || "".equals(map.get("ID"))){
-			if(dao.addFlowEpOut(map)){
-				controller.setAttr("item", map);
-				controller.setAttr("resFlag", "0");
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "保存失败");
+		if(dao.checkCar(map)){
+			if(map.get("ID") == null || "".equals(map.get("ID"))){
+				if(dao.addFlowEpOut(map)){
+					controller.setAttr("item", map);
+					controller.setAttr("resFlag", "0");
+				}else{
+					controller.setAttr("resFlag", "1");
+					controller.setAttr("msg", "保存失败");
+				}
 			}
-		}
-		else{
-			if(dao.updateFlowEpOut(map)){
-				controller.setAttr("item", map);
-				controller.setAttr("resFlag", "0");
-			}else{
-				controller.setAttr("resFlag", "1");
-				controller.setAttr("msg", "更新失败");
+			else{
+				if(dao.updateFlowEpOut(map)){
+					controller.setAttr("item", map);
+					controller.setAttr("resFlag", "0");
+				}else{
+					controller.setAttr("resFlag", "1");
+					controller.setAttr("msg", "更新失败");
+				}
 			}
+		}else{
+			controller.setAttr("resFlag", "2");
+			controller.setAttr("msg", "该车没有在平台注册");
 		}
 	}
 	
@@ -236,7 +255,7 @@ public class LabService extends BaseService{
 		Map<String, Object> ep = dao.initEp(userId);
 		map.put("EN_TEL_CZ", ep.get("TEL"));
 		map.put("CZY", ep.get("NAME"));
-		if(dao.updateStockEpIn(map) && dao.updateFlowEpIn(map)){
+		if(dao.updateStockEpInByType1(map) && dao.updateStockEpInByType2(map) && dao.updateFlowEpIn(map)){
 			controller.setAttr("item", map);
 			controller.setAttr("resFlag", "0");
 		}else{
@@ -308,4 +327,21 @@ public class LabService extends BaseService{
 		controller.setAttr("resFlag", "0");
 	}
 	
+	private void queryEp2List(){
+		controller.setAttrs(dao.queryEp2List());
+	}
+	private void queryEp1List(){
+		controller.setAttrs(dao.queryEp1List());
+	}
+	
+	private void updateEpStatus(){
+		String epId = controller.getMyParam("epId").toString();
+		if(dao.updateEpStatus(epId) > 0){
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("msg", "操作成功");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("msg", "操作失败");
+		}
+	}
 }

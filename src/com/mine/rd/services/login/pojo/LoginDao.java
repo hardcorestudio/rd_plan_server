@@ -129,7 +129,7 @@ public class LoginDao extends BaseDao {
 		return record != null ? record.getColumns() : null;
 	}
 	
-	public Map<String, Object> labRegisterForAPP(String tel,String pwd){
+	public Map<String, Object> labRegisterForAPP(String tel,String pwd,String BELONG_EP){
 		Record record = new Record();
 		record.set("ID", getSeqId("A_LAB_USER"));
 		record.set("EP_ID", getSeqId("EP_ID"));
@@ -137,6 +137,7 @@ public class LoginDao extends BaseDao {
 		record.set("PWD", pwd);
 		record.set("STATUS", "0");
 		record.set("TYPE", "1");
+		record.set("BELONG_EP", BELONG_EP);
 		record.set("sysdate", getSysdate());
 		boolean flag = Db.save("A_LAB_USER", record);
 		return flag ? record.getColumns() : null;
@@ -166,5 +167,32 @@ public class LoginDao extends BaseDao {
 	
 	public int forgetPwd(String tel,String pwd){
 		return Db.update("update A_LAB_USER set pwd = ? where tel =? and type = '1' ",pwd,tel);
+	}
+	
+	public boolean ifgetCode(String tel , String BELONG_EP){
+		boolean flag = false;
+		Record record = Db.findFirst("select datediff(n,sysdate,getdate()) diff from A_LAB_MAILCODE where tel = ? and belong_ep = ? ",tel,BELONG_EP);
+		if(record == null || record.getInt("diff") > 10){
+			flag = true;
+		}
+		return flag;
+	}
+	
+	public boolean checkCode(String tel , String BELONG_EP,String code){
+		boolean flag = false;
+		Record record = Db.findFirst("select datediff(n,sysdate,getdate()) diff from A_LAB_MAILCODE where tel = ? and belong_ep = ? and code = ? ",tel,BELONG_EP,code);
+		if(record != null && record.getInt("diff") <= 10){
+			flag = true;
+		}
+		return flag;
+	}
+	
+	public void saveGetCode(String tel , String BELONG_EP,String code){
+		Db.update("delete from A_LAB_MAILCODE where tel = ? and belong_ep = ? ",tel,BELONG_EP);
+		Db.update("insert into A_LAB_MAILCODE values (?,?,getdate(),?) ",tel,BELONG_EP,code);
+	}
+	
+	public String getEpMail(String EpId){
+		return Db.queryStr("select mail from A_LAB_USER where ep_id = ? ",EpId);
 	}
 }

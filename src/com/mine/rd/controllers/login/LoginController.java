@@ -313,4 +313,18 @@ public class LoginController extends BaseController {
 		}
 		renderJsonForCorsLoginRegister();
 	}
+	
+	public void getCode(){
+		logger.info("发送邮件获取验证码");
+		Service service = new LoginService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("发送邮件获取验证码异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCorsLoginRegister();
+	}
 }

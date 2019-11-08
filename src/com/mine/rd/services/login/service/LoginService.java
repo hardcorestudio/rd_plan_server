@@ -2,11 +2,15 @@ package com.mine.rd.services.login.service;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Random;
 
+import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
 import com.mine.pub.kit.Md5kit;
+import com.mine.pub.kit.mail.EmailConst;
+import com.mine.pub.kit.mail.EmailUtils;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.login.pojo.LoginDao;
 
@@ -186,13 +190,19 @@ public class LoginService extends BaseService {
 		String tel = controller.getMyParam("tel").toString();
 		String pwd = controller.getMyParam("pwd").toString();
 		String type = controller.getMyParam("type").toString();
+		String code = controller.getMyParam("code").toString();
+		String BELONG_EP = controller.getMyParam("BELONG_EP").toString();
 		Map<String , Object> user = dao.labLoginForAPP(tel,type);
 		if(user != null && user.get("ID") != null && !"".equals(user.get("ID"))){
 			controller.setAttr("resFlag", "1");
 			controller.setMySession("ifLogin","");
 			controller.setAttr("msg", "用户已存在！");
+		}else if(!dao.checkCode(tel, BELONG_EP, code)){
+			controller.setAttr("resFlag", "2");
+			controller.setMySession("ifLogin","");
+			controller.setAttr("msg", "验证码无效或已过期！");
 		}else{   // 查询不到用户信息
-			Map<String , Object> registerUser = dao.labRegisterForAPP(tel,pwd);
+			Map<String , Object> registerUser = dao.labRegisterForAPP(tel,pwd,BELONG_EP);
 			if(registerUser != null){
 				controller.doIWBSESSION();
 				controller.setMySession("tel",tel);
@@ -295,6 +305,55 @@ public class LoginService extends BaseService {
 		}
 	}
 	
+	private void getCode() throws Exception{
+		String tel = controller.getMyParam("tel").toString();
+		String BELONG_EP = controller.getMyParam("BELONG_EP").toString();
+		if(dao.ifgetCode(tel, BELONG_EP)){
+			String acceptMail = dao.getEpMail(BELONG_EP);
+			String code = randomCode();
+			boolean flag = sendMail(PropKit.get("email"),PropKit.get("emailPwd"),acceptMail,"废电池APP-终端企业申请注册码",tel+"用户的验证码:"+code+",十分钟内有效");
+			if(flag){
+				dao.saveGetCode(tel,BELONG_EP,code);
+			}
+			controller.setAttr("resFlag", "0");
+			controller.setAttr("msg", "操作成功，请联系所选单位联系人根据输入的手机号获取注册码");
+		}else{
+			controller.setAttr("resFlag", "1");
+			controller.setAttr("msg", "10分钟内只能请求一次");
+		}
+	}
+	
+	public String randomCode() {
+        StringBuilder str = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            str.append(random.nextInt(10));
+        }
+        return str.toString();
+    }
+	
+	
+	
+	private boolean sendMail(String mail,String mailPwd,String acceptMail,String subject,String content) throws Exception {
+		String smtp = "";
+		String mailFlag = "smtp."+mail.split("@")[1];
+		//判断邮件发送协议地址
+		if("smtp.163.com".equals(mailFlag)){
+			smtp = EmailConst.SMTP_163;
+		}else if("smtp.126.com".equals(mailFlag)){
+			smtp = EmailConst.SMTP_126;
+		}else if("smtp.sina.com".equals(mailFlag)){
+			smtp = EmailConst.SMTP_SINA;
+		}else if("smtp.gmail.com".equals(mailFlag)){
+			smtp = EmailConst.SMTP_GMAIL;
+		}else{
+			return false;
+		}
+		//发送邮件
+		EmailUtils.send(smtp, mail, mailPwd, acceptMail, subject, content);
+		return true;
+	}
+	
 	@Override
 	public void doService() throws Exception {
 		Db.tx(new IAtom() {
@@ -321,6 +380,9 @@ public class LoginService extends BaseService {
 	            	}
 	            	else if("forgetPwd".equals(getLastMethodName(7))){
 	            		forgetPwd();
+	            	}
+	            	else if("getCode".equals(getLastMethodName(7))){
+	            		getCode();
 	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();

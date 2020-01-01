@@ -408,4 +408,19 @@ public class PlanController extends BaseController {
 		}
 		renderJsonForCors();
 	}
+	
+	public void getIndustryType(){
+		logger.info("行业门类");
+		Service service = new PlanService(this);
+		try {
+			service.doService();
+		} catch (Exception e) {
+			logger.error("行业门类异常===>" + e.getMessage());
+			this.setAttr("msg", "系统异常！");
+			this.setAttr("resFlag", "1");
+			e.printStackTrace();
+		}
+		renderJsonForCors();
+	}
+	
 }

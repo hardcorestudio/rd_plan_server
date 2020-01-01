@@ -12,6 +12,7 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.mine.pub.controller.BaseController;
+import com.mine.pub.kit.DateKit;
 //import com.mine.pub.kit.JsonMyKit;
 import com.mine.pub.service.BaseService;
 import com.mine.rd.services.plan.pojo.PlanDao;
@@ -115,6 +116,9 @@ public class PlanService extends BaseService{
 	            	else if("savePt".equals(getLastMethodName(7))){
 	            		savePt();
 	            	}
+	            	else if("getIndustryType".equals(getLastMethodName(7))){
+	            		getIndustryType();
+	            	}
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            	controller.setAttr("msg", "系统异常，请重新登录！");
@@ -140,6 +144,7 @@ public class PlanService extends BaseService{
 		List<Object> statusCache = (List<Object>) controller.getMyParam("statusCache");
 		controller.setAttrs(dao.queryEpList(pn, ps,searchContent,statusValue,statusCache,epId));
 		controller.setAttr("resFlag", "0");
+		controller.setAttr("thisyear",DateKit.toStr(dao.getSysdate(), "yyyy"));
 	}
 	
 	private void planMain(){
@@ -249,8 +254,18 @@ public class PlanService extends BaseService{
 		String SYS_TRAINING = controller.getMyParam("SYS_TRAINING").toString();
 		String SYS_ACCIDENT = controller.getMyParam("SYS_ACCIDENT").toString();
 		String MANAGEMENT_ORG = controller.getMyParam("MANAGEMENT_ORG").toString();
+		String REGISTERCODE = controller.getMyParam("REGISTERCODE") == null ? "" : controller.getMyParam("REGISTERCODE").toString();
+		String PDP = controller.getMyParam("PDP") == null ? "" : controller.getMyParam("PDP").toString();
+		String industry_type_id = controller.getMyParam("industry_type_id") == null ? "" : controller.getMyParam("industry_type_id").toString();
+		String industry_type_name = controller.getMyParam("industry_type_name") == null ? "" : controller.getMyParam("industry_type_name").toString();
+		String industry_big_id = controller.getMyParam("industry_big_id") == null ? "" : controller.getMyParam("industry_big_id").toString();
+		String industry_big_name = controller.getMyParam("industry_big_name") == null ? "" : controller.getMyParam("industry_big_name").toString();
+		String industry_mid_id = controller.getMyParam("industry_mid_id") == null ? "" : controller.getMyParam("industry_mid_id").toString();
+		String industry_mid_name = controller.getMyParam("industry_mid_name") == null ? "" : controller.getMyParam("industry_mid_name").toString();
+		String industry_sm_id = controller.getMyParam("industry_sm_id") == null ? "" : controller.getMyParam("industry_sm_id").toString();
+		String industry_sm_name = controller.getMyParam("industry_sm_name") == null ? "" : controller.getMyParam("industry_sm_name").toString();
 		List<Map<String, Object>> sons = controller.getMyParamList("sons");
-		boolean flag = dao.saveBaseInfo(tpId,epId,TOTAL_INVESTMENT,TOTAL_INVESTMENT_UNIT,TOTAL_OUTPUTVALUE,TOTAL_OUTPUTVALUE_UNIT,FLOOR_AREA,FLOOR_AREA_UNIT,EMPLOYEES_NUM,PRINCIPAL,LINKMAN,LINK_NUM,FAX_TEL,MAIL,WEBSITE,DEPARTMENT,DEPARTMENT_HEAD,MANAGER,SYS_MANAGER,SYS_RESPONSIBILITY,SYS_OPERATION,SYS_LEDGER,SYS_TRAINING,SYS_ACCIDENT,MANAGEMENT_ORG);
+		boolean flag = dao.saveBaseInfo(tpId,epId,TOTAL_INVESTMENT,TOTAL_INVESTMENT_UNIT,TOTAL_OUTPUTVALUE,TOTAL_OUTPUTVALUE_UNIT,FLOOR_AREA,FLOOR_AREA_UNIT,EMPLOYEES_NUM,PRINCIPAL,LINKMAN,LINK_NUM,FAX_TEL,MAIL,WEBSITE,DEPARTMENT,DEPARTMENT_HEAD,MANAGER,SYS_MANAGER,SYS_RESPONSIBILITY,SYS_OPERATION,SYS_LEDGER,SYS_TRAINING,SYS_ACCIDENT,MANAGEMENT_ORG,REGISTERCODE,PDP,industry_type_id,industry_type_name,industry_big_id,industry_big_name,industry_mid_id,industry_mid_name,industry_sm_id,industry_sm_name);
 		boolean flagSon = dao.saveBaseInfoList(tpId,epId,sons);
 		if(flag && flagSon){
 			controller.setAttr("resFlag", "0");
@@ -823,47 +838,71 @@ public class PlanService extends BaseService{
 		}
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		controller.setAttr("initPtInfoList", initPtInfoList == null ? "" : initPtInfoList);
+		controller.setAttr("ifsave", initPts == null || initPts.size() < 1 ? "0" : "1");
 		controller.setAttr("initOverviewList", initOverviewList);
 	}
 	
 	private void savePt(){
 		String tpId = controller.getMyParam("TP_ID").toString();
-		List<Map<String, Object>> initPtInfoList = controller.getMyParamList("initPtInfoList");
-		boolean flag = false;
-		boolean flag_list = false;
-		int count = 1;
-		dao.deletePt(tpId);
-		dao.deletePtList(tpId);
-		for(Map<String, Object> ptInfo : initPtInfoList){
-			String EN_ID_CS = controller.getMySession("epId").toString();
-			String EN_NAME_CS = controller.getMySession("epName").toString();
-			String LINKMAN = ptInfo.get("LINKMAN").toString();
-			String LINKTEL =ptInfo.get("LINKTEL").toString();
-			String ysdwmc = ptInfo.get("ysdwmc").toString();
-			String ysdwdz = ptInfo.get("ysdwdz").toString();
-			String ysdwlxr = ptInfo.get("ysdwlxr").toString();
-			String ysdwlxrsj = ptInfo.get("ysdwlxrsj").toString();
-			String ysdwdlyszh = ptInfo.get("ysdwdlyszh").toString();
-			String fwjsdwwxfwjyxkzh = ptInfo.get("fwjsdwwxfwjyxkzh").toString();
-			String yrsxzqhdm = ptInfo.get("yrsxzqhdm").toString();
-			String wfjsdwmc = ptInfo.get("wfjsdwmc").toString();
-			String wfjsdz = ptInfo.get("wfjsdz").toString();
-			String wfjsdwlxrsj = ptInfo.get("wfjsdwlxrsj").toString();
-			String wfjsdwlxr = ptInfo.get("wfjsdwlxr").toString();
-			String belongSepa = controller.getMySession("belongSepa").toString();
-			@SuppressWarnings("unchecked")
-			List<Map<String, Object>> PT_LIST = (List<Map<String, Object>>) ptInfo.get("PT_LIST");
-			flag = dao.savePt(tpId, count+"",EN_ID_CS,EN_NAME_CS, ysdwmc,LINKMAN,LINKTEL,ysdwdz,ysdwlxr,ysdwlxrsj,ysdwdlyszh,fwjsdwwxfwjyxkzh,yrsxzqhdm,wfjsdwmc,wfjsdz,wfjsdwlxrsj,wfjsdwlxr,belongSepa);
-			flag_list = dao.savePtList(tpId,count+"", PT_LIST);
-			count++;
-		}
-		if(flag && flag_list ){
-			controller.setAttr("resFlag", "0");
-			controller.setAttr("resMsg", "提交成功");
-			this.ws("transfer", "func_done");
+		String ifsave = controller.getMyParam("ifsave").toString();
+		if("1".equals(ifsave)){
+			List<Map<String, Object>> initPtInfoList = controller.getMyParamList("initPtInfoList");
+			boolean flag = false;
+			boolean flag_list = false;
+			int count = 1;
+			dao.deletePt(tpId);
+			dao.deletePtList(tpId);
+			for(Map<String, Object> ptInfo : initPtInfoList){
+				String EN_ID_CS = controller.getMySession("epId").toString();
+				String EN_NAME_CS = controller.getMySession("epName").toString();
+				String LINKMAN = ptInfo.get("LINKMAN").toString();
+				String LINKTEL =ptInfo.get("LINKTEL").toString();
+				String ysdwmc = ptInfo.get("ysdwmc").toString();
+				String ysdwdz = ptInfo.get("ysdwdz").toString();
+				String ysdwlxr = ptInfo.get("ysdwlxr").toString();
+				String ysdwlxrsj = ptInfo.get("ysdwlxrsj").toString();
+				String ysdwdlyszh = ptInfo.get("ysdwdlyszh").toString();
+				String fwjsdwwxfwjyxkzh = ptInfo.get("fwjsdwwxfwjyxkzh").toString();
+				String yrsxzqhdm = ptInfo.get("yrsxzqhdm").toString();
+				String wfjsdwmc = ptInfo.get("wfjsdwmc").toString();
+				String wfjsdz = ptInfo.get("wfjsdz").toString();
+				String wfjsdwlxrsj = ptInfo.get("wfjsdwlxrsj").toString();
+				String wfjsdwlxr = ptInfo.get("wfjsdwlxr").toString();
+				String belongSepa = controller.getMySession("belongSepa").toString();
+				@SuppressWarnings("unchecked")
+				List<Map<String, Object>> PT_LIST = (List<Map<String, Object>>) ptInfo.get("PT_LIST");
+				flag = dao.savePt(tpId, count+"",EN_ID_CS,EN_NAME_CS, ysdwmc,LINKMAN,LINKTEL,ysdwdz,ysdwlxr,ysdwlxrsj,ysdwdlyszh,fwjsdwwxfwjyxkzh,yrsxzqhdm,wfjsdwmc,wfjsdz,wfjsdwlxrsj,wfjsdwlxr,belongSepa);
+				flag_list = dao.savePtList(tpId,count+"", PT_LIST);
+				count++;
+			}
+			if(flag && flag_list ){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+				this.ws("transfer", "func_done");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
 		}else{
-			controller.setAttr("resFlag", "1");
-			controller.setAttr("resMsg", "提交失败");
+			boolean flag = dao.deletePt(tpId);
+			boolean flag_handle = dao.deletePtList(tpId);
+			if(flag && flag_handle){
+				controller.setAttr("resFlag", "0");
+				controller.setAttr("resMsg", "提交成功");
+				this.ws("handleSelf", "func_class");
+			}else{
+				controller.setAttr("resFlag", "1");
+				controller.setAttr("resMsg", "提交失败");
+			}
 		}
+		
 	}
+	
+	private void getIndustryType(){
+		controller.setAttr("industryType",dao.getIndustryType());
+		controller.setAttr("industryBig",dao.getIndustryBig());
+		controller.setAttr("industryMid",dao.getIndustryMid());
+		controller.setAttr("industrySm",dao.getIndustrySm());
+	}
+	
 }

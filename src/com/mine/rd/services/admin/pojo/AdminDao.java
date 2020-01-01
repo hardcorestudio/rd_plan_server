@@ -142,6 +142,7 @@ public class AdminDao extends BaseDao {
 				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
 				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
 				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
+				map.put("APPLY_YEAR", apply.get("APPLY_DATE_S").toString().substring(0, 4));
 				list.add(map);
 			}
 		}
@@ -196,6 +197,7 @@ public class AdminDao extends BaseDao {
 				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
 				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
 				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
+				map.put("APPLY_YEAR", apply.get("APPLY_DATE_S").toString().substring(0, 4));
 				list.add(map);
 			}
 		}
@@ -267,6 +269,7 @@ public class AdminDao extends BaseDao {
 				map.put("BELONG_SEPA", apply.get("BELONG_SEPA"));
 				map.put("SEPA_NAME", convert(cityList, apply.get("BELONG_SEPA")) + "环保局");
 				map.put("APPLY_DATE", apply.get("APPLY_DATE_S"));
+				map.put("APPLY_YEAR", apply.get("APPLY_DATE_S").toString().substring(0, 4));
 				list.add(map);
 			}
 		}

@@ -165,22 +165,22 @@ public class PlanDao extends BaseDao {
 		return map;
 	}
 	
-	public boolean saveBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
+	public boolean saveBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG,String REGISTERCODE,String PDP,String industry_type_id,String industry_type_name,String industry_big_id,String industry_big_name,String industry_mid_id,String industry_mid_name,String industry_sm_id,String industry_sm_name){
 		Record record = Db.findFirst("select count(1) num from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
 		if(record != null){
 			int num = record.getInt("num");
 			if(num > 0){
 				int resInt = Db.update("delete from Z_WOBO_EP_EXTEND where tp_id = ? ",tpId);
-				return resInt < 0 ? false : saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+				return resInt < 0 ? false : saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG,REGISTERCODE,PDP,industry_type_id,industry_type_name,industry_big_id,industry_big_name,industry_mid_id,industry_mid_name,industry_sm_id,industry_sm_name);
 			}else{
-				return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+				return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG,REGISTERCODE,PDP,industry_type_id,industry_type_name,industry_big_id,industry_big_name,industry_mid_id,industry_mid_name,industry_sm_id,industry_sm_name);
 			}
 		}else{
-			return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG);
+			return saveRecordBaseInfo(tpId,epId, TOTAL_INVESTMENT, TOTAL_INVESTMENT_UNIT, TOTAL_OUTPUTVALUE, TOTAL_OUTPUTVALUE_UNIT, FLOOR_AREA, FLOOR_AREA_UNIT, EMPLOYEES_NUM, PRINCIPAL, LINKMAN, LINK_NUM, FAX_TEL, MAIL, WEBSITE, DEPARTMENT, DEPARTMENT_HEAD, MANAGER, SYS_MANAGER, SYS_RESPONSIBILITY, SYS_OPERATION, SYS_LEDGER, SYS_TRAINING, SYS_ACCIDENT, MANAGEMENT_ORG,REGISTERCODE,PDP,industry_type_id,industry_type_name,industry_big_id,industry_big_name,industry_mid_id,industry_mid_name,industry_sm_id,industry_sm_name);
 		}
 	}
 	
-	private boolean saveRecordBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG){
+	private boolean saveRecordBaseInfo(String tpId,String epId,String TOTAL_INVESTMENT,String TOTAL_INVESTMENT_UNIT,String TOTAL_OUTPUTVALUE,String TOTAL_OUTPUTVALUE_UNIT,String FLOOR_AREA,String FLOOR_AREA_UNIT,String EMPLOYEES_NUM,String PRINCIPAL,String LINKMAN,String LINK_NUM,String FAX_TEL,String MAIL,String WEBSITE,String DEPARTMENT,String DEPARTMENT_HEAD,String MANAGER,String SYS_MANAGER,String SYS_RESPONSIBILITY,String SYS_OPERATION,String SYS_LEDGER,String SYS_TRAINING,String SYS_ACCIDENT,String MANAGEMENT_ORG,String REGISTERCODE,String PDP,String industry_type_id,String industry_type_name,String industry_big_id,String industry_big_name,String industry_mid_id,String industry_mid_name,String industry_sm_id,String industry_sm_name){
 		Record baseInfo = new Record();
 		baseInfo.set("TP_ID", tpId);
 		baseInfo.set("EP_ID", epId);
@@ -207,6 +207,16 @@ public class PlanDao extends BaseDao {
 		baseInfo.set("SYS_RESPONSIBILITY", SYS_RESPONSIBILITY);
 		baseInfo.set("SYS_TRAINING", SYS_TRAINING);
 		baseInfo.set("MANAGEMENT_ORG", MANAGEMENT_ORG);
+		baseInfo.set("REGISTERCODE", REGISTERCODE);
+		baseInfo.set("PDP", PDP);
+		baseInfo.set("industry_type_id", industry_type_id);
+		baseInfo.set("industry_type_name", industry_type_name);
+		baseInfo.set("industry_big_id", industry_big_id);
+		baseInfo.set("industry_big_name", industry_big_name);
+		baseInfo.set("industry_mid_id", industry_mid_name);
+		baseInfo.set("industry_mid_name", industry_mid_name);
+		baseInfo.set("industry_sm_id", industry_sm_id);
+		baseInfo.set("industry_sm_name", industry_sm_name);
 		baseInfo.set("STATUS", "00");
 		baseInfo.set("sysdate", getSysdate());
 		return Db.save("Z_WOBO_EP_EXTEND", baseInfo);
@@ -410,6 +420,7 @@ public class PlanDao extends BaseDao {
 			record.set("W_NAME", map.get("W_NAME"));
 			record.set("CHARACTER", map.get("CHARACTER"));
 			record.set("SOURCE_PROCESS", map.get("SOURCE_PROCESS"));
+			record.set("IETG", map.get("IETG"));
 			res = Db.save("Z_WOBO_OVERVIEWLIST", record);
 		}
 		return res;
@@ -1089,10 +1100,47 @@ public class PlanDao extends BaseDao {
 		}
 		return res;
 	}
-	public void deletePt(String tpId){
+	public boolean deletePt(String tpId){
 		Db.update("delete from Z_WOBO_TRANSFER_PLAN_PT where tp_id = ? " ,tpId);
+		return true;
 	}
-	public void deletePtList(String tpId){
+	public boolean deletePtList(String tpId){
 		Db.update("delete from Z_WOBO_TRANSFER_PLAN_LIST_PT where tp_id = ? " ,tpId);
+		return true;
+	}
+	public List<Map<String,Object>> getIndustryType(){
+		List<Record> industryType = CacheKit.get("mydict", "industry_type");
+		List<Map<String,Object>> typeList = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<industryType.size() ; i++){
+			industryType.get(i).getColumns().put("children",new ArrayList<Object>());
+			typeList.add(industryType.get(i).getColumns());
+		}
+		return typeList;
+	}
+	public List<Map<String,Object>> getIndustryBig(){
+		List<Record> industryBig = CacheKit.get("mydict", "industry_big");
+		List<Map<String,Object>> bigList = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<industryBig.size() ; i++){
+			industryBig.get(i).getColumns().put("children",new ArrayList<Object>());
+			bigList.add(industryBig.get(i).getColumns());
+		}
+		return bigList;
+	}
+	public List<Map<String,Object>> getIndustryMid(){
+		List<Record> industryMid = CacheKit.get("mydict", "industry_mid");
+		List<Map<String,Object>> midList = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<industryMid.size() ; i++){
+			industryMid.get(i).getColumns().put("children",new ArrayList<Object>());
+			midList.add(industryMid.get(i).getColumns());
+		}
+		return midList;
+	}
+	public List<Map<String,Object>> getIndustrySm(){
+		List<Record> industrySm = CacheKit.get("mydict", "industry_sm");
+		List<Map<String,Object>> smList = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i<industrySm.size() ; i++){
+			smList.add(industrySm.get(i).getColumns());
+		}
+		return smList;
 	}
 }

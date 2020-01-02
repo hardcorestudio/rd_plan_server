@@ -213,7 +213,7 @@ public class PlanDao extends BaseDao {
 		baseInfo.set("industry_type_name", industry_type_name);
 		baseInfo.set("industry_big_id", industry_big_id);
 		baseInfo.set("industry_big_name", industry_big_name);
-		baseInfo.set("industry_mid_id", industry_mid_name);
+		baseInfo.set("industry_mid_id", industry_mid_id);
 		baseInfo.set("industry_mid_name", industry_mid_name);
 		baseInfo.set("industry_sm_id", industry_sm_id);
 		baseInfo.set("industry_sm_name", industry_sm_name);

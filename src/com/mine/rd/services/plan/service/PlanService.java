@@ -693,16 +693,16 @@ public class PlanService extends BaseService{
 		List<Map<String,Object>> initOverviewList = dao.initOverviewList(tpId);
 		List<Map<String,Object>> initEpCzList = dao.initEpCzList();
 		String last_tpId = dao.checkLastYearId(tpId);
-		if(initHandleList.size() < 1){
-			if(!"".equals(last_tpId)){
-				initHandleList = dao.initHandleList(last_tpId);
-			}
-		}
-		if(initOverviewList.size() < 1){
-			if(!"".equals(last_tpId)){
-				initOverviewList = dao.initOverviewList(last_tpId);
-			}
-		}
+//		if(initHandleList.size() < 1){
+//			if(!"".equals(last_tpId)){
+//				initHandleList = dao.initHandleList(last_tpId);
+//			}
+//		}
+//		if(initOverviewList.size() < 1){
+//			if(!"".equals(last_tpId)){
+//				initOverviewList = dao.initOverviewList(last_tpId);
+//			}
+//		}
 		controller.setAttr("initHandleList", initHandleList);
 		controller.setAttr("initOverviewList", initOverviewList);
 		controller.setAttr("initEpCzList", initEpCzList);

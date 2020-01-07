@@ -89,7 +89,7 @@ public class AdminDao extends BaseDao {
 		}else{		//区级管理员
 			sqlSelect = "select * ";
 			if("finished".equals(action)){		//finished-已办业务
-				sql = "from (select distinct a.AYL_ID,a.EP_ID,a.EP_NAME,a.BIZ_ID,a.BIZ_NAME,a.BELONG_SEPA,APPLY_DATE,STATUS,(case a.APPLY_DATE when '' then '' else CONVERT(varchar(100), a.APPLY_DATE, 120) end) as APPLY_DATE_S,(case a.sysdate when '' then '' else DateName(year,sysdate)+'年' end) as sysdateshow from Z_WOBO_APPLY_LIST a, Z_WOBO_APPROVE_LIST b where a.BELONG_SEPA = '"+area+"' and a.STATUS in ('02','03','04') and a.AYL_ID = b.AYL_ID and b.BTOF_ID = '"+BTOF_ID+"') as A where A.STATUS in ('02','03','04')";
+				sql = "from (select distinct a.AYL_ID,a.EP_ID,a.EP_NAME,a.BIZ_ID,a.BIZ_NAME,a.BELONG_SEPA,APPLY_DATE,STATUS,(case a.APPLY_DATE when '' then '' else CONVERT(varchar(100), a.APPLY_DATE, 120) end) as APPLY_DATE_S,(case a.sysdate when '' then '' else DateName(year,a.sysdate)+'年' end) as sysdateshow from Z_WOBO_APPLY_LIST a, Z_WOBO_APPROVE_LIST b where a.BELONG_SEPA = '"+area+"' and a.STATUS in ('02','03','04') and a.AYL_ID = b.AYL_ID and b.BTOF_ID = '"+BTOF_ID+"') as A where A.STATUS in ('02','03','04')";
 				if(searchContent != null && !"".equals(searchContent)){
 					sql = sql + " and (A.AYL_ID like '%"+searchContent+"%' or A.EP_NAME like '%"+searchContent+"%' or A.BIZ_NAME like '%"+searchContent+"%' or A.sysdateshow like '%"+searchContent+"%')";
 				}

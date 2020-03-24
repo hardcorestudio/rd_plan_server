@@ -819,7 +819,8 @@ public class PlanService extends BaseService{
 		String BIG_CATEGORY_ID = controller.getMyParam("BIG_CATEGORY_ID").toString();
 		String SAMLL_CATEGORY_ID = controller.getMyParam("SAMLL_CATEGORY_ID").toString();
 		String UNIT = controller.getMyParam("UNIT").toString();
-		String last_unit_num = dao.getLastTBSum(epId,EN_ID_CZ,BIG_CATEGORY_ID,SAMLL_CATEGORY_ID,UNIT);
+		String D_NAME = controller.getMyParam("D_NAME").toString();
+		String last_unit_num = dao.getLastTBSum(epId,EN_ID_CZ,BIG_CATEGORY_ID,SAMLL_CATEGORY_ID,UNIT,D_NAME);
 		controller.setAttr("last_unit_num", last_unit_num);
 		controller.setAttr("resFlag", "0");
 		controller.setAttr("resMsg", "成功");
